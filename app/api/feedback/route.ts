@@ -52,16 +52,24 @@ async function getHandler(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const sentiment = searchParams.get("sentiment");
     const priority = searchParams.get("priority");
+    const search = searchParams.get("search");
     const limit = parseInt(searchParams.get("limit") || "50");
     const skip = parseInt(searchParams.get("skip") || "0");
 
     const filter: any = {};
+    if (search) {
+      filter.$text = { $search: search };
+    }
     if (sentiment) filter["analysis.sentiment"] = sentiment;
     if (priority) filter["analysis.priority"] = priority;
 
     const feedbacks = await collection
       .find(filter)
-      .sort({ createdAt: -1 })
+      .sort(
+        search
+          ? { score: { $meta: "textScore" }, createdAt: -1 }
+          : { createdAt: -1 }
+      )
       .limit(limit)
       .skip(skip)
       .toArray();
