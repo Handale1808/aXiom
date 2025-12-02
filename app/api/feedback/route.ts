@@ -1,28 +1,30 @@
-import { NextRequest, NextResponse } from 'next/server';
-import clientPromise from '@/lib/mongodb';
-import type { IFeedback } from '@/models/Feedback';
+import { NextRequest, NextResponse } from "next/server";
+import clientPromise from "@/lib/mongodb";
+import type { IFeedback } from "@/models/Feedback";
+import { withMiddleware } from "@/lib/middleware";
+import { ValidationError, DatabaseError } from "@/lib/errors";
 
-export async function POST(request: NextRequest) {
+async function postHandler(request: NextRequest) {
   try {
     const client = await clientPromise;
-    const db = client.db('axiom');
-    const collection = db.collection<IFeedback>('feedbacks');
-    
+    const db = client.db("axiom");
+    const collection = db.collection<IFeedback>("feedbacks");
+
     const body = await request.json();
     const { text, email, analysis } = body;
 
     if (!text || !analysis) {
-      return NextResponse.json(
-        { error: 'Text and analysis are required' },
-        { status: 400 }
-      );
+      throw new ValidationError("Text and analysis are required", {
+        ...(!text ? { text: "Text is required" } : {}),
+        ...(!analysis ? { analysis: "Analysis is required" } : {}),
+      });
     }
 
     const feedback: IFeedback = {
       text,
       email,
+      createdAt: new Date(),
       analysis,
-      createdAt: new Date()
     };
 
     const result = await collection.insertOne(feedback);
@@ -32,29 +34,30 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error('Error creating feedback:', error);
-    return NextResponse.json(
-      { error: 'Failed to create feedback' },
-      { status: 500 }
-    );
+    if (error instanceof ValidationError) {
+      throw error;
+    }
+    throw new DatabaseError("Failed to create feedback");
   }
 }
 
-export async function GET(request: NextRequest) {
+export const POST = withMiddleware(postHandler);
+
+async function getHandler(request: NextRequest) {
   try {
     const client = await clientPromise;
-    const db = client.db('axiom');
-    const collection = db.collection<IFeedback>('feedbacks');
-    
+    const db = client.db("axiom");
+    const collection = db.collection<IFeedback>("feedbacks");
+
     const { searchParams } = new URL(request.url);
-    const sentiment = searchParams.get('sentiment');
-    const priority = searchParams.get('priority');
-    const limit = parseInt(searchParams.get('limit') || '50');
-    const skip = parseInt(searchParams.get('skip') || '0');
+    const sentiment = searchParams.get("sentiment");
+    const priority = searchParams.get("priority");
+    const limit = parseInt(searchParams.get("limit") || "50");
+    const skip = parseInt(searchParams.get("skip") || "0");
 
     const filter: any = {};
-    if (sentiment) filter['analysis.sentiment'] = sentiment;
-    if (priority) filter['analysis.priority'] = priority;
+    if (sentiment) filter["analysis.sentiment"] = sentiment;
+    if (priority) filter["analysis.priority"] = priority;
 
     const feedbacks = await collection
       .find(filter)
@@ -72,14 +75,12 @@ export async function GET(request: NextRequest) {
         total,
         limit,
         skip,
-        hasMore: skip + feedbacks.length < total
-      }
+        hasMore: skip + feedbacks.length < total,
+      },
     });
   } catch (error) {
-    console.error('Error fetching feedback:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch feedback' },
-      { status: 500 }
-    );
+    throw new DatabaseError("Failed to fetch feedback");
   }
 }
+
+export const GET = withMiddleware(getHandler);
