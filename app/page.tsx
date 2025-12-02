@@ -1,94 +1,62 @@
 // app/page.tsx
 
-"use client";
-import { useState, useEffect } from "react";
-import TextSubmit from "@/lib/components/TextSubmit";
-import AnalysisResult from "@/lib/components/AnalysisResult";
-import FeedbackList from "@/lib/components/FeedbackList";
+import Link from "next/link";
 
 export default function Home() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [result, setResult] = useState<any>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [feedbacks, setFeedbacks] = useState<any[]>([]);
-
-  useEffect(() => {
-    fetchFeedbacks();
-  }, []);
-
-  const fetchFeedbacks = async () => {
-    try {
-      const response = await fetch("/api/feedback");
-      const data = await response.json();
-      if (data.success) {
-        setFeedbacks(data.data);
-      }
-    } catch (err) {
-      console.error("Failed to fetch feedbacks:", err);
-    }
-  };
-
-  const handleSubmit = async (text: string) => {
-    setIsSubmitting(true);
-    setError(null);
-    setResult(null);
-
-    try {
-      const response = await fetch("/api/feedback", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ text }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error?.message || "Failed to submit feedback");
-      }
-
-      setResult(data.data);
-      await fetchFeedbacks();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 p-4 font-sans dark:bg-black">
-      <div className="w-full max-w-2xl space-y-6">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-zinc-900 dark:text-white">
-            Feedback Analyzer
+      <div className="w-full max-w-3xl space-y-8 text-center">
+        <div className="space-y-4">
+          <h1 className="text-5xl font-bold text-zinc-900 dark:text-white">
+            Welcome to aXiom
           </h1>
-          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-            Submit your feedback and get AI-powered analysis
+          <p className="text-xl text-zinc-600 dark:text-zinc-400">
+            AI-Powered Feedback Analysis
           </p>
         </div>
 
-        <TextSubmit
-          onSubmit={handleSubmit}
-          placeholder="Enter your feedback..."
-        />
-
-        {isSubmitting && (
-          <div className="rounded-lg border border-zinc-200 bg-white p-4 text-center dark:border-zinc-800 dark:bg-zinc-900">
-            <p className="text-zinc-600 dark:text-zinc-400">Analyzing...</p>
+        <div className="space-y-4 text-left">
+          <p className="text-lg text-zinc-700 dark:text-zinc-300">
+            Transform customer feedback into actionable insights with our advanced AI analysis system.
+          </p>
+          
+          <div className="space-y-3">
+            <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+              <h3 className="font-semibold text-zinc-900 dark:text-white">
+                Instant Analysis
+              </h3>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                Get real-time AI-powered insights from your customer feedback
+              </p>
+            </div>
+            
+            <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+              <h3 className="font-semibold text-zinc-900 dark:text-white">
+                Comprehensive Reports
+              </h3>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                View and track all feedback submissions in one centralized location
+              </p>
+            </div>
+            
+            <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+              <h3 className="font-semibold text-zinc-900 dark:text-white">
+                Smart Categorization
+              </h3>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                Automatically categorize and prioritize feedback for your team
+              </p>
+            </div>
           </div>
-        )}
+        </div>
 
-        {error && (
-          <div className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950">
-            <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
-          </div>
-        )}
-
-        {result && <AnalysisResult analysis={result.analysis} />}
-
-        <FeedbackList feedbacks={feedbacks} />
+        <div className="pt-4">
+          <Link href="/submit">
+            <button className="rounded-lg bg-zinc-900 px-8 py-3 text-base font-medium text-white transition-colors hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200">
+              Get Started
+            </button>
+          </Link>
+        </div>
       </div>
     </div>
   );
