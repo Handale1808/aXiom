@@ -10,6 +10,7 @@
     "setup-db": "dotenv -e .env.local -- tsx scripts/setup-db.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.71.0",
     "mongodb": "^7.0.0",
     "mongoose": "^9.0.0",
     "next": "16.0.6",
