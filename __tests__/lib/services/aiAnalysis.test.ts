@@ -1,12 +1,26 @@
 import { analyzeFeedback } from "@/lib/services/aiAnalysis";
-import Anthropic from "@anthropic-ai/sdk";
 
-// Tell Jest to use our mock instead of the real Anthropic SDK
-jest.mock("@anthropic-ai/sdk");
+// Mock the entire module - create mockCreate inside the factory
+const mockCreate = jest.fn();
 
-// Get access to the mocked create function
-const mockCreate = (Anthropic as jest.MockedClass<typeof Anthropic>).prototype
-  .messages.create as jest.MockedFunction<any>;
+jest.mock("@anthropic-ai/sdk", () => {
+  const mockCreateFn = jest.fn();
+  
+  return {
+    __esModule: true,
+    default: jest.fn().mockImplementation(() => ({
+      messages: {
+        create: mockCreateFn,
+      },
+    })),
+    // Export the mock so we can access it in tests
+    mockCreateFn,
+  };
+});
+
+// Import the mock function we exported
+const Anthropic = require("@anthropic-ai/sdk");
+const mockCreateFromModule = Anthropic.mockCreateFn;
 
 describe("analyzeFeedback", () => {
   // Before each test, clear any previous mock data
@@ -31,7 +45,7 @@ describe("analyzeFeedback", () => {
       ],
     };
 
-    mockCreate.mockResolvedValueOnce(mockResponse);
+    mockCreateFromModule.mockResolvedValueOnce(mockResponse);
 
     // Act: Call the function we're testing
     const result = await analyzeFeedback("I love this product!");
@@ -46,8 +60,8 @@ describe("analyzeFeedback", () => {
     });
 
     // Verify the API was called correctly
-    expect(mockCreate).toHaveBeenCalledTimes(1);
-    expect(mockCreate).toHaveBeenCalledWith(
+    expect(mockCreateFromModule).toHaveBeenCalledTimes(1);
+    expect(mockCreateFromModule).toHaveBeenCalledWith(
       expect.objectContaining({
         model: "claude-sonnet-4-20250514",
         max_tokens: 1024,
@@ -66,7 +80,7 @@ describe("analyzeFeedback", () => {
       ],
     };
 
-    mockCreate.mockResolvedValueOnce(mockResponse);
+    mockCreateFromModule.mockResolvedValueOnce(mockResponse);
 
     // Act
     const result = await analyzeFeedback("Some feedback");

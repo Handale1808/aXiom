@@ -1,10 +1,12 @@
+const mockCreate = jest.fn();
+
 export class Anthropic {
   messages = {
-    create: jest.fn(),
+    create: mockCreate,
   };
 
   constructor(config?: { apiKey?: string }) {
-    // Mock constructor does nothing
+    // Mock constructor
   }
 }
 
