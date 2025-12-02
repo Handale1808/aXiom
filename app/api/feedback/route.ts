@@ -3,6 +3,7 @@ import clientPromise from "@/lib/mongodb";
 import type { IFeedback } from "@/models/Feedback";
 import { withMiddleware } from "@/lib/middleware";
 import { ValidationError, DatabaseError } from "@/lib/errors";
+import { analyzeFeedback } from "@/lib/services/aiAnalysis";
 
 async function postHandler(request: NextRequest) {
   try {
@@ -11,14 +12,15 @@ async function postHandler(request: NextRequest) {
     const collection = db.collection<IFeedback>("feedbacks");
 
     const body = await request.json();
-    const { text, email, analysis } = body;
+    const { text, email } = body;
 
-    if (!text || !analysis) {
-      throw new ValidationError("Text and analysis are required", {
-        ...(!text ? { text: "Text is required" } : {}),
-        ...(!analysis ? { analysis: "Analysis is required" } : {}),
+    if (!text) {
+      throw new ValidationError("Text is required", {
+        text: "Text is required",
       });
     }
+
+    const analysis = await analyzeFeedback(text);
 
     const feedback: IFeedback = {
       text,
