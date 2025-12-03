@@ -32,12 +32,6 @@ export default function FeedbackList({
           <div
             key={feedback._id}
             onClick={() => onFeedbackClick?.(feedback._id)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                onFeedbackClick?.(feedback._id);
-              }
-            }}
             className="cursor-pointer rounded-lg border border-zinc-200 bg-white p-4 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
             role="button"
             tabIndex={0}
