@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { logRequest, generateRequestId } from './logger';
+import { generateRequestId, info, debug, error as logError } from './logger';
 import { formatErrorResponse, ApiError } from './errors';
 
 type RouteHandler = (
   request: NextRequest,
-  context?: any
+  context: { requestId: string }
 ) => Promise<NextResponse>;
 
 export function withMiddleware(handler: RouteHandler): RouteHandler {
@@ -14,17 +14,41 @@ export function withMiddleware(handler: RouteHandler): RouteHandler {
     const method = request.method;
     const path = new URL(request.url).pathname;
 
+    info('Incoming request', {
+      requestId,
+      method,
+      path,
+      userAgent: request.headers.get('user-agent'),
+    });
+
+    debug('Calling route handler', { requestId, method, path });
+
     try {
-      const response = await handler(request, context);
+      const response = await handler(request, { requestId });
       const latency = Date.now() - startTime;
       const status = response.status;
 
-      logRequest({ method, path, status, latency, requestId });
+      debug('Handler completed successfully', { requestId, status });
+
+      info('Request completed', {
+        requestId,
+        method,
+        path,
+        status,
+        latency,
+      });
 
       response.headers.set('X-Request-Id', requestId);
       return response;
     } catch (error) {
       const latency = Date.now() - startTime;
+      
+      debug('Handler threw error', {
+        requestId,
+        errorType: (error as Error).name,
+        errorMessage: (error as Error).message,
+      });
+
       const errorResponse = formatErrorResponse(
         error as Error,
         requestId
@@ -32,13 +56,13 @@ export function withMiddleware(handler: RouteHandler): RouteHandler {
       
       const status = error instanceof ApiError ? error.statusCode : 500;
 
-      logRequest({
+      info('Request completed with error', {
+        requestId,
         method,
         path,
         status,
         latency,
-        requestId,
-        error: (error as Error).message
+        error: (error as Error).message,
       });
 
       const response = NextResponse.json(errorResponse, { status });

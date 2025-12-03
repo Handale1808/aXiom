@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { IAnalysis } from "@/models/Feedback";
+import { debug, info, warn, error as logError } from "@/lib/logger";
 
 const anthropic = process.env.ANTHROPIC_API_KEY
   ? new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
@@ -7,7 +8,8 @@ const anthropic = process.env.ANTHROPIC_API_KEY
 
 async function retryWithBackoff<T>(
   fn: () => Promise<T>,
-  maxRetries: number = 3
+  maxRetries: number = 3,
+  requestId?: string
 ): Promise<T> {
   let lastError: Error;
 
@@ -19,7 +21,15 @@ async function retryWithBackoff<T>(
 
       if (attempt < maxRetries - 1) {
         const delay = Math.pow(2, attempt) * 1000;
-        console.log(`Retry attempt ${attempt + 1} after ${delay}ms`);
+
+        warn("Retrying API call due to error", {
+          requestId,
+          attempt: attempt + 1,
+          maxRetries,
+          delay,
+          error: (error as Error).message,
+        });
+
         await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
@@ -91,23 +101,44 @@ function validateAnalysis(data: any): IAnalysis {
   return data as IAnalysis;
 }
 
-export async function analyzeFeedback(text: string): Promise<IAnalysis> {
+export async function analyzeFeedback(
+  text: string,
+  requestId?: string
+): Promise<IAnalysis> {
   const startTime = Date.now();
 
+  info("Starting feedback analysis", {
+    requestId,
+    textLength: text.length,
+    provider: "anthropic",
+    model: "claude-sonnet-4-20250514",
+  });
+
   if (!anthropic) {
-    console.log("No API key found, using mock analysis");
+    warn("No API key found, using mock analysis", {
+      requestId,
+      mode: "mock",
+    });
     return getMockAnalysis(text);
   }
 
   try {
-    const analysis = await retryWithBackoff(async () => {
-      const message = await anthropic.messages.create({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1024,
-        messages: [
-          {
-            role: "user",
-            content: `Analyze the following user feedback and return ONLY a JSON object with no additional text, markdown, or formatting.
+    const analysis = await retryWithBackoff(
+      async () => {
+        debug("Calling Anthropic API", {
+          requestId,
+          model: "claude-sonnet-4-20250514",
+          maxTokens: 1024,
+          textLength: text.length,
+        });
+
+        const message = await anthropic.messages.create({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 1024,
+          messages: [
+            {
+              role: "user",
+              content: `Analyze the following user feedback and return ONLY a JSON object with no additional text, markdown, or formatting.
 
 The JSON must have exactly these fields:
 - summary: A brief 1-2 sentence summary of the feedback
@@ -127,37 +158,88 @@ Guidelines:
 Feedback text: "${text}"
 
 Return only the JSON object:`,
-          },
-        ],
-      });
+            },
+          ],
+        });
 
-      const content = message.content[0];
-      if (content.type !== "text") {
-        throw new Error("Unexpected response type from API");
-      }
+        const apiDuration = Date.now() - startTime;
+        debug("API call successful", {
+          requestId,
+          responseType: message.content[0].type,
+          duration: apiDuration,
+        });
 
-      let responseText = content.text.trim();
+        const content = message.content[0];
+        if (content.type !== "text") {
+          throw new Error("Unexpected response type from API");
+        }
 
-      responseText = responseText
-        .replace(/```json\n?/g, "")
-        .replace(/```\n?/g, "");
+        let responseText = content.text.trim();
 
-      const parsed = JSON.parse(responseText);
-      return validateAnalysis(parsed);
-    });
+        debug("Parsing AI response", {
+          requestId,
+          responseLength: responseText.length,
+        });
+
+        responseText = responseText
+          .replace(/```json\n?/g, "")
+          .replace(/```\n?/g, "");
+
+        let parsed;
+        try {
+          parsed = JSON.parse(responseText);
+        } catch (parseError) {
+          logError("Failed to parse AI response", {
+            requestId,
+            error: (parseError as Error).message,
+            responseText: responseText.substring(0, 200),
+          });
+          throw parseError;
+        }
+
+        try {
+          const validated = validateAnalysis(parsed);
+          info("Analysis validated successfully", {
+            requestId,
+            sentiment: validated.sentiment,
+            priority: validated.priority,
+            tagCount: validated.tags.length,
+          });
+          return validated;
+        } catch (validationError) {
+          logError("Analysis validation failed", {
+            requestId,
+            error: (validationError as Error).message,
+            receivedData: {
+              hasSummary: !!parsed.summary,
+              sentiment: parsed.sentiment,
+              priority: parsed.priority,
+              tagCount: Array.isArray(parsed.tags) ? parsed.tags.length : 0,
+            },
+          });
+          throw validationError;
+        }
+      },
+      3,
+      requestId
+    );
 
     const duration = Date.now() - startTime;
-    console.log(
-      `AI analysis completed in ${duration}ms using claude-sonnet-4-20250514`
-    );
+    info("Feedback analysis completed", {
+      requestId,
+      totalDuration: duration,
+      sentiment: analysis.sentiment,
+      priority: analysis.priority,
+    });
 
     return analysis;
   } catch (error) {
     const duration = Date.now() - startTime;
-    console.error(
-      `AI analysis failed after ${duration}ms:`,
-      error instanceof Error ? error.message : "Unknown error"
-    );
+    logError("AI analysis failed", {
+      requestId,
+      duration,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
     throw error;
   }
 }
