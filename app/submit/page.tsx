@@ -41,44 +41,99 @@ export default function Submit() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 p-4 font-sans dark:bg-black">
-      <div className="w-full max-w-2xl space-y-6">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-zinc-900 dark:text-white">
-            Submit Feedback
+    <div className="relative min-h-screen bg-black p-4 font-mono">
+      <div className="relative mx-auto max-w-4xl">
+        <div className="mb-8 border-b-2 border-[#30D6D6] pb-6">
+          <h1 className="text-center text-4xl font-bold tracking-wider text-[#30D6D6] drop-shadow-[0_0_10px_rgba(48,214,214,0.5)]">
+            FEEDBACK_ANALYSIS_TERMINAL
           </h1>
-          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-            Enter your feedback below for AI-powered analysis
+          <p className="mt-2 text-center text-sm tracking-widest text-[#006694] font-bold">
+            [NEURAL_PROCESSING_ACTIVE]
           </p>
         </div>
 
-        <TextSubmit
-          onSubmit={handleSubmit}
-          placeholder="Enter your feedback..."
-        />
+        <div className="mb-6 space-y-6">
+          <div className="relative border-2 border-[#30D6D6]/30 bg-black/50 p-5 backdrop-blur-sm">
+            <div className="absolute -left-px -top-px h-4 w-4 border-l-2 border-t-2 border-[#30D6D6]" />
+            <div className="absolute -right-px -top-px h-4 w-4 border-r-2 border-t-2 border-[#30D6D6]" />
+            <div className="absolute -bottom-px -left-px h-4 w-4 border-b-2 border-l-2 border-[#30D6D6]" />
+            <div className="absolute -bottom-px -right-px h-4 w-4 border-b-2 border-r-2 border-[#30D6D6]" />
+
+            <h3 className="mb-3 text-sm font-bold tracking-widest text-[#30D6D6]">
+              [SYSTEM_INSTRUCTIONS]
+            </h3>
+            <p className="text-cyan-100/70 leading-relaxed">
+              Input your feedback below. Our advanced xenomorphic AI will process your data through quantum neural networks to extract actionable insights. Genetic algorithms optimize analysis in real-time.
+            </p>
+          </div>
+
+          <TextSubmit
+            onSubmit={handleSubmit}
+            placeholder="Begin transmission... describe your experience with our alien feline fusion technology..."
+          />
+        </div>
 
         {isSubmitting && (
-          <div className="rounded-lg border border-zinc-200 bg-white p-4 text-center dark:border-zinc-800 dark:bg-zinc-900">
-            <p className="text-zinc-600 dark:text-zinc-400">Analyzing...</p>
+          <div className="relative mb-6 border-2 border-[#30D6D6]/50 bg-[#30D6D6]/10 p-8 text-center">
+            <div className="absolute right-4 top-4 h-3 w-3 animate-pulse bg-[#30D6D6] shadow-[0_0_15px_rgba(48,214,214,0.9)]" />
+            <div className="mb-3 text-xs tracking-[0.3em] text-[#30D6D6]/70">
+              PROCESSING_DATA
+            </div>
+            <div className="flex justify-center gap-1">
+              <div className="h-2 w-2 animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]" style={{ animationDelay: "0ms" }} />
+              <div className="h-2 w-2 animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]" style={{ animationDelay: "150ms" }} />
+              <div className="h-2 w-2 animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]" style={{ animationDelay: "300ms" }} />
+            </div>
+            <p className="mt-3 text-sm text-cyan-100/60">
+              Analyzing genetic feedback patterns...
+            </p>
           </div>
         )}
 
         {error && (
-          <div className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950">
-            <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
+          <div className="relative mb-6 border-2 border-red-500/50 bg-red-950/30 p-6">
+            <div className="absolute -left-px -top-px h-4 w-4 border-l-2 border-t-2 border-red-500" />
+            <div className="absolute -right-px -top-px h-4 w-4 border-r-2 border-t-2 border-red-500" />
+            <div className="absolute -bottom-px -left-px h-4 w-4 border-b-2 border-l-2 border-red-500" />
+            <div className="absolute -bottom-px -right-px h-4 w-4 border-b-2 border-r-2 border-red-500" />
+            
+            <div className="flex items-center gap-3">
+              <div className="h-3 w-3 animate-pulse bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)]" />
+              <div>
+                <div className="text-xs font-bold tracking-wider text-red-400">
+                  [ERROR_DETECTED]
+                </div>
+                <p className="mt-1 text-sm text-red-300">{error}</p>
+              </div>
+            </div>
           </div>
         )}
 
         {result && (
-          <>
+          <div className="space-y-6">
             <AnalysisResult analysis={result.analysis} />
-            <div className="rounded-lg border border-green-200 bg-green-50 p-4 text-center dark:border-green-900 dark:bg-green-950">
-              <p className="text-sm text-green-800 dark:text-green-200">
-                Feedback submitted successfully!
+            
+            <div className="relative border-2 border-[#30D6D6] bg-[#30D6D6]/5 p-6 text-center">
+              <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-transparent via-[#30D6D6] to-transparent" />
+              <div className="absolute right-0 top-0 h-full w-1 bg-gradient-to-b from-transparent via-[#30D6D6] to-transparent" />
+              
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <div className="h-2 w-2 bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]" />
+                <span className="text-xs tracking-[0.3em] text-[#30D6D6]">
+                  TRANSMISSION_COMPLETE
+                </span>
+                <div className="h-2 w-2 bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]" />
+              </div>
+              <p className="text-sm text-cyan-100/70">
+                Feedback successfully integrated into xenomorphic database
               </p>
             </div>
-          </>
+          </div>
         )}
+
+        <div className="mt-8 border-t border-[#30D6D6]/20 pt-4 text-center text-xs text-[#30D6D6]/40 tracking-wider">
+          AXIOM_FEEDBACK_TERMINAL_v1.337 | AI_CORE_ONLINE | GENE_SPLICE_READY
+        </div>
       </div>
     </div>
   );
