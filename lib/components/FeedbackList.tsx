@@ -39,9 +39,6 @@ export default function FeedbackList({
   return (
     <div className="mt-8 font-mono">
       <div className="mb-4 border-b border-[#30D6D6]/30 pb-2">
-        <h2 className="text-sm font-bold tracking-widest text-[#30D6D6]">
-          [FEEDBACK_DATABASE]
-        </h2>
         <p className="mt-1 text-xs text-[#006694]">
           Total Records: {feedbacks.length}
         </p>
