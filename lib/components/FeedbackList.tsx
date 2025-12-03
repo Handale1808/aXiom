@@ -11,9 +11,13 @@ interface FeedbackItem {
 
 interface FeedbackListProps {
   feedbacks: FeedbackItem[];
+  onFeedbackClick?: (feedbackId: string) => void;
 }
 
-export default function FeedbackList({ feedbacks }: FeedbackListProps) {
+export default function FeedbackList({
+  feedbacks,
+  onFeedbackClick,
+}: FeedbackListProps) {
   if (feedbacks.length === 0) {
     return null;
   }
@@ -27,7 +31,10 @@ export default function FeedbackList({ feedbacks }: FeedbackListProps) {
         {feedbacks.map((feedback) => (
           <div
             key={feedback._id}
-            className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
+            onClick={() => onFeedbackClick?.(feedback._id)}
+            className="cursor-pointer rounded-lg border border-zinc-200 bg-white p-4 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+            role="button"
+            tabIndex={0}
           >
             <p className="text-zinc-900 dark:text-white">{feedback.text}</p>
             <div className="mt-2 flex gap-2 text-xs text-zinc-500">

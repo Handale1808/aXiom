@@ -113,8 +113,11 @@ async function getHandler(
 
   try {
     const client = await clientPromise;
+    debug("MongoDB client obtained", { requestId });
     const db = client.db("axiom");
+    debug("Database selected", { requestId });
     const collection = db.collection<IFeedback>("feedbacks");
+    debug("Collection obtained", { requestId });
 
     const { searchParams } = new URL(request.url);
     const sentiment = searchParams.get("sentiment");
