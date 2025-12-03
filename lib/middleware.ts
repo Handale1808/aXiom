@@ -7,8 +7,8 @@ type RouteHandler = (
   context: { requestId: string }
 ) => Promise<NextResponse>;
 
-export function withMiddleware(handler: RouteHandler): RouteHandler {
-  return async (request: NextRequest, context?: any) => {
+export function withMiddleware(handler: RouteHandler) {
+  return async (request: NextRequest, context?: { params: Promise<{}> }) => {
     const startTime = Date.now();
     const requestId = generateRequestId();
     const method = request.method;
