@@ -3,20 +3,22 @@
 import { useState } from "react";
 
 interface TextSubmitProps {
-  onSubmit: (text: string) => void;
+  onSubmit: (text: string, email?: string) => void;
   placeholder?: string;
 }
 
 export default function TextSubmit({
   onSubmit,
-  placeholder = "Enter text...",
+  placeholder = "Enter feedback...",
 }: TextSubmitProps) {
   const [text, setText] = useState("");
+  const [email, setEmail] = useState("");
 
   const handleSubmit = () => {
     if (text.trim()) {
-      onSubmit(text);
+      onSubmit(text, email.trim() || undefined);
       setText("");
+      setEmail("");
     }
   };
 
@@ -34,6 +36,12 @@ export default function TextSubmit({
         onChange={(e) => setText(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
+      />
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Enter your email"
       />
       <button onClick={handleSubmit}>Submit</button>
     </div>
