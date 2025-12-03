@@ -3,20 +3,24 @@
 "use client";
 import { useState, useEffect } from "react";
 import FeedbackList from "@/lib/components/FeedbackList";
+import FeedbackDetailModal from "@/lib/components/FeedbackDetailModal";
 
 export default function Feedbacks() {
   const [feedbacks, setFeedbacks] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedFeedbackId, setSelectedFeedbackId] = useState<string | null>(
+    null
+  );
 
   const fetchFeedbacks = async () => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const response = await fetch("/api/feedback");
       const data = await response.json();
-      
+
       if (data.success) {
         setFeedbacks(data.data);
       } else {
@@ -27,6 +31,14 @@ export default function Feedbacks() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleFeedbackClick = (feedbackId: string) => {
+    setSelectedFeedbackId(feedbackId);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedFeedbackId(null);
   };
 
   useEffect(() => {
@@ -45,7 +57,7 @@ export default function Feedbacks() {
               View and manage all submitted feedback
             </p>
           </div>
-          
+
           <button
             onClick={fetchFeedbacks}
             disabled={isLoading}
@@ -57,7 +69,9 @@ export default function Feedbacks() {
 
         {isLoading && feedbacks.length === 0 && (
           <div className="rounded-lg border border-zinc-200 bg-white p-8 text-center dark:border-zinc-800 dark:bg-zinc-900">
-            <p className="text-zinc-600 dark:text-zinc-400">Loading feedbacks...</p>
+            <p className="text-zinc-600 dark:text-zinc-400">
+              Loading feedbacks...
+            </p>
           </div>
         )}
 
@@ -75,8 +89,17 @@ export default function Feedbacks() {
           </div>
         )}
 
-        {feedbacks.length > 0 && <FeedbackList feedbacks={feedbacks} />}
+        {feedbacks.length > 0 && (
+          <FeedbackList
+            feedbacks={feedbacks}
+            onFeedbackClick={handleFeedbackClick}
+          />
+        )}
       </div>
+      <FeedbackDetailModal
+        feedbackId={selectedFeedbackId}
+        onClose={handleCloseModal}
+      />
     </div>
   );
 }
