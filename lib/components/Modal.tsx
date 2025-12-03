@@ -23,15 +23,19 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="mx-4 max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white dark:bg-zinc-900"
+        className="relative mx-4 max-h-[90vh] w-full max-w-3xl overflow-y-auto border-2 border-[#30D6D6] bg-black font-mono shadow-[0_0_30px_rgba(48,214,214,0.3)]"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
       >
+        <div className="absolute -left-px -top-px h-6 w-6 border-l-2 border-t-2 border-[#30D6D6]" />
+        <div className="absolute -right-px -top-px h-6 w-6 border-r-2 border-t-2 border-[#30D6D6]" />
+        <div className="absolute -bottom-px -left-px h-6 w-6 border-b-2 border-l-2 border-[#30D6D6]" />
+        <div className="absolute -bottom-px -right-px h-6 w-6 border-b-2 border-r-2 border-[#30D6D6]" />
         {children}
       </div>
     </div>,
