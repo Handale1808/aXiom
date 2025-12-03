@@ -12,7 +12,7 @@ export default function Submit() {
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (text: string) => {
+  const handleSubmit = async (text: string, email?: string) => {
     setIsSubmitting(true);
     setError(null);
     setResult(null);
@@ -23,7 +23,7 @@ export default function Submit() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text, email }),
       });
 
       const data = await response.json();
