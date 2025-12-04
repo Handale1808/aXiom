@@ -6,11 +6,12 @@ import { useRouter } from "next/navigation";
 import TextSubmit from "@/lib/components/TextSubmit";
 import AnalysisResult from "@/lib/components/AnalysisResult";
 import { apiFetch } from "@/lib/apiClient";
+import type { FeedbackWithId, ApiSuccessResponse } from "@/lib/types/api";
 
 export default function Submit() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<FeedbackWithId | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (text: string, email?: string) => {
@@ -19,7 +20,7 @@ export default function Submit() {
     setResult(null);
 
     try {
-      const data = await apiFetch<{ success: true; data: any }>(
+      const data = await apiFetch<ApiSuccessResponse<FeedbackWithId>>(
         "/api/feedback",
         {
           method: "POST",

@@ -15,3 +15,6 @@ export interface IFeedback {
   createdAt: Date;
   analysis: IAnalysis;
 }
+
+export type Sentiment = IAnalysis["sentiment"];
+export type Priority = IAnalysis["priority"];

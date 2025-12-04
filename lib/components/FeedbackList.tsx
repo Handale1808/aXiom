@@ -2,6 +2,7 @@
 
 import FeedbackFilters from "./FeedbackFilters";
 import FeedbackSearch from "./FeedbackSearch";
+import type { FeedbackWithId } from "@/lib/types/api";
 
 interface FeedbackItem {
   _id: string;
@@ -15,7 +16,7 @@ interface FeedbackItem {
 }
 
 interface FeedbackListProps {
-  feedbacks: FeedbackItem[];
+  feedbacks: FeedbackWithId[];
   onFeedbackClick?: (feedbackId: string) => void;
   sortColumn?: string | null;
   sortDirection?: "asc" | "desc";
