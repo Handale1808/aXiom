@@ -13,12 +13,22 @@ export default function TextSubmit({
 }: TextSubmitProps) {
   const [text, setText] = useState("");
   const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
+
+  const isValidEmail = (email: string): boolean => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
 
   const handleSubmit = () => {
     if (text.trim()) {
+      if (email && !isValidEmail(email)) {
+        setEmailError("INVALID_EMAIL_FORMAT");
+        return;
+      }
       onSubmit(text, email.trim() || undefined);
       setText("");
       setEmail("");
+      setEmailError("");
     }
   };
 
@@ -57,15 +67,27 @@ export default function TextSubmit({
         <input
           type="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (e.target.value && !isValidEmail(e.target.value)) {
+              setEmailError("INVALID_EMAIL_FORMAT");
+            } else {
+              setEmailError("");
+            }
+          }}
           placeholder="agent@xenocorp.alien"
           className="w-full border-2 border-[#006694]/50 bg-black/80 p-3 text-cyan-100 placeholder-[#006694]/50 focus:border-[#30D6D6] focus:outline-none focus:ring-1 focus:ring-[#30D6D6]"
         />
+        {emailError && (
+          <div className="mt-2 text-xs text-red-400 tracking-wider">
+            [{emailError}]
+          </div>
+        )}
       </div>
 
       <button
         onClick={handleSubmit}
-        disabled={!text.trim()}
+        disabled={!text.trim() || !!emailError}
         className="group relative w-full overflow-hidden border-2 border-[#30D6D6] bg-black py-4 font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_20px_rgba(48,214,214,0.5)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-black disabled:hover:text-[#30D6D6] disabled:hover:shadow-none"
       >
         <span className="relative z-10">INITIATE_SCAN</span>
