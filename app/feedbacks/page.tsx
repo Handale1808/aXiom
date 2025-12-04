@@ -53,7 +53,7 @@ export default function Feedbacks() {
     const tagsSet = new Set<string>();
     feedbacks.forEach((feedback) => {
       if (feedback.analysis.tags) {
-        feedback.analysis.tags.forEach((tag) => {
+        feedback.analysis.tags.forEach((tag : string) => {
           if (tag && tag.trim()) {
             tagsSet.add(tag);
           }
