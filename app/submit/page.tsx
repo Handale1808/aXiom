@@ -126,15 +126,10 @@ export default function Submit() {
             <AnalysisResult analysis={result.analysis} />
 
             <div className="relative border-2 border-[#30D6D6] bg-[#30D6D6]/5 p-6 text-center">
-              <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-transparent via-[#30D6D6] to-transparent" />
-              <div className="absolute right-0 top-0 h-full w-1 bg-gradient-to-b from-transparent via-[#30D6D6] to-transparent" />
-
               <div className="flex items-center justify-center gap-2 mb-2">
-                <div className="h-2 w-2 bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]" />
                 <span className="text-xs tracking-[0.3em] text-[#30D6D6]">
                   TRANSMISSION_COMPLETE
                 </span>
-                <div className="h-2 w-2 bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]" />
               </div>
               <p className="text-sm text-cyan-100/70">
                 Specimen data successfully integrated into xenomorphic database

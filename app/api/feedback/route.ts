@@ -4,8 +4,15 @@ import type { IFeedback } from "@/models/Feedback";
 import { withMiddleware } from "@/lib/middleware";
 import { ValidationError, DatabaseError } from "@/lib/errors";
 import { analyzeFeedback } from "@/lib/services/aiAnalysis";
-import { debug, info, warn, sanitizeEmail } from "@/lib/logger";
+import {
+  debug,
+  info,
+  warn,
+  sanitizeEmail,
+  error as logError,
+} from "@/lib/logger";
 import { withDatabaseLogging } from "@/lib/databaseLogger";
+import { ObjectId } from "mongodb";
 
 async function postHandler(
   request: NextRequest,
@@ -214,3 +221,106 @@ async function getHandler(
 }
 
 export const GET = withMiddleware(getHandler);
+
+async function deleteHandler(
+  request: NextRequest,
+  context: { requestId: string }
+) {
+  const { requestId } = context;
+
+  try {
+    debug("Processing bulk delete feedback request", {
+      requestId,
+    });
+
+    const client = await clientPromise;
+    const db = client.db("axiom");
+    const collection = db.collection<IFeedback>("feedbacks");
+
+    const body = await request.json();
+    const { ids } = body;
+
+    debug("Validating bulk delete input", {
+      requestId,
+      hasIds: !!ids,
+      idsType: Array.isArray(ids) ? "array" : typeof ids,
+      idsLength: Array.isArray(ids) ? ids.length : undefined,
+    });
+
+    if (!Array.isArray(ids)) {
+      throw new ValidationError(
+        "ids must be an array",
+        { ids: "ids must be an array" },
+        requestId
+      );
+    }
+
+    if (ids.length === 0) {
+      throw new ValidationError(
+        "ids array cannot be empty",
+        { ids: "ids array cannot be empty" },
+        requestId
+      );
+    }
+
+    for (const id of ids) {
+      if (typeof id !== "string" || !/^[0-9a-fA-F]{24}$/.test(id)) {
+        warn("Invalid ID format in bulk delete", {
+          requestId,
+          invalidId: id,
+        });
+        throw new ValidationError(
+          "All ids must be valid MongoDB ObjectId strings",
+          { ids: "Invalid ID format" },
+          requestId
+        );
+      }
+    }
+
+    info("Performing bulk delete", {
+      requestId,
+      count: ids.length,
+    });
+
+    const objectIds = ids.map((id) => new ObjectId(id));
+
+    let result;
+    try {
+      result = await withDatabaseLogging(
+        () => collection.deleteMany({ _id: { $in: objectIds } }),
+        {
+          operation: "deleteMany",
+          collection: "feedbacks",
+          requestId,
+          filter: { _id: { $in: ids } },
+        }
+      );
+    } catch (dbError) {
+      logError("MongoDB deleteMany operation failed", {
+        requestId,
+        error: dbError instanceof Error ? dbError.message : "Unknown error",
+        stack: dbError instanceof Error ? dbError.stack : undefined,
+      });
+      throw dbError;
+    }
+
+    info("Bulk delete completed", {
+      requestId,
+      requestedCount: ids.length,
+      deletedCount: result.deletedCount,
+    });
+
+    return NextResponse.json({
+      success: true,
+      deletedCount: result.deletedCount,
+      deletedIds: ids,
+    });
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      throw error;
+    }
+    throw new DatabaseError("Failed to delete feedbacks", requestId);
+  }
+}
+
+export const DELETE = withMiddleware(deleteHandler);

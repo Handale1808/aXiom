@@ -10,9 +10,27 @@ interface AnalysisData {
 
 interface AnalysisResultProps {
   analysis: AnalysisData;
+  isEditingNextAction?: boolean;
+  editedNextAction?: string;
+  onEditStart?: () => void;
+  onEditCancel?: () => void;
+  onEditSave?: (newValue: string) => void;
+  onNextActionChange?: (value: string) => void;
+  isUpdating?: boolean;
+  nextActionError?: string | null;
 }
 
-export default function AnalysisResult({ analysis }: AnalysisResultProps) {
+export default function AnalysisResult({
+  analysis,
+  isEditingNextAction = false,
+  editedNextAction = "",
+  onEditStart,
+  onEditCancel,
+  onEditSave,
+  onNextActionChange,
+  isUpdating = false,
+  nextActionError = null,
+}: AnalysisResultProps) {
   const getSentimentColor = (sentiment: string) => {
     const s = sentiment.toLowerCase();
     if (s.includes("positive")) return "text-[#30D6D6]";
@@ -99,12 +117,71 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
         </div>
 
         <div className="relative border-2 border-[#30D6D6]/30 bg-black/50 p-4">
-          <span className="text-xs font-bold tracking-wider text-[#006694]">
-            RECOMMENDED_ACTION:
-          </span>
-          <p className="mt-2 text-cyan-100/90 leading-relaxed">
-            {analysis.nextAction}
-          </p>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold tracking-wider text-[#006694]">
+              RECOMMENDED_ACTION:
+            </span>
+            {!isEditingNextAction && onEditStart && (
+              <button
+                onClick={onEditStart}
+                className="border border-yellow-500/50 bg-black px-3 py-1 text-xs font-bold tracking-wider text-yellow-500 transition-all hover:bg-yellow-500/10 hover:border-yellow-500"
+              >
+                EDIT
+              </button>
+            )}
+          </div>
+
+          {!isEditingNextAction ? (
+            <p className="mt-2 text-cyan-100/90 leading-relaxed">
+              {analysis.nextAction}
+            </p>
+          ) : (
+            <div className="mt-2 space-y-3">
+              <div>
+                <textarea
+                  value={editedNextAction}
+                  onChange={(e) => onNextActionChange?.(e.target.value)}
+                  disabled={isUpdating}
+                  className="w-full min-h-[100px] bg-black border border-[#30D6D6]/50 p-3 text-cyan-100/90 font-mono text-sm leading-relaxed resize-y focus:outline-none focus:border-[#30D6D6] disabled:opacity-50"
+                  placeholder="Enter recommended action..."
+                />
+                <div className="flex items-center justify-between mt-1">
+                  <span className="text-xs text-[#006694]">
+                    {editedNextAction.length}/500
+                  </span>
+                  {nextActionError && (
+                    <span className="text-xs text-red-400">
+                      {nextActionError}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex gap-2 justify-end">
+                <button
+                  onClick={onEditCancel}
+                  disabled={isUpdating}
+                  className="border border-[#006694] bg-black px-4 py-2 text-xs font-bold tracking-wider text-[#006694] transition-all hover:bg-[#006694]/10 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  CANCEL
+                </button>
+                <button
+                  onClick={() => onEditSave?.(editedNextAction)}
+                  disabled={
+                    isUpdating ||
+                    editedNextAction.trim().length < 10 ||
+                    editedNextAction.trim().length > 500
+                  }
+                  className="border border-[#6CBE4D] bg-black px-4 py-2 text-xs font-bold tracking-wider text-[#6CBE4D] transition-all hover:bg-[#6CBE4D] hover:text-black disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  {isUpdating && (
+                    <div className="h-2 w-2 animate-pulse bg-[#6CBE4D]" />
+                  )}
+                  {isUpdating ? "SAVING..." : "SAVE"}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

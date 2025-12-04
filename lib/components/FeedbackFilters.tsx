@@ -86,7 +86,7 @@ export default function FeedbackFilters({
                           onSentimentChange
                         )
                       }
-                      className="h-4 w-4 cursor-pointer border-[#30D6D6] bg-black accent-[#30D6D6]"
+                      className="h-4 w-4 cursor-pointer appearance-none border border-[#30D6D6]/50 bg-black checked:bg-black checked:border-[#30D6D6] checked:before:content-['✓'] checked:before:text-[#30D6D6] checked:before:text-xs checked:before:flex checked:before:items-center checked:before:justify-center"
                     />
                     {sentiment}
                   </label>
@@ -114,7 +114,7 @@ export default function FeedbackFilters({
                           onPriorityChange
                         )
                       }
-                      className="h-4 w-4 cursor-pointer border-[#30D6D6] bg-black accent-[#30D6D6]"
+                      className="h-4 w-4 cursor-pointer appearance-none border border-[#30D6D6]/50 bg-black checked:bg-black checked:border-[#30D6D6] checked:before:content-['✓'] checked:before:text-[#30D6D6] checked:before:text-xs checked:before:flex checked:before:items-center checked:before:justify-center"
                     />
                     {priority}
                   </label>
@@ -156,7 +156,7 @@ export default function FeedbackFilters({
                                 onTagChange
                               )
                             }
-                            className="h-4 w-4 flex-shrink-0 cursor-pointer border-[#30D6D6] bg-black accent-[#30D6D6]"
+                            className="h-4 w-4 cursor-pointer appearance-none flex-shrink-0 border border-[#30D6D6]/50 bg-black checked:bg-black checked:border-[#30D6D6] checked:before:content-['✓'] checked:before:text-[#30D6D6] checked:before:text-xs checked:before:flex checked:before:items-center checked:before:justify-center"
                           />
                           <span className="truncate">{tag}</span>
                         </label>

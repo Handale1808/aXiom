@@ -7,15 +7,73 @@ import type { IFeedback } from "@/models/Feedback";
 interface FeedbackDetailModalProps {
   feedbackId: string | null;
   onClose: () => void;
+  onDelete: (id: string) => void;
+  onUpdateNextAction: (id: string, newNextAction: string) => void;
+  isDeleting: boolean;
+  isUpdating: boolean;
 }
 
 export default function FeedbackDetailModal({
   feedbackId,
   onClose,
+  onDelete,
+  onUpdateNextAction,
+  isDeleting,
+  isUpdating,
 }: FeedbackDetailModalProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<IFeedback | null>(null);
+  const [isEditingNextAction, setIsEditingNextAction] = useState(false);
+  const [editedNextAction, setEditedNextAction] = useState("");
+  const [nextActionError, setNextActionError] = useState<string | null>(null);
+
+  const validateNextAction = (value: string): string | null => {
+    const trimmed = value.trim();
+    if (trimmed.length === 0) {
+      return "Next action cannot be empty";
+    }
+    if (trimmed.length < 10) {
+      return "Next action must be at least 10 characters";
+    }
+    if (trimmed.length > 500) {
+      return "Next action must not exceed 500 characters";
+    }
+    return null;
+  };
+
+  const handleEditStart = () => {
+    if (feedback?.analysis.nextAction) {
+      setEditedNextAction(feedback.analysis.nextAction);
+      setIsEditingNextAction(true);
+      setNextActionError(null);
+    }
+  };
+
+  const handleEditCancel = () => {
+    setIsEditingNextAction(false);
+    setEditedNextAction("");
+    setNextActionError(null);
+  };
+
+  const handleEditSave = (newValue: string) => {
+    const validationError = validateNextAction(newValue);
+    if (validationError) {
+      setNextActionError(validationError);
+      return;
+    }
+
+    if (feedbackId) {
+      onUpdateNextAction(feedbackId, newValue.trim());
+    }
+  };
+
+  const handleNextActionChange = (value: string) => {
+    setEditedNextAction(value);
+    if (nextActionError) {
+      setNextActionError(null);
+    }
+  };
 
   useEffect(() => {
     if (!feedbackId) return;
@@ -43,6 +101,14 @@ export default function FeedbackDetailModal({
 
   if (!feedbackId) return null;
 
+  useEffect(() => {
+    if (!isUpdating && isEditingNextAction && feedback) {
+      setIsEditingNextAction(false);
+      setEditedNextAction("");
+      setNextActionError(null);
+    }
+  }, [isUpdating, isEditingNextAction, feedback]);
+
   return (
     <Modal isOpen={!!feedbackId} onClose={onClose}>
       <div className="p-6">
@@ -55,12 +121,24 @@ export default function FeedbackDetailModal({
               [RECORD_VIEWER]
             </p>
           </div>
-          <button
-            onClick={onClose}
-            className="border-2 border-[#30D6D6] bg-black px-6 py-2 text-sm font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_15px_rgba(48,214,214,0.5)]"
-          >
-            CLOSE
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => feedbackId && onDelete(feedbackId)}
+              disabled={isDeleting}
+              className="border-2 border-red-500 bg-black px-6 py-2 text-sm font-bold tracking-wider text-red-400 transition-all hover:bg-red-500 hover:text-black hover:shadow-[0_0_15px_rgba(239,68,68,0.5)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            >
+              {isDeleting && (
+                <div className="h-2 w-2 animate-pulse bg-red-400" />
+              )}
+              {isDeleting ? "DELETING..." : "DELETE"}
+            </button>
+            <button
+              onClick={onClose}
+              className="border-2 border-[#30D6D6] bg-black px-6 py-2 text-sm font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_15px_rgba(48,214,214,0.5)]"
+            >
+              CLOSE
+            </button>
+          </div>
         </div>
 
         {loading && (
@@ -158,7 +236,17 @@ export default function FeedbackDetailModal({
               </p>
             </div>
 
-            <AnalysisResult analysis={feedback.analysis} />
+            <AnalysisResult
+              analysis={feedback.analysis}
+              isEditingNextAction={isEditingNextAction}
+              editedNextAction={editedNextAction}
+              onEditStart={handleEditStart}
+              onEditCancel={handleEditCancel}
+              onEditSave={handleEditSave}
+              onNextActionChange={handleNextActionChange}
+              isUpdating={isUpdating}
+              nextActionError={nextActionError}
+            />
           </div>
         )}
       </div>

@@ -32,12 +32,16 @@ interface FeedbackListProps {
   onTagChange?: (tags: string[]) => void;
   onClearAllFilters?: () => void;
   activeFilterCount?: number;
-  // Add these:
   isSearchOpen?: boolean;
   onSearchToggle?: () => void;
   searchQuery?: string;
   onSearchChange?: (query: string) => void;
   onClearSearch?: () => void;
+  selectedIds?: string[];
+  onSelectionChange?: (ids: string[]) => void;
+  onDeleteSingle?: (id: string) => void;
+  onDeleteMultiple?: (ids: string[]) => void;
+  isDeletingIds?: string[];
 }
 
 export default function FeedbackList({
@@ -58,12 +62,16 @@ export default function FeedbackList({
   onTagChange,
   onClearAllFilters,
   activeFilterCount = 0,
-  // Add these:
   isSearchOpen = false,
   onSearchToggle,
   searchQuery = "",
   onSearchChange,
   onClearSearch,
+  selectedIds = [],
+  onSelectionChange,
+  onDeleteSingle,
+  onDeleteMultiple,
+  isDeletingIds = [],
 }: FeedbackListProps) {
   const hasNoResults = feedbacks.length === 0;
 
@@ -134,6 +142,27 @@ export default function FeedbackList({
     return sorted;
   };
 
+  const handleSelectAll = () => {
+    if (selectedIds.length === feedbacks.length) {
+      onSelectionChange?.([]);
+    } else {
+      onSelectionChange?.(feedbacks.map((f) => f._id));
+    }
+  };
+
+  const handleSelectOne = (id: string) => {
+    if (selectedIds.includes(id)) {
+      onSelectionChange?.(
+        selectedIds.filter((selectedId) => selectedId !== id)
+      );
+    } else {
+      onSelectionChange?.([...selectedIds, id]);
+    }
+  };
+
+  const isAllSelected =
+    feedbacks.length > 0 && selectedIds.length === feedbacks.length;
+
   const SortArrow = ({ column }: { column: string }) => {
     if (sortColumn !== column) return null;
     return <span className="ml-1">{sortDirection === "asc" ? "▲" : "▼"}</span>;
@@ -146,6 +175,31 @@ export default function FeedbackList({
           <p className="text-xs text-[#006694]">
             Total Records: {feedbacks.length}
           </p>
+          {selectedIds.length > 0 && (
+            <div className="mb-4 border-2 border-yellow-500/50 bg-yellow-950/20 p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="text-sm font-bold tracking-wider text-yellow-500 mr-10">
+                    {selectedIds.length} ITEMS_SELECTED
+                  </span>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => onSelectionChange?.([])}
+                    className="border border-yellow-500/50 bg-black px-4 py-2 text-xs font-bold tracking-wider text-yellow-500 transition-all hover:bg-yellow-500/10 hover:border-yellow-500"
+                  >
+                    CLEAR_SELECTION
+                  </button>
+                  <button
+                    onClick={() => onDeleteMultiple?.(selectedIds)}
+                    className="border border-red-500 bg-black px-4 py-2 text-xs font-bold tracking-wider text-red-400 transition-all hover:bg-red-500 hover:text-black"
+                  >
+                    DELETE_SELECTED
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
           <div className="flex gap-2">
             <FeedbackSearch
               isOpen={isSearchOpen}
@@ -180,7 +234,16 @@ export default function FeedbackList({
 
       {hasNoResults ? null : (
         <div className="border border-[#30D6D6]/20">
-          <div className="grid grid-cols-[1fr_120px_120px_80px] gap-4 border-b-2 border-[#30D6D6]/50 bg-[#006694]/20 px-4 py-2 text-xs font-bold tracking-wider text-[#30D6D6]">
+          <div className="grid grid-cols-[40px_1fr_120px_120px_60px_60px] gap-4 border-b-2 border-[#30D6D6]/50 bg-[#006694]/20 px-4 py-2 text-xs font-bold tracking-wider text-[#30D6D6]">
+            <div className="flex items-center justify-center">
+              <input
+                type="checkbox"
+                checked={isAllSelected}
+                onChange={handleSelectAll}
+                className="h-4 w-4 cursor-pointer appearance-none border border-[#30D6D6]/50 bg-black checked:bg-black checked:border-[#30D6D6] checked:before:content-['✓'] checked:before:text-[#30D6D6] checked:before:text-xs checked:before:flex checked:before:items-center checked:before:justify-center"
+                aria-label="Select all feedbacks"
+              />
+            </div>
             <div
               className="cursor-pointer hover:text-white transition-colors"
               onClick={() => onSort?.("text")}
@@ -202,25 +265,41 @@ export default function FeedbackList({
               PRIORITY
               <SortArrow column="priority" />
             </div>
-            <div>ACTION</div>
+            <div>VIEW</div>
+            <div>DELETE</div>
           </div>
           {getSortedFeedbacks().map((feedback, index) => (
             <div
               key={feedback._id}
-              onClick={() => onFeedbackClick?.(feedback._id)}
-              className={`group grid cursor-pointer grid-cols-[1fr_120px_120px_80px] gap-4 px-4 py-3 transition-all hover:bg-[#30D6D6]/10 ${
+              className={`group grid grid-cols-[40px_1fr_120px_120px_60px_60px] gap-4 px-4 py-3 transition-all hover:bg-[#30D6D6]/10 ${
                 index % 2 === 0 ? "bg-black/40" : "bg-[#006694]/10"
-              }`}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  onFeedbackClick?.(feedback._id);
-                }
-              }}
+              } ${isDeletingIds.includes(feedback._id) ? "opacity-50" : ""}`}
             >
-              <div className="flex flex-col gap-1 min-w-0">
+              <div className="flex items-center justify-center">
+                <input
+                  type="checkbox"
+                  checked={selectedIds.includes(feedback._id)}
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    handleSelectOne(feedback._id);
+                  }}
+                  disabled={isDeletingIds.includes(feedback._id)}
+                  className="h-4 w-4 cursor-pointer appearance-none border border-[#30D6D6]/50 bg-black checked:bg-black checked:border-[#30D6D6] checked:before:content-['✓'] checked:before:text-[#30D6D6] checked:before:text-xs checked:before:flex checked:before:items-center checked:before:justify-center"
+                  aria-label={`Select feedback ${feedback._id}`}
+                />
+              </div>
+              <div
+                className="flex flex-col gap-1 min-w-0 cursor-pointer"
+                onClick={() => onFeedbackClick?.(feedback._id)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onFeedbackClick?.(feedback._id);
+                  }
+                }}
+              >
                 <div className="text-sm text-cyan-100/90 truncate">
                   {feedback.text}
                 </div>
@@ -268,8 +347,28 @@ export default function FeedbackList({
                   );
                 })()}
               </div>
-              <div className="flex items-center text-xs text-[#006694] group-hover:text-[#30D6D6]">
+              <div
+                className="flex items-center text-xs text-[#006694] group-hover:text-[#30D6D6] cursor-pointer"
+                onClick={() => onFeedbackClick?.(feedback._id)}
+              >
                 {">"} VIEW
+              </div>
+              <div className="flex items-center">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDeleteSingle?.(feedback._id);
+                  }}
+                  disabled={isDeletingIds.includes(feedback._id)}
+                  className="text-xs text-red-400 hover:text-red-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                  aria-label={`Delete feedback ${feedback._id}`}
+                >
+                  {isDeletingIds.includes(feedback._id) ? (
+                    <div className="h-2 w-2 animate-pulse bg-red-400" />
+                  ) : (
+                    "DEL"
+                  )}
+                </button>
               </div>
             </div>
           ))}

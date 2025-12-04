@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import FeedbackList from "@/lib/components/FeedbackList";
 import FeedbackDetailModal from "@/lib/components/FeedbackDetailModal";
 import FeedbackFilters from "@/lib/components/FeedbackFilters";
+import ConfirmationDialog from "@/lib/components/ConfirmationDialog";
 
 export default function Feedbacks() {
   const [feedbacks, setFeedbacks] = useState<any[]>([]);
@@ -21,6 +22,14 @@ export default function Feedbacks() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [selectedFeedbackIds, setSelectedFeedbackIds] = useState<string[]>([]);
+  const [isDeletingIds, setIsDeletingIds] = useState<string[]>([]);
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    isOpen: boolean;
+    feedbackIds: string[];
+    type: "single" | "bulk";
+  } | null>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const loadFiltersFromStorage = () => {
     try {
@@ -160,6 +169,145 @@ export default function Feedbacks() {
     }
   };
 
+  const deleteFeedback = async (id: string) => {
+    setIsDeletingIds((prev) => [...prev, id]);
+
+    try {
+      const response = await fetch(`/api/feedback/${id}`, {
+        method: "DELETE",
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        setFeedbacks((prev) => prev.filter((f) => f._id !== id));
+        setSelectedFeedbackIds((prev) =>
+          prev.filter((selectedId) => selectedId !== id)
+        );
+
+        if (selectedFeedbackId === id) {
+          setSelectedFeedbackId(null);
+        }
+
+        setDeleteConfirmation(null);
+      } else {
+        setError("Failed to delete feedback");
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to delete feedback"
+      );
+    } finally {
+      setIsDeletingIds((prev) =>
+        prev.filter((deletingId) => deletingId !== id)
+      );
+    }
+  };
+
+  const deleteFeedbackBulk = async (ids: string[]) => {
+    setIsDeletingIds(ids);
+
+    try {
+      const response = await fetch("/api/feedback", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ids }),
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        setFeedbacks((prev) => prev.filter((f) => !ids.includes(f._id)));
+        setSelectedFeedbackIds([]);
+
+        if (selectedFeedbackId && ids.includes(selectedFeedbackId)) {
+          setSelectedFeedbackId(null);
+        }
+
+        setDeleteConfirmation(null);
+      } else {
+        setError("Failed to delete feedbacks");
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to delete feedbacks"
+      );
+    } finally {
+      setIsDeletingIds([]);
+    }
+  };
+
+  const updateNextAction = async (id: string, newNextAction: string) => {
+    setIsUpdating(true);
+
+    try {
+      const response = await fetch(`/api/feedback/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ nextAction: newNextAction }),
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        setFeedbacks((prev) =>
+          prev.map((f) =>
+            f._id === id
+              ? { ...f, analysis: { ...f.analysis, nextAction: newNextAction } }
+              : f
+          )
+        );
+      } else {
+        setError("Failed to update feedback");
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to update feedback"
+      );
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleDeleteSingle = (id: string) => {
+    setDeleteConfirmation({
+      isOpen: true,
+      feedbackIds: [id],
+      type: "single",
+    });
+  };
+
+  const handleDeleteMultiple = (ids: string[]) => {
+    setDeleteConfirmation({
+      isOpen: true,
+      feedbackIds: ids,
+      type: "bulk",
+    });
+  };
+
+  const confirmDelete = () => {
+    if (!deleteConfirmation) return;
+
+    if (deleteConfirmation.type === "single") {
+      deleteFeedback(deleteConfirmation.feedbackIds[0]);
+    } else {
+      deleteFeedbackBulk(deleteConfirmation.feedbackIds);
+    }
+  };
+
+  const cancelDelete = () => {
+    setDeleteConfirmation(null);
+  };
+
+  const handleUpdateNextAction = (id: string, newNextAction: string) => {
+    updateNextAction(id, newNextAction);
+  };
+
+  const handleSelectionChange = (ids: string[]) => {
+    setSelectedFeedbackIds(ids);
+  };
+
   const handleFeedbackClick = (feedbackId: string) => {
     setSelectedFeedbackId(feedbackId);
   };
@@ -280,8 +428,6 @@ export default function Feedbacks() {
 
         {!isLoading && feedbacks.length === 0 && !error && (
           <div className="relative border-2 border-[#006694]/50 bg-black/50 p-12 text-center backdrop-blur-sm">
-            <div className="absolute left-1/2 top-8 h-3 w-3 -translate-x-1/2 bg-[#006694] shadow-[0_0_10px_rgba(0,102,148,0.8)]" />
-
             <div className="mb-4 text-xs tracking-[0.3em] text-[#006694]">
               DATABASE_EMPTY
             </div>
@@ -313,12 +459,16 @@ export default function Feedbacks() {
             onTagChange={handleTagChange}
             onClearAllFilters={handleClearAllFilters}
             activeFilterCount={getActiveFilterCount()}
-            // Add these:
             isSearchOpen={isSearchOpen}
             onSearchToggle={() => setIsSearchOpen(!isSearchOpen)}
             searchQuery={searchQuery}
             onSearchChange={handleSearchChange}
             onClearSearch={handleClearSearch}
+            selectedIds={selectedFeedbackIds}
+            onSelectionChange={handleSelectionChange}
+            onDeleteSingle={handleDeleteSingle}
+            onDeleteMultiple={handleDeleteMultiple}
+            isDeletingIds={isDeletingIds}
           />
         )}
 
@@ -355,6 +505,36 @@ export default function Feedbacks() {
       <FeedbackDetailModal
         feedbackId={selectedFeedbackId}
         onClose={handleCloseModal}
+        onDelete={handleDeleteSingle}
+        onUpdateNextAction={handleUpdateNextAction}
+        isDeleting={
+          selectedFeedbackId
+            ? isDeletingIds.includes(selectedFeedbackId)
+            : false
+        }
+        isUpdating={isUpdating}
+      />
+
+      <ConfirmationDialog
+        isOpen={deleteConfirmation?.isOpen || false}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        title={
+          deleteConfirmation?.type === "bulk"
+            ? "DELETE_MULTIPLE_FEEDBACKS"
+            : "DELETE_FEEDBACK"
+        }
+        message={
+          deleteConfirmation?.type === "bulk"
+            ? `Are you sure you want to delete ${deleteConfirmation.feedbackIds.length} feedback items? This action cannot be undone.`
+            : "Are you sure you want to delete this feedback? This action cannot be undone."
+        }
+        confirmText={
+          deleteConfirmation?.type === "bulk" ? "DELETE_ALL" : "DELETE"
+        }
+        cancelText="CANCEL"
+        isLoading={isDeletingIds.length > 0}
+        variant="danger"
       />
     </div>
   );
