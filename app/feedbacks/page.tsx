@@ -87,17 +87,23 @@ export default function Feedbacks() {
     return feedbacks.filter((feedback) => {
       const sentimentMatch =
         selectedSentiments.length === 0 ||
-        selectedSentiments.includes(feedback.analysis.sentiment);
+        selectedSentiments.some(
+          (s) => s.toLowerCase() === feedback.analysis.sentiment.toLowerCase()
+        );
 
       const priorityMatch =
         selectedPriorities.length === 0 ||
-        selectedPriorities.includes(feedback.analysis.priority);
+        selectedPriorities.some(
+          (p) => p.toLowerCase() === feedback.analysis.priority.toLowerCase()
+        );
 
       const tagsMatch =
         selectedTags.length === 0 ||
         (feedback.analysis.tags &&
           selectedTags.every((selectedTag) =>
-            feedback.analysis.tags.includes(selectedTag)
+            feedback.analysis.tags.some(
+              (tag) => tag.toLowerCase() === selectedTag.toLowerCase()
+            )
           ));
 
       const searchMatch =
