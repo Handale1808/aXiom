@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "aXiom — [FELINE GENETICS LABORATORY] | Feedback Analyzer",
+  title: "aXiom - [FELINE GENETICS LABORATORY] | Feedback Analyzer",
   description:
-    "aXiom: An intergalactic bio-engineering lab specialising in splicing alien DNA with Earth’s cutest cats. Submit feedback on your cosmic kitties and let our AI analyse, prioritise, and triage incidents — from harmless glowing whiskers to dimension-rending hairballs.",
+    "aXiom: An intergalactic bio-engineering lab specialising in splicing alien DNA with Earth’s cutest cats. Submit feedback on your cosmic kitties and let our AI analyse, prioritise, and triage incidents - from harmless glowing whiskers to dimension-rending hairballs.",
   keywords: [
     "aXiom",
     "alien cats",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     "intergalactic pets",
   ],
   openGraph: {
-    title: "aXiom — [FELINE GENETICS LABORATORY]",
+    title: "aXiom - [FELINE GENETICS LABORATORY]",
     description:
       "Submit feedback about your genetically-enhanced alien cats and let our AI determine importance, danger level, and urgency. Perfect for owners of telepathic, bioluminescent, or multi-tailed felines.",
     url: "https://axiom-exfzklg83-socialspells-projects.vercel.app/",

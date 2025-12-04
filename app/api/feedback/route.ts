@@ -131,8 +131,12 @@ async function getHandler(
     const priority = searchParams.get("priority");
     const tag = searchParams.get("tag");
     const search = searchParams.get("search");
-    const limit = parseInt(searchParams.get("limit") || "50");
-    const skip = parseInt(searchParams.get("skip") || "0");
+    const page = parseInt(searchParams.get("page") || "1");
+    const pageSize = parseInt(searchParams.get("pageSize") || "50");
+    const limitParam = searchParams.get("limit");
+    const skipParam = searchParams.get("skip");
+    const limit = limitParam ? parseInt(limitParam) : pageSize;
+    const skip = skipParam ? parseInt(skipParam) : Math.max(0, (page - 1) * pageSize);
 
     debug("Processing feedback list request", {
       requestId,
@@ -143,6 +147,8 @@ async function getHandler(
         search,
       },
       pagination: {
+        page,
+        pageSize,
         limit,
         skip,
       },
@@ -210,6 +216,8 @@ async function getHandler(
       data: feedbacks,
       pagination: {
         total,
+        page,
+        pageSize,
         limit,
         skip,
         hasMore: skip + feedbacks.length < total,
