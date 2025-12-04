@@ -99,8 +99,6 @@ export default function FeedbackDetailModal({
       });
   }, [feedbackId]);
 
-  if (!feedbackId) return null;
-
   useEffect(() => {
     if (!isUpdating && isEditingNextAction && feedback) {
       setIsEditingNextAction(false);
@@ -108,6 +106,10 @@ export default function FeedbackDetailModal({
       setNextActionError(null);
     }
   }, [isUpdating, isEditingNextAction, feedback]);
+
+  if (!feedbackId) {
+    return null;
+  }
 
   return (
     <Modal isOpen={!!feedbackId} onClose={onClose}>
