@@ -55,7 +55,7 @@ export default function FeedbackFilters({
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 z-10 w-[800px] border-2 border-[#30D6D6]/30 bg-black/95 p-6 backdrop-blur-sm transform -translate-x-[13%]">
+        <div className="absolute right-0 top-full mt-2 z-10 w-[800px] border-2 border-[#30D6D6]/30 bg-black/95 p-6 backdrop-blur-sm">
           <div className="absolute -left-px -top-px h-4 w-4 border-l-2 border-t-2 border-[#30D6D6]" />
           <div className="absolute -right-px -top-px h-4 w-4 border-r-2 border-t-2 border-[#30D6D6]" />
           <div className="absolute -bottom-px -left-px h-4 w-4 border-b-2 border-l-2 border-[#30D6D6]" />
@@ -126,7 +126,7 @@ export default function FeedbackFilters({
               <div className="mb-3 text-xs font-bold tracking-wider text-[#006694]">
                 TAGS
               </div>
-              <div className="max-h-32 overflow-y-auto">
+              <div className="max-h-32 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-black [&::-webkit-scrollbar-thumb]:bg-[#30D6D6]/50 [&::-webkit-scrollbar-thumb]:border [&::-webkit-scrollbar-thumb]:border-[#30D6D6] [&::-webkit-scrollbar-thumb]:hover:bg-[#30D6D6] [&::-webkit-scrollbar-thumb]:hover:shadow-[0_0_10px_rgba(48,214,214,0.8)]">
                 {availableTags.length === 0 ? (
                   <div className="text-xs text-[#006694]">
                     No tags available
