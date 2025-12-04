@@ -48,7 +48,11 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
             <span className="text-xs font-bold tracking-wider text-[#006694]">
               SENTIMENT_ANALYSIS:
             </span>
-            <p className={`mt-1 font-bold capitalize ${getSentimentColor(analysis.sentiment)}`}>
+            <p
+              className={`mt-1 font-bold capitalize ${getSentimentColor(
+                analysis.sentiment
+              )}`}
+            >
               {analysis.sentiment}
             </p>
           </div>
@@ -57,9 +61,24 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
             <span className="text-xs font-bold tracking-wider text-[#006694]">
               PRIORITY_LEVEL:
             </span>
-            <p className="mt-1 font-bold text-[#30D6D6]">
-              {analysis.priority}
-            </p>
+            <div className="mt-1 flex items-center gap-2">
+              {(() => {
+                const p = analysis.priority.toLowerCase();
+                let color = "#BB489A";
+                if (p.includes("p3")) color = "#30D6D6";
+                if (p.includes("p2")) color = "#6CBE4D";
+                if (p.includes("p1")) color = "#a44aff";
+                if (p.includes("p0")) color = "#BB489A";
+
+                return (
+                  <>
+                    <span className="font-bold" style={{ color }}>
+                      {analysis.priority}
+                    </span>
+                  </>
+                );
+              })()}
+            </div>
           </div>
         </div>
 
