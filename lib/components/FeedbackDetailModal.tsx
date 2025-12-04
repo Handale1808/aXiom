@@ -3,6 +3,7 @@ import Modal from "./Modal";
 import AnalysisResult from "./AnalysisResult";
 import { formatDate } from "@/lib/utils/formatDate";
 import type { IFeedback } from "@/models/Feedback";
+import { apiFetch } from "@/lib/apiClient";
 
 interface FeedbackDetailModalProps {
   feedbackId: string | null;
@@ -82,16 +83,11 @@ export default function FeedbackDetailModal({
     setError(null);
     setFeedback(null);
 
-    fetch(`/api/feedback/${feedbackId}`)
-      .then((res) => res.json())
+    apiFetch<{ success: true; data: IFeedback }>(`/api/feedback/${feedbackId}`)
       .then((data) => {
-        if (data.success) {
-          setFeedback(data.data);
-        } else {
-          setError("Failed to load feedback");
-        }
+        setFeedback(data.data);
       })
-      .catch((err) => {
+      .catch((err: Error) => {
         setError(err.message || "Failed to load feedback");
       })
       .finally(() => {
@@ -187,16 +183,13 @@ export default function FeedbackDetailModal({
               onClick={() => {
                 setError(null);
                 setLoading(true);
-                fetch(`/api/feedback/${feedbackId}`)
-                  .then((res) => res.json())
+                apiFetch<{ success: true; data: IFeedback }>(
+                  `/api/feedback/${feedbackId}`
+                )
                   .then((data) => {
-                    if (data.success) {
-                      setFeedback(data.data);
-                    } else {
-                      setError("Failed to load feedback");
-                    }
+                    setFeedback(data.data);
                   })
-                  .catch((err) => {
+                  .catch((err: Error) => {
                     setError(err.message || "Failed to load feedback");
                   })
                   .finally(() => {

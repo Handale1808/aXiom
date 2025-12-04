@@ -6,6 +6,7 @@ import FeedbackList from "@/lib/components/FeedbackList";
 import FeedbackDetailModal from "@/lib/components/FeedbackDetailModal";
 import FeedbackFilters from "@/lib/components/FeedbackFilters";
 import ConfirmationDialog from "@/lib/components/ConfirmationDialog";
+import { apiFetch } from "@/lib/apiClient";
 
 export default function Feedbacks() {
   const [feedbacks, setFeedbacks] = useState<any[]>([]);
@@ -102,7 +103,7 @@ export default function Feedbacks() {
         (feedback.analysis.tags &&
           selectedTags.every((selectedTag) =>
             feedback.analysis.tags.some(
-              (tag) => tag.toLowerCase() === selectedTag.toLowerCase()
+              (tag: string) => tag.toLowerCase() === selectedTag.toLowerCase()
             )
           ));
 
@@ -110,7 +111,7 @@ export default function Feedbacks() {
         !searchQuery ||
         feedback.text.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (feedback.analysis.tags &&
-          feedback.analysis.tags.some((tag) =>
+          feedback.analysis.tags.some((tag: string) =>
             tag.toLowerCase().includes(searchQuery.toLowerCase())
           ));
 
@@ -160,14 +161,13 @@ export default function Feedbacks() {
     setError(null);
 
     try {
-      const response = await fetch("/api/feedback");
-      const data = await response.json();
+      const data = await apiFetch<{
+        success: true;
+        data: any[];
+        pagination: any;
+      }>("/api/feedback");
 
-      if (data.success) {
-        setFeedbacks(data.data);
-      } else {
-        throw new Error("Failed to fetch feedbacks");
-      }
+      setFeedbacks(data.data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load feedbacks");
     } finally {
@@ -179,10 +179,9 @@ export default function Feedbacks() {
     setIsDeletingIds((prev) => [...prev, id]);
 
     try {
-      const response = await fetch(`/api/feedback/${id}`, {
+      const data = await apiFetch<{ success: true }>(`/api/feedback/${id}`, {
         method: "DELETE",
       });
-      const data = await response.json();
 
       if (data.success) {
         setFeedbacks((prev) => prev.filter((f) => f._id !== id));
@@ -213,14 +212,10 @@ export default function Feedbacks() {
     setIsDeletingIds(ids);
 
     try {
-      const response = await fetch("/api/feedback", {
+      const data = await apiFetch<{ success: true }>("/api/feedback", {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({ ids }),
       });
-      const data = await response.json();
 
       if (data.success) {
         setFeedbacks((prev) => prev.filter((f) => !ids.includes(f._id)));
@@ -247,14 +242,13 @@ export default function Feedbacks() {
     setIsUpdating(true);
 
     try {
-      const response = await fetch(`/api/feedback/${id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ nextAction: newNextAction }),
-      });
-      const data = await response.json();
+      const data = await apiFetch<{ success: true; data: any }>(
+        `/api/feedback/${id}`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({ nextAction: newNextAction }),
+        }
+      );
 
       if (data.success) {
         setFeedbacks((prev) =>

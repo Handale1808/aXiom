@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import TextSubmit from "@/lib/components/TextSubmit";
 import AnalysisResult from "@/lib/components/AnalysisResult";
+import { apiFetch } from "@/lib/apiClient";
 
 export default function Submit() {
   const router = useRouter();
@@ -18,19 +19,13 @@ export default function Submit() {
     setResult(null);
 
     try {
-      const response = await fetch("/api/feedback", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ text, email }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error?.message || "Failed to submit feedback");
-      }
+      const data = await apiFetch<{ success: true; data: any }>(
+        "/api/feedback",
+        {
+          method: "POST",
+          body: JSON.stringify({ text, email }),
+        }
+      );
 
       setResult(data.data);
     } catch (err) {
