@@ -100,9 +100,9 @@ export default function Feedbacks() {
       const tagsMatch =
         selectedTags.length === 0 ||
         (feedback.analysis.tags &&
-          selectedTags.some((selectedTag) =>
+          selectedTags.every((selectedTag) =>
             feedback.analysis.tags.some(
-              (tag: string) => tag.toLowerCase() === selectedTag.toLowerCase()
+              (tag) => tag.toLowerCase() === selectedTag.toLowerCase()
             )
           ));
 
@@ -110,7 +110,7 @@ export default function Feedbacks() {
         !searchQuery ||
         feedback.text.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (feedback.analysis.tags &&
-          feedback.analysis.tags.some((tag: string) =>
+          feedback.analysis.tags.some((tag) =>
             tag.toLowerCase().includes(searchQuery.toLowerCase())
           ));
 
