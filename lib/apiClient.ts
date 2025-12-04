@@ -1,40 +1,47 @@
-// lib/apiClient.ts
-const API_BASE =
-  (typeof window !== "undefined"
-    ? (process.env.NEXT_PUBLIC_API_BASE_URL as string | undefined)
-    : process.env.NEXT_PUBLIC_API_BASE_URL) || "";
+let lastRequestId: string | null = null;
 
-function joinUrl(path: string) {
-  // Handles absolute and relative paths gracefully
-  try {
-    return new URL(path, API_BASE || "").toString();
-  } catch {
-    return path; // Fallback
-  }
+export function getLastRequestId(): string | null {
+  return lastRequestId;
 }
 
-export async function apiFetch<T = unknown>(
-  path: string,
-  init?: RequestInit
+export async function apiFetch<T>(
+  url: string,
+  options: RequestInit = {}
 ): Promise<T> {
-  const url = joinUrl(path);
-
-  const res = await fetch(url, {
-    ...init,
+  const response = await fetch(url, {
+    ...options,
     headers: {
       "Content-Type": "application/json",
-      ...(init?.headers || {}),
+      ...options.headers,
     },
   });
 
-  // Expect JSON responses from your API
-  const data = await res.json().catch(() => null);
-
-  if (!res.ok) {
-    const message =
-      data?.error?.message || `Request failed with status ${res.status}`;
-    throw new Error(message);
+  // Extract request ID from response headers
+  const requestId = response.headers.get("X-Request-Id");
+  if (requestId) {
+    lastRequestId = requestId;
+    (window as any).__lastRequestId = requestId; // ← ADD THIS LINE
   }
 
-  return data as T;
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({
+      error: { message: "An error occurred" },
+    }));
+
+    const errorMessage =
+      errorData.error?.message || errorData.message || "An error occurred";
+
+    // Log error with request ID for debugging
+    console.error("API Error:", {
+      url,
+      status: response.status,
+      message: errorMessage,
+      requestId: requestId || "unknown",
+      timestamp: new Date().toISOString(),
+    });
+
+    throw new Error(errorMessage);
+  }
+
+  return response.json();
 }

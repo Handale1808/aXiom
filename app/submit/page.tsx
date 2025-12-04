@@ -74,7 +74,6 @@ export default function Submit() {
 
         {isSubmitting && (
           <div className="relative mb-6 border-2 border-[#30D6D6]/50 bg-[#30D6D6]/10 p-8 text-center">
-            <div className="absolute right-4 top-4 h-3 w-3 animate-pulse bg-[#30D6D6] shadow-[0_0_15px_rgba(48,214,214,0.9)]" />
             <div className="mb-3 text-xs tracking-[0.3em] text-[#30D6D6]/70">
               PROCESSING_DATA
             </div>
