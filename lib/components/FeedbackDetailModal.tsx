@@ -70,9 +70,18 @@ export default function FeedbackDetailModal({
               LOADING_RECORD
             </div>
             <div className="flex justify-center gap-1">
-              <div className="h-2 w-2 animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]" style={{ animationDelay: "0ms" }} />
-              <div className="h-2 w-2 animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]" style={{ animationDelay: "150ms" }} />
-              <div className="h-2 w-2 animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]" style={{ animationDelay: "300ms" }} />
+              <div
+                className="h-2 w-2 animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]"
+                style={{ animationDelay: "0ms" }}
+              />
+              <div
+                className="h-2 w-2 animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]"
+                style={{ animationDelay: "150ms" }}
+              />
+              <div
+                className="h-2 w-2 animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]"
+                style={{ animationDelay: "300ms" }}
+              />
             </div>
             <p className="mt-3 text-sm text-cyan-100/60">
               Retrieving feedback data...
@@ -86,7 +95,7 @@ export default function FeedbackDetailModal({
             <div className="absolute -right-px -top-px h-4 w-4 border-r-2 border-t-2 border-red-500" />
             <div className="absolute -bottom-px -left-px h-4 w-4 border-b-2 border-l-2 border-red-500" />
             <div className="absolute -bottom-px -right-px h-4 w-4 border-b-2 border-r-2 border-red-500" />
-            
+
             <div className="flex items-center gap-3 mb-3">
               <div className="h-3 w-3 animate-pulse bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)]" />
               <div className="text-xs font-bold tracking-wider text-red-400">
@@ -124,9 +133,6 @@ export default function FeedbackDetailModal({
         {feedback && !loading && !error && (
           <div className="space-y-6">
             <div className="border-2 border-[#006694]/30 bg-black/30 p-4">
-              <div className="mb-2 text-xs font-bold tracking-wider text-[#006694]">
-                METADATA:
-              </div>
               <div className="space-y-1 text-sm text-cyan-100/70">
                 <p>
                   <span className="text-[#006694]">TIMESTAMP:</span>{" "}
@@ -147,9 +153,6 @@ export default function FeedbackDetailModal({
               <div className="absolute -bottom-px -left-px h-4 w-4 border-b-2 border-l-2 border-[#30D6D6]" />
               <div className="absolute -bottom-px -right-px h-4 w-4 border-b-2 border-r-2 border-[#30D6D6]" />
 
-              <div className="mb-3 text-xs font-bold tracking-wider text-[#30D6D6]">
-                [FEEDBACK_TEXT]
-              </div>
               <p className="whitespace-pre-wrap text-cyan-100/90 leading-relaxed">
                 {feedback.text}
               </p>
