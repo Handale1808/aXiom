@@ -220,7 +220,7 @@ export default function FeedbackList({
                 }
               }}
             >
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-1 min-w-0">
                 <div className="text-sm text-cyan-100/90 truncate">
                   {feedback.text}
                 </div>
