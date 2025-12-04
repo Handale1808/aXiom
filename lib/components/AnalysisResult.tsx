@@ -31,7 +31,6 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
         <h2 className="text-sm font-bold tracking-widest text-[#30D6D6]">
           [ANALYSIS_COMPLETE]
         </h2>
-        <div className="h-2 w-2 animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]" />
       </div>
 
       <div className="space-y-4">
@@ -81,7 +80,6 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
         </div>
 
         <div className="relative border-2 border-[#30D6D6]/30 bg-black/50 p-4">
-          <div className="absolute right-2 top-2 h-2 w-2 bg-[#30D6D6] shadow-[0_0_8px_rgba(48,214,214,0.8)]" />
           <span className="text-xs font-bold tracking-wider text-[#006694]">
             RECOMMENDED_ACTION:
           </span>

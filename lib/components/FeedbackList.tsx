@@ -33,7 +33,7 @@ export default function FeedbackList({
     const p = priority.toLowerCase();
     if (p.includes("p3")) return { color: "#30D6D6" };
     if (p.includes("p2")) return { color: "#6CBE4D" };
-    if (p.includes("p1")) return { color: "#6CBE4D" };
+    if (p.includes("p1")) return { color: "#a44aff" };
     if (p.includes("p0")) return { color: "#BB489A" };
     return { color: "#BB489A" };
   };
