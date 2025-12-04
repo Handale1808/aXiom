@@ -140,7 +140,7 @@ export async function analyzeFeedback(
               role: "user",
               content: `You are analyzing customer feedback for a bioengineering company that splices alien DNA with cats to create hybrid pets. Users may report various issues ranging from life-threatening emergencies to minor aesthetic concerns.
 
-CRITICAL PRINCIPLE: Objective safety threats to human life always require immediate intervention, regardless of customer satisfaction. However, when no safety threat exists, customer satisfaction drives priority level.
+CRITICAL PRINCIPLE: Objective safety threats to human/alien life always require immediate intervention, regardless of customer satisfaction. However, when no safety threat exists, customer satisfaction drives priority level.
 
 Analyze the following feedback and return ONLY a valid JSON object with no markdown formatting, code blocks, or additional text.
 
@@ -165,10 +165,10 @@ SENTIMENT ANALYSIS GUIDELINES:
 
 SAFETY THREAT ASSESSMENT:
 Set "safetyThreat" to true if:
-- Any human has been harmed or is at immediate risk of harm
+- Any human/alien has been harmed or is at immediate risk of harm
 - Cat is actively dangerous to people (attacking, toxic, uncontrollable aggression)
 - Public safety concern (neighbors, children, community at risk)
-- Biohazard or contagion risk to humans
+- Biohazard or contagion risk to humans/aliens
 - Cat's condition could rapidly deteriorate to dangerous
 
 Set to false if:
@@ -178,16 +178,16 @@ Set to false if:
 
 PRIORITY CLASSIFICATION:
 
-P0 - CRITICAL (Immediate threat to human life or safety):
-Criteria: Active danger to ANY human, regardless of customer willingness to cooperate or emotional attachment to cat.
+P0 - CRITICAL (Immediate threat to human/alien life or safety):
+Criteria: Active danger to ANY human/alien, regardless of customer willingness to cooperate or emotional attachment to cat.
 
 Examples:
-- Cat has harmed or killed humans (owners, family, neighbors, public)
-- Cat exhibiting severe uncontrolled aggression toward people
-- Toxic secretions or emissions causing human medical emergencies
+- Cat has harmed or killed humans/aliens (owners, family, neighbors, public)
+- Cat exhibiting severe uncontrolled aggression toward people/aliens
+- Toxic secretions or emissions causing human/alien medical emergencies
 - Mutations creating immediate physical danger (extreme size, destructive capabilities)
 - Biohazard threatening public health
-- Any scenario where delay could result in human death or serious injury
+- Any scenario where delay could result in human/alien death or serious injury
 
 Important: Customer attachment or reluctance to surrender cat does not lower priority. This information affects HOW we respond, not WHETHER we respond urgently.
 
@@ -264,7 +264,7 @@ Populate with specific phrases or situations indicating emergency:
 Leave empty for non-emergency situations, even if customer reports unusual features they're happy with.
 
 KEY DECISION RULES:
-1. Human safety threat = P0, always, regardless of all other factors
+1. Human/alien safety threat = P0, always, regardless of all other factors
 2. Customer cooperation affects response strategy, not priority level
 3. Happy customer + no safety threat + healthy cat = P3
 4. Customer dissatisfaction with non-dangerous issues = P1 or P2 based on severity
