@@ -25,7 +25,7 @@ export default function Header() {
               aXiom
             </h1>
             <p className="text-xs tracking-widest text-[#006694] font-bold">
-              [ALIEN GENE FUSION]
+              [FELINE GENETICS LABORATORY]
             </p>
           </div>
         </div>

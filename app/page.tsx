@@ -14,7 +14,7 @@ export default function Home() {
                 aXiom
               </h1>
               <p className="text-sm tracking-widest font-extrabold text-[#006694] mt-1">
-                [ALIEN GENE FUSION]
+                [FELINE GENETICS LABORATORY]
               </p>
             </div>
           </div>
@@ -36,9 +36,9 @@ export default function Home() {
               [MISSION_BRIEF]
             </h3>
             <p className="text-cyan-100/70 leading-relaxed">
-              Transform customer feedback into actionable insights with our
-              advanced AI analysis system. Neural processing meets data
-              synthesis.
+              Share your experience with your genetically-enhanced cat
+              companion. Our AI analyzes customer feedback to improve future
+              feline specimens and alien DNA integration protocols.
             </p>
           </div>
 
@@ -81,8 +81,8 @@ export default function Home() {
               {">"} INSTANT_ANALYSIS
             </h3>
             <p className="text-sm text-cyan-100/60">
-              Get real-time AI-powered insights from your customer feedback.
-              Neural networks process data at quantum speeds.
+              Submit feedback about your alien-enhanced cat and receive instant
+              AI analysis. Help us refine our genetic splicing technology.
             </p>
           </div>
 
@@ -92,8 +92,8 @@ export default function Home() {
               {">"} COMPREHENSIVE_REPORTS
             </h3>
             <p className="text-sm text-cyan-100/60">
-              View and track all feedback submissions in one centralized
-              location. Complete data aggregation and visualization.
+              Track reported behaviors, abilities, and anomalies across all
+              feline specimens. Monitor the evolution of our genetic program.
             </p>
           </div>
 
@@ -103,8 +103,8 @@ export default function Home() {
               {">"} SMART_CATEGORIZATION
             </h3>
             <p className="text-sm text-cyan-100/60">
-              Automatically categorize and prioritize feedback for your team.
-              Machine learning algorithms optimize workflow.
+              Advanced categorization for specimen feedback, mutation tracking,
+              and genetic performance metrics. Research division protocol.
             </p>
           </div>
         </div>
