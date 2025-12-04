@@ -7,6 +7,7 @@ interface FeedbackItem {
     sentiment: string;
     priority: string;
   };
+  createdAt?: string;
 }
 
 interface FeedbackListProps {
@@ -15,6 +16,7 @@ interface FeedbackListProps {
   sortColumn?: string | null;
   sortDirection?: "asc" | "desc";
   onSort?: (column: string) => void;
+  onClearSort?: () => void;
 }
 
 export default function FeedbackList({
@@ -23,6 +25,7 @@ export default function FeedbackList({
   sortColumn = null,
   sortDirection = "asc",
   onSort,
+  onClearSort,
 }: FeedbackListProps) {
   if (feedbacks.length === 0) {
     return null;
@@ -45,9 +48,13 @@ export default function FeedbackList({
   };
 
   const getSortedFeedbacks = () => {
-    if (!sortColumn) return feedbacks;
-
     const sorted = [...feedbacks].sort((a, b) => {
+      if (!sortColumn) {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA;
+      }
+
       let compareA: any;
       let compareB: any;
 
@@ -99,10 +106,20 @@ export default function FeedbackList({
   return (
     <div className="mt-8 font-mono">
       <div className="mb-4 border-b border-[#30D6D6]/30 pb-2">
-        <p className="mt-1 text-xs text-[#006694]">
-          Total Records: {feedbacks.length}
-        </p>
+        <div className="flex justify-between items-center">
+          <p className="text-xs text-[#006694]">
+            Total Records: {feedbacks.length}
+          </p>
+          <button
+            onClick={onClearSort}
+            disabled={!sortColumn}
+            className="border border-[#30D6D6]/50 bg-black px-4 py-2 text-xs font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6]/10 hover:border-[#30D6D6] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:border-[#30D6D6]/50"
+          >
+            CLEAR_SORT
+          </button>
+        </div>
       </div>
+
       <div className="border border-[#30D6D6]/20">
         <div className="grid grid-cols-[1fr_120px_120px_80px] gap-4 border-b-2 border-[#30D6D6]/50 bg-[#006694]/20 px-4 py-2 text-xs font-bold tracking-wider text-[#30D6D6]">
           <div

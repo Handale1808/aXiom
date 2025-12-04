@@ -56,6 +56,11 @@ export default function Feedbacks() {
     }
   };
 
+  const handleClearSort = () => {
+    setSortColumn(null);
+    setSortDirection("asc");
+  };
+
   return (
     <div className="relative min-h-screen bg-black p-4 font-mono">
       <div className="relative mx-auto max-w-5xl">
@@ -94,7 +99,11 @@ export default function Feedbacks() {
             xenomorphic analysis system.
           </p>
           <p className="text-cyan-100/70 leading-relaxed">
-            Click any entry to view complete diagnostic data.
+            Probe any transmission node to extract full bio-metric readings and
+            temporal coordinates.
+          </p>
+          <p className="text-cyan-100/70 leading-relaxed">
+            Click the column designators to reorganize the data matrix.
           </p>
         </div>
 
@@ -166,6 +175,7 @@ export default function Feedbacks() {
             sortColumn={sortColumn}
             sortDirection={sortDirection}
             onSort={handleSort}
+            onClearSort={handleClearSort}
           />
         )}
 
