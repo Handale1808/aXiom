@@ -23,11 +23,11 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="mx-4 max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white dark:bg-zinc-900"
+        className="relative mx-4 max-h-[90vh] w-full max-w-3xl overflow-y-auto overflow-x-auto border-2 border-[#30D6D6] bg-black font-mono shadow-[0_0_30px_rgba(48,214,214,0.3)] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-black [&::-webkit-scrollbar-thumb]:bg-[#30D6D6]/50 [&::-webkit-scrollbar-thumb]:border [&::-webkit-scrollbar-thumb]:border-[#30D6D6] [&::-webkit-scrollbar-thumb]:hover:bg-[#30D6D6] [&::-webkit-scrollbar-thumb]:hover:shadow-[0_0_10px_rgba(48,214,214,0.8)]"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
