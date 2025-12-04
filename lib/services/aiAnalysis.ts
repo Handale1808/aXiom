@@ -3,7 +3,11 @@ import type { IAnalysis } from "@/models/Feedback";
 import { debug, info, warn, error as logError } from "@/lib/logger";
 
 const anthropic = process.env.ANTHROPIC_API_KEY
-  ? new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+  ? new Anthropic({
+      apiKey: process.env.ANTHROPIC_API_KEY,
+      timeout: 30000,
+      maxRetries: 0,
+    })
   : null;
 
 async function retryWithBackoff<T>(
