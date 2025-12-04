@@ -1,3 +1,5 @@
+import { useEffect, useRef } from "react";
+
 interface FeedbackFiltersProps {
   isOpen: boolean;
   onToggle: () => void;
@@ -28,6 +30,23 @@ export default function FeedbackFilters({
   const sentimentOptions = ["Positive", "Neutral", "Negative"];
   const priorityOptions = ["P0", "P1", "P2", "P3"];
 
+  const filterRef = useRef<HTMLDivElement>(null);
+
+useEffect(() => {
+  if (!isOpen) return;
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
+      onToggle();
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, [isOpen, onToggle]);
+
   const handleCheckboxChange = (
     value: string,
     currentSelection: string[],
@@ -41,7 +60,7 @@ export default function FeedbackFilters({
   };
 
   return (
-    <div className="relative">
+    <div ref={filterRef} className="relative">
       <button
         onClick={onToggle}
         className="relative border border-[#30D6D6]/50 bg-black px-4 py-2 text-xs font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6]/10 hover:border-[#30D6D6]"

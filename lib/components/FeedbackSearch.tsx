@@ -1,3 +1,5 @@
+import { useEffect, useRef } from "react";
+
 interface FeedbackSearchProps {
   isOpen: boolean;
   onToggle: () => void;
@@ -13,8 +15,28 @@ export default function FeedbackSearch({
   onSearchChange,
   onClearSearch,
 }: FeedbackSearchProps) {
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target as Node)
+      ) {
+        onToggle();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen, onToggle]);
+  
   return (
-    <div className="relative">
+    <div ref={searchRef} className="relative">
       <button
         onClick={onToggle}
         className="relative border border-[#30D6D6]/50 bg-black px-4 py-2 text-xs font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6]/10 hover:border-[#30D6D6]"
