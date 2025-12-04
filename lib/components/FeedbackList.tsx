@@ -12,11 +12,17 @@ interface FeedbackItem {
 interface FeedbackListProps {
   feedbacks: FeedbackItem[];
   onFeedbackClick?: (feedbackId: string) => void;
+  sortColumn?: string | null;
+  sortDirection?: "asc" | "desc";
+  onSort?: (column: string) => void;
 }
 
 export default function FeedbackList({
   feedbacks,
   onFeedbackClick,
+  sortColumn = null,
+  sortDirection = "asc",
+  onSort,
 }: FeedbackListProps) {
   if (feedbacks.length === 0) {
     return null;
@@ -38,6 +44,58 @@ export default function FeedbackList({
     return { color: "#BB489A" };
   };
 
+  const getSortedFeedbacks = () => {
+    if (!sortColumn) return feedbacks;
+
+    const sorted = [...feedbacks].sort((a, b) => {
+      let compareA: any;
+      let compareB: any;
+
+      switch (sortColumn) {
+        case "text":
+          compareA = a.text.toLowerCase();
+          compareB = b.text.toLowerCase();
+          break;
+        case "sentiment":
+          const sentimentOrder: Record<string, number> = {
+            positive: 3,
+            neutral: 2,
+            negative: 1,
+          };
+          compareA = sentimentOrder[a.analysis.sentiment.toLowerCase()] || 0;
+          compareB = sentimentOrder[b.analysis.sentiment.toLowerCase()] || 0;
+          break;
+        case "priority":
+          const priorityOrder: Record<string, number> = {
+            p0: 4,
+            p1: 3,
+            p2: 2,
+            p3: 1,
+          };
+          const getPriorityValue = (priority: string) => {
+            const match = priority.toLowerCase().match(/p[0-3]/);
+            return match ? priorityOrder[match[0]] || 0 : 0;
+          };
+          compareA = getPriorityValue(a.analysis.priority);
+          compareB = getPriorityValue(b.analysis.priority);
+          break;
+        default:
+          return 0;
+      }
+
+      if (compareA < compareB) return sortDirection === "asc" ? -1 : 1;
+      if (compareA > compareB) return sortDirection === "asc" ? 1 : -1;
+      return 0;
+    });
+
+    return sorted;
+  };
+
+  const SortArrow = ({ column }: { column: string }) => {
+    if (sortColumn !== column) return null;
+    return <span className="ml-1">{sortDirection === "asc" ? "▲" : "▼"}</span>;
+  };
+
   return (
     <div className="mt-8 font-mono">
       <div className="mb-4 border-b border-[#30D6D6]/30 pb-2">
@@ -47,12 +105,30 @@ export default function FeedbackList({
       </div>
       <div className="border border-[#30D6D6]/20">
         <div className="grid grid-cols-[1fr_120px_120px_80px] gap-4 border-b-2 border-[#30D6D6]/50 bg-[#006694]/20 px-4 py-2 text-xs font-bold tracking-wider text-[#30D6D6]">
-          <div>FEEDBACK_TEXT</div>
-          <div>SENTIMENT</div>
-          <div>PRIORITY</div>
+          <div
+            className="cursor-pointer hover:text-white transition-colors"
+            onClick={() => onSort?.("text")}
+          >
+            FEEDBACK_TEXT
+            <SortArrow column="text" />
+          </div>
+          <div
+            className="cursor-pointer hover:text-white transition-colors"
+            onClick={() => onSort?.("sentiment")}
+          >
+            SENTIMENT
+            <SortArrow column="sentiment" />
+          </div>
+          <div
+            className="cursor-pointer hover:text-white transition-colors"
+            onClick={() => onSort?.("priority")}
+          >
+            PRIORITY
+            <SortArrow column="priority" />
+          </div>
           <div>ACTION</div>
         </div>
-        {feedbacks.map((feedback, index) => (
+        {getSortedFeedbacks().map((feedback, index) => (
           <div
             key={feedback._id}
             onClick={() => onFeedbackClick?.(feedback._id)}

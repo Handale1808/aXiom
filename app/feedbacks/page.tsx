@@ -12,6 +12,8 @@ export default function Feedbacks() {
   const [selectedFeedbackId, setSelectedFeedbackId] = useState<string | null>(
     null
   );
+  const [sortColumn, setSortColumn] = useState<string | null>(null);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   const fetchFeedbacks = async () => {
     setIsLoading(true);
@@ -44,6 +46,15 @@ export default function Feedbacks() {
   useEffect(() => {
     fetchFeedbacks();
   }, []);
+
+  const handleSort = (column: string) => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortColumn(column);
+      setSortDirection("asc");
+    }
+  };
 
   return (
     <div className="relative min-h-screen bg-black p-4 font-mono">
@@ -152,6 +163,9 @@ export default function Feedbacks() {
           <FeedbackList
             feedbacks={feedbacks}
             onFeedbackClick={handleFeedbackClick}
+            sortColumn={sortColumn}
+            sortDirection={sortDirection}
+            onSort={handleSort}
           />
         )}
 
