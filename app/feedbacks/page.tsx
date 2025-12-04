@@ -19,6 +19,8 @@ export default function Feedbacks() {
   const [selectedPriorities, setSelectedPriorities] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const loadFiltersFromStorage = () => {
     try {
@@ -63,6 +65,15 @@ export default function Feedbacks() {
     return Array.from(tagsSet).sort();
   };
 
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    setIsSearchOpen(false);
+  };
+
   const getFilteredFeedbacks = () => {
     return feedbacks.filter((feedback) => {
       const sentimentMatch =
@@ -80,7 +91,15 @@ export default function Feedbacks() {
             feedback.analysis.tags.includes(selectedTag)
           ));
 
-      return sentimentMatch && priorityMatch && tagsMatch;
+      const searchMatch =
+        !searchQuery ||
+        feedback.text.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (feedback.analysis.tags &&
+          feedback.analysis.tags.some((tag) =>
+            tag.toLowerCase().includes(searchQuery.toLowerCase())
+          ));
+
+      return sentimentMatch && priorityMatch && tagsMatch && searchMatch;
     });
   };
 
@@ -111,7 +130,9 @@ export default function Feedbacks() {
     setSelectedSentiments([]);
     setSelectedPriorities([]);
     setSelectedTags([]);
+    setSearchQuery("");
     setIsFilterOpen(false);
+    setIsSearchOpen(false);
     try {
       localStorage.removeItem("feedbackFilters");
     } catch (error) {
@@ -292,6 +313,12 @@ export default function Feedbacks() {
             onTagChange={handleTagChange}
             onClearAllFilters={handleClearAllFilters}
             activeFilterCount={getActiveFilterCount()}
+            // Add these:
+            isSearchOpen={isSearchOpen}
+            onSearchToggle={() => setIsSearchOpen(!isSearchOpen)}
+            searchQuery={searchQuery}
+            onSearchChange={handleSearchChange}
+            onClearSearch={handleClearSearch}
           />
         )}
 

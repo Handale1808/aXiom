@@ -1,6 +1,7 @@
 // lib/components/FeedbackList.tsx
 
 import FeedbackFilters from "./FeedbackFilters";
+import FeedbackSearch from "./FeedbackSearch";
 
 interface FeedbackItem {
   _id: string;
@@ -31,6 +32,12 @@ interface FeedbackListProps {
   onTagChange?: (tags: string[]) => void;
   onClearAllFilters?: () => void;
   activeFilterCount?: number;
+  // Add these:
+  isSearchOpen?: boolean;
+  onSearchToggle?: () => void;
+  searchQuery?: string;
+  onSearchChange?: (query: string) => void;
+  onClearSearch?: () => void;
 }
 
 export default function FeedbackList({
@@ -51,6 +58,12 @@ export default function FeedbackList({
   onTagChange,
   onClearAllFilters,
   activeFilterCount = 0,
+  // Add these:
+  isSearchOpen = false,
+  onSearchToggle,
+  searchQuery = "",
+  onSearchChange,
+  onClearSearch,
 }: FeedbackListProps) {
   const hasNoResults = feedbacks.length === 0;
 
@@ -134,6 +147,13 @@ export default function FeedbackList({
             Total Records: {feedbacks.length}
           </p>
           <div className="flex gap-2">
+            <FeedbackSearch
+              isOpen={isSearchOpen}
+              onToggle={onSearchToggle || (() => {})}
+              searchQuery={searchQuery}
+              onSearchChange={onSearchChange || (() => {})}
+              onClearSearch={onClearSearch || (() => {})}
+            />
             <FeedbackFilters
               isOpen={isFilterOpen}
               onToggle={onFilterToggle || (() => {})}
