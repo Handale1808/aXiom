@@ -9,6 +9,7 @@ We implemented production-ready structured logging with **custom-built utilities
 I chose to build a **custom logging solution** rather than using established libraries like Winston, Pino, or Bunyan.
 
 **Why custom:**
+
 - Zero external dependencies to manage
 - Full control over log format and behavior
 - ~200 lines of code vs ~500KB+ library overhead
@@ -16,6 +17,7 @@ I chose to build a **custom logging solution** rather than using established lib
 - Perfect fit for project scope and requirements
 
 **Libraries considered:**
+
 - **Winston**: Most popular, but overkill for this scope
 - **Pino**: Extremely fast, but we don't have high-throughput needs
 - **Bunyan**: Battle-tested, but less active development
@@ -25,6 +27,7 @@ For a **production system at scale**, I would evaluate Winston or Pino based on 
 ## Implementation Details
 
 ### Core Features
+
 - Multiple log levels (debug, info, warn, error)
 - Structured JSON output for production
 - Human-readable format for development
@@ -34,6 +37,7 @@ For a **production system at scale**, I would evaluate Winston or Pino based on 
 - Environment-aware formatting
 
 ### Log Levels
+
 - **debug**: Detailed diagnostic information (e.g., "Parsing AI response")
 - **info**: General informational messages (e.g., "Request completed in 1250ms")
 - **warn**: Unexpected but recoverable issues (e.g., "Retrying API call")
@@ -42,11 +46,13 @@ For a **production system at scale**, I would evaluate Winston or Pino based on 
 ### Output Format
 
 **Development:**
+
 ```
 [2024-01-01T12:00:00.000Z] INFO  [req_123] Request completed {"latency": 1250}
 ```
 
 **Production:**
+
 ```json
 {
   "timestamp": "2024-01-01T12:00:00.000Z",
@@ -60,42 +66,51 @@ For a **production system at scale**, I would evaluate Winston or Pino based on 
 ## Request ID (Correlation ID) Implementation
 
 ### Format
+
 ```
 req_1234567890_abc123
 ```
+
 - Timestamp for uniqueness
 - Random string for collision prevention
 
 ### Propagation Flow
+
 ```
 Middleware (generates) → Route Handler (receives via context) → AI Service (parameter) → Database Wrapper (parameter)
 ```
 
 **Benefits:**
+
 1. **Distributed Tracing**: Track single request through entire system
 2. **Production Debugging**: Filter all logs for specific request when user reports error
 3. **Performance Analysis**: Calculate time spent in each layer
 4. **Concurrent Request Separation**: No confusion between simultaneous requests
 
 ### Implementation
+
 ```typescript
 // Middleware generates and passes to handler
 const requestId = generateRequestId();
 const response = await handler(request, { requestId });
 
 // Handler receives and uses
-async function postHandler(request: NextRequest, context: { requestId: string }) {
+async function postHandler(
+  request: NextRequest,
+  context: { requestId: string }
+) {
   const { requestId } = context;
-  info('Processing feedback submission', { requestId });
-  
+  info("Processing feedback submission", { requestId });
+
   // Pass to AI service
   const analysis = await analyzeFeedback(text, requestId);
-  
+
   // Pass to database wrapper
-  await withDatabaseLogging(
-    () => collection.insertOne(feedback),
-    { operation: 'insertOne', collection: 'feedbacks', requestId }
-  );
+  await withDatabaseLogging(() => collection.insertOne(feedback), {
+    operation: "insertOne",
+    collection: "feedbacks",
+    requestId,
+  });
 }
 ```
 
@@ -104,25 +119,29 @@ async function postHandler(request: NextRequest, context: { requestId: string })
 ### Pattern: Higher-Order Function
 
 Instead of manual logging around every database operation:
+
 ```typescript
 // Without wrapper (repetitive)
 const start = Date.now();
-debug('Starting database operation');
+debug("Starting database operation");
 const result = await collection.insertOne(feedback);
 const duration = Date.now() - start;
-info('Database operation completed', { duration });
+info("Database operation completed", { duration });
 ```
 
 We use a wrapper function:
+
 ```typescript
 // With wrapper (DRY)
-const result = await withDatabaseLogging(
-  () => collection.insertOne(feedback),
-  { operation: 'insertOne', collection: 'feedbacks', requestId }
-);
+const result = await withDatabaseLogging(() => collection.insertOne(feedback), {
+  operation: "insertOne",
+  collection: "feedbacks",
+  requestId,
+});
 ```
 
 **Benefits:**
+
 - **DRY**: No repeated logging code
 - **Consistency**: Every database operation logged the same way
 - **Automatic timing**: Duration calculated automatically
@@ -134,30 +153,33 @@ const result = await withDatabaseLogging(
 ### Safety Measures
 
 We implement utility functions to prevent logging personally identifiable information:
+
 ```typescript
-sanitizeEmail(email)     // Returns "[email present]" or "[no email]"
-sanitizeFilter(filter)   // Redacts email fields, truncates long strings
-truncateText(text, 50)   // Limits text length in logs
+sanitizeEmail(email); // Returns "[email present]" or "[no email]"
+sanitizeFilter(filter); // Redacts email fields, truncates long strings
+truncateText(text, 50); // Limits text length in logs
 ```
 
 **Why this matters:**
+
 1. **Privacy Compliance**: Email addresses are PII under GDPR/CCPA
 2. **Security**: Logs might be accessed by many people or sent to third-party services
 3. **Best Practice**: Production logs should contain metadata, not content
 4. **Risk Reduction**: Reduces attack surface if logs are leaked
 
 ### Usage
+
 ```typescript
 // Log presence, not values
-info('Input validated', {
+info("Input validated", {
   requestId,
-  email: sanitizeEmail(email),        // "[email present]"
-  textLength: text.length,             // Safe metadata
+  email: sanitizeEmail(email), // "[email present]"
+  textLength: text.length, // Safe metadata
   textPreview: truncateText(text, 50), // Limited exposure
 });
 
 // Sanitize database filters
-debug('Querying database', {
+debug("Querying database", {
   requestId,
   filter: sanitizeFilter(filter), // Redacts sensitive fields
 });
@@ -168,11 +190,13 @@ debug('Querying database', {
 ### Traditional vs Structured
 
 **Traditional logging:**
+
 ```
 POST /api/feedback 201 1250ms
 ```
 
 **Structured logging:**
+
 ```json
 {
   "timestamp": "2024-01-01T12:00:00.000Z",
@@ -187,6 +211,7 @@ POST /api/feedback 201 1250ms
 ```
 
 **Why structured:**
+
 - **Machine Parseable**: Log aggregation services can parse automatically
 - **Queryable**: Search like a database ("Show all requests where latency > 1000ms")
 - **Contextual**: Rich metadata in every log entry
@@ -196,8 +221,9 @@ POST /api/feedback 201 1250ms
 
 **Development**: Human-readable for debugging
 **Production**: JSON for log aggregation services (CloudWatch, Datadog, Elasticsearch)
+
 ```typescript
-const isProduction = process.env.NODE_ENV === 'production';
+const isProduction = process.env.NODE_ENV === "production";
 
 if (isProduction) {
   return JSON.stringify(data);
@@ -211,6 +237,7 @@ if (isProduction) {
 ### Application Layers
 
 **Middleware Layer:**
+
 ```
 - Incoming request (info)
 - Calling route handler (debug)
@@ -220,6 +247,7 @@ if (isProduction) {
 ```
 
 **Route Handler Layer:**
+
 ```
 - Processing submission (debug)
 - Validating input (debug)
@@ -231,6 +259,7 @@ if (isProduction) {
 ```
 
 **AI Service Layer:**
+
 ```
 - Starting analysis (info)
 - Using mock mode (warn) [if no API key]
@@ -245,6 +274,7 @@ if (isProduction) {
 ```
 
 **Database Layer:**
+
 ```
 - Executing operation (debug)
 - Operation completed (info)
@@ -253,6 +283,7 @@ if (isProduction) {
 ## Observability
 
 ### What We Log
+
 - Request/response metadata (method, path, status, latency)
 - Operation durations (AI calls, database queries)
 - Request IDs for correlation
@@ -261,6 +292,7 @@ if (isProduction) {
 - Record counts and operation types
 
 ### What We DON'T Log
+
 - Email addresses (sanitized to "[email present]")
 - Full feedback text (only length)
 - Complete AI prompts
@@ -268,6 +300,7 @@ if (isProduction) {
 - Sensitive filter values
 
 ### Metrics Captured
+
 ```typescript
 {
   requestId: "req_123",
@@ -287,6 +320,7 @@ if (isProduction) {
 ### Log Aggregation
 
 Our structured JSON logs integrate with:
+
 - **AWS CloudWatch Logs**: Automatic JSON parsing
 - **Google Cloud Logging**: Structured log ingestion
 - **Datadog**: Log pipelines and dashboards
@@ -296,6 +330,7 @@ Our structured JSON logs integrate with:
 ### Querying Examples
 
 With structured logs, you can query like a database:
+
 ```
 # Find all errors for a specific request
 requestId: "req_123" AND level: "error"
@@ -316,6 +351,7 @@ COUNT(level: "error") > 10 per minute
 ## Trade-offs
 
 ### Pros:
+
 - Zero external dependencies
 - Full control and transparency
 - Production-ready JSON format
@@ -324,6 +360,7 @@ COUNT(level: "error") > 10 per minute
 - Environment-aware output
 
 ### Cons:
+
 - No log transports (file, HTTP, database)
 - No log rotation or archiving
 - No built-in log level filtering at runtime
@@ -332,6 +369,7 @@ COUNT(level: "error") > 10 per minute
 ### When to Use Libraries:
 
 Consider Winston, Pino, or Bunyan when:
+
 - Need multiple log transports
 - Require log rotation and archiving
 - Need advanced filtering and sampling

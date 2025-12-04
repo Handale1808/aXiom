@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/lib/components/Header";
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,7 +36,6 @@ export const metadata: Metadata = {
     siteName: "aXiom Alien DNA Labs",
   },
 };
-
 
 export default function RootLayout({
   children,

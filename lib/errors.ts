@@ -1,4 +1,4 @@
-import { error as logError } from './logger';
+import { error as logError } from "./logger";
 
 export class ApiError extends Error {
   constructor(
@@ -8,7 +8,7 @@ export class ApiError extends Error {
     public requestId?: string
   ) {
     super(message);
-    this.name = 'ApiError';
+    this.name = "ApiError";
   }
 
   toLogData() {
@@ -18,7 +18,7 @@ export class ApiError extends Error {
       code: this.code,
       statusCode: this.statusCode,
       requestId: this.requestId,
-      stack: process.env.NODE_ENV === 'development' ? this.stack : undefined,
+      stack: process.env.NODE_ENV === "development" ? this.stack : undefined,
     };
   }
 }
@@ -29,15 +29,18 @@ export class ValidationError extends ApiError {
     public fields?: Record<string, string>,
     requestId?: string
   ) {
-    super(400, message, 'VALIDATION_ERROR', requestId);
-    this.name = 'ValidationError';
+    super(400, message, "VALIDATION_ERROR", requestId);
+    this.name = "ValidationError";
   }
 }
 
 export class DatabaseError extends ApiError {
-  constructor(message: string = 'Database operation failed', requestId?: string) {
-    super(500, message, 'DATABASE_ERROR', requestId);
-    this.name = 'DatabaseError';
+  constructor(
+    message: string = "Database operation failed",
+    requestId?: string
+  ) {
+    super(500, message, "DATABASE_ERROR", requestId);
+    this.name = "DatabaseError";
   }
 }
 
@@ -56,30 +59,32 @@ export function formatErrorResponse(
   requestId?: string
 ): ErrorResponse {
   if (error instanceof ApiError) {
-    logError('API error occurred', error.toLogData());
-    
+    logError("API error occurred", error.toLogData());
+
     return {
       error: {
         message: error.message,
         code: error.code,
         statusCode: error.statusCode,
-        ...(error instanceof ValidationError && error.fields ? { fields: error.fields } : {}),
+        ...(error instanceof ValidationError && error.fields
+          ? { fields: error.fields }
+          : {}),
         ...(requestId ? { requestId } : {}),
       },
     };
   }
 
-  logError('Unexpected error occurred', {
+  logError("Unexpected error occurred", {
     errorType: error.name,
     message: error.message,
     requestId,
-    stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+    stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
   });
 
   return {
     error: {
-      message: 'Internal server error',
-      code: 'INTERNAL_ERROR',
+      message: "Internal server error",
+      code: "INTERNAL_ERROR",
       statusCode: 500,
       ...(requestId ? { requestId } : {}),
     },

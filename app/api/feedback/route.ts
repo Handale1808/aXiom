@@ -136,7 +136,9 @@ async function getHandler(
     const limitParam = searchParams.get("limit");
     const skipParam = searchParams.get("skip");
     const limit = limitParam ? parseInt(limitParam) : pageSize;
-    const skip = skipParam ? parseInt(skipParam) : Math.max(0, (page - 1) * pageSize);
+    const skip = skipParam
+      ? parseInt(skipParam)
+      : Math.max(0, (page - 1) * pageSize);
 
     debug("Processing feedback list request", {
       requestId,

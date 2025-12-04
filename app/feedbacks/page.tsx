@@ -340,7 +340,14 @@ export default function Feedbacks() {
   useEffect(() => {
     fetchFeedbacks();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, pageSize, selectedSentiments, selectedPriorities, selectedTags, searchQuery]);
+  }, [
+    page,
+    pageSize,
+    selectedSentiments,
+    selectedPriorities,
+    selectedTags,
+    searchQuery,
+  ]);
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {

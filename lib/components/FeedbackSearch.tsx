@@ -34,7 +34,7 @@ export default function FeedbackSearch({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen, onToggle]);
-  
+
   return (
     <div ref={searchRef} className="relative">
       <button

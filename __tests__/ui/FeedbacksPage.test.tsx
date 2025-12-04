@@ -101,7 +101,9 @@ describe("Feedbacks Page", () => {
     render(<Feedbacks />);
 
     await waitFor(() => {
-      expect(screen.getByText(/No feedback submissions yet/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/No feedback submissions yet/)
+      ).toBeInTheDocument();
     });
 
     const refreshButton = screen.getByRole("button", { name: /refresh/i });
@@ -131,7 +133,9 @@ describe("Feedbacks Page", () => {
     expect(refreshButton).toBeDisabled();
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /refresh/i })).not.toBeDisabled();
+      expect(
+        screen.getByRole("button", { name: /refresh/i })
+      ).not.toBeDisabled();
     });
   });
 

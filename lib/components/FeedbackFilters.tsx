@@ -32,20 +32,23 @@ export default function FeedbackFilters({
 
   const filterRef = useRef<HTMLDivElement>(null);
 
-useEffect(() => {
-  if (!isOpen) return;
+  useEffect(() => {
+    if (!isOpen) return;
 
-  const handleClickOutside = (event: MouseEvent) => {
-    if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
-      onToggle();
-    }
-  };
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        filterRef.current &&
+        !filterRef.current.contains(event.target as Node)
+      ) {
+        onToggle();
+      }
+    };
 
-  document.addEventListener("mousedown", handleClickOutside);
-  return () => {
-    document.removeEventListener("mousedown", handleClickOutside);
-  };
-}, [isOpen, onToggle]);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen, onToggle]);
 
   const handleCheckboxChange = (
     value: string,

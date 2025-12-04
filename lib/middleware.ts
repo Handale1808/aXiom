@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { generateRequestId, info, debug, error as logError } from './logger';
-import { formatErrorResponse, ApiError } from './errors';
+import { NextRequest, NextResponse } from "next/server";
+import { generateRequestId, info, debug, error as logError } from "./logger";
+import { formatErrorResponse, ApiError } from "./errors";
 
 type RouteHandler = (
   request: NextRequest,
@@ -14,23 +14,23 @@ export function withMiddleware(handler: RouteHandler) {
     const method = request.method;
     const path = new URL(request.url).pathname;
 
-    info('Incoming request', {
+    info("Incoming request", {
       requestId,
       method,
       path,
-      userAgent: request.headers.get('user-agent'),
+      userAgent: request.headers.get("user-agent"),
     });
 
-    debug('Calling route handler', { requestId, method, path });
+    debug("Calling route handler", { requestId, method, path });
 
     try {
       const response = await handler(request, { requestId });
       const latency = Date.now() - startTime;
       const status = response.status;
 
-      debug('Handler completed successfully', { requestId, status });
+      debug("Handler completed successfully", { requestId, status });
 
-      info('Request completed', {
+      info("Request completed", {
         requestId,
         method,
         path,
@@ -38,25 +38,22 @@ export function withMiddleware(handler: RouteHandler) {
         latency,
       });
 
-      response.headers.set('X-Request-Id', requestId);
+      response.headers.set("X-Request-Id", requestId);
       return response;
     } catch (error) {
       const latency = Date.now() - startTime;
-      
-      debug('Handler threw error', {
+
+      debug("Handler threw error", {
         requestId,
         errorType: (error as Error).name,
         errorMessage: (error as Error).message,
       });
 
-      const errorResponse = formatErrorResponse(
-        error as Error,
-        requestId
-      );
-      
+      const errorResponse = formatErrorResponse(error as Error, requestId);
+
       const status = error instanceof ApiError ? error.statusCode : 500;
 
-      info('Request completed with error', {
+      info("Request completed with error", {
         requestId,
         method,
         path,
@@ -66,7 +63,7 @@ export function withMiddleware(handler: RouteHandler) {
       });
 
       const response = NextResponse.json(errorResponse, { status });
-      response.headers.set('X-Request-Id', requestId);
+      response.headers.set("X-Request-Id", requestId);
       return response;
     }
   };

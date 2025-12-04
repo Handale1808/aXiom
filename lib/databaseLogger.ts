@@ -1,4 +1,4 @@
-import { debug, info, sanitizeFilter } from './logger';
+import { debug, info, sanitizeFilter } from "./logger";
 
 interface DatabaseOperationOptions {
   operation: string;
@@ -14,7 +14,7 @@ export async function withDatabaseLogging<T>(
   const { operation, collection, requestId, filter } = options;
   const startTime = Date.now();
 
-  debug('Executing database operation', {
+  debug("Executing database operation", {
     requestId,
     operation,
     collection,
@@ -28,11 +28,11 @@ export async function withDatabaseLogging<T>(
     let recordCount: number | undefined;
     if (Array.isArray(result)) {
       recordCount = result.length;
-    } else if (result && typeof result === 'object' && 'insertedId' in result) {
+    } else if (result && typeof result === "object" && "insertedId" in result) {
       recordCount = 1;
     }
 
-    info('Database operation completed', {
+    info("Database operation completed", {
       requestId,
       operation,
       collection,
@@ -43,7 +43,7 @@ export async function withDatabaseLogging<T>(
     return result;
   } catch (error) {
     const duration = Date.now() - startTime;
-    
+
     throw error;
   }
 }
@@ -53,8 +53,8 @@ export function logDatabaseError(
   options: DatabaseOperationOptions
 ): void {
   const { operation, collection, requestId } = options;
-  
-  debug('Database operation failed', {
+
+  debug("Database operation failed", {
     requestId,
     operation,
     collection,
