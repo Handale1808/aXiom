@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "aXiom — Alien Feline DNA Labs | Feedback Analyzer",
+  title: "aXiom — [FELINE GENETICS LABORATORY] | Feedback Analyzer",
   description:
     "aXiom: An intergalactic bio-engineering lab specialising in splicing alien DNA with Earth’s cutest cats. Submit feedback on your cosmic kitties and let our AI analyse, prioritise, and triage incidents — from harmless glowing whiskers to dimension-rending hairballs.",
   keywords: [
