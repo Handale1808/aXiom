@@ -7,6 +7,7 @@ import ConfirmationDialog from "@/lib/components/ConfirmationDialog";
 import { useFeedbackData } from "@/lib/hooks/useFeedbackData";
 import { useFeedbackFilters } from "@/lib/hooks/useFeedbackFilters";
 import { useFeedbackActions } from "@/lib/hooks/useFeedbackActions";
+import ErrorBoundary from "@/lib/components/ErrorBoundary";
 
 export default function Feedbacks() {
   const [selectedFeedbackId, setSelectedFeedbackId] = useState<string | null>(
@@ -36,22 +37,15 @@ export default function Feedbacks() {
     getAvailableTags,
   } = useFeedbackFilters();
 
-  const {
-    feedbacks,
-    isLoading,
-    error,
-    total,
-    hasMore,
-    refetch,
-    setFeedbacks,
-  } = useFeedbackData({
-    page,
-    pageSize,
-    selectedSentiments,
-    selectedPriorities,
-    selectedTags,
-    searchQuery,
-  });
+  const { feedbacks, isLoading, error, total, hasMore, refetch, setFeedbacks } =
+    useFeedbackData({
+      page,
+      pageSize,
+      selectedSentiments,
+      selectedPriorities,
+      selectedTags,
+      searchQuery,
+    });
 
   const {
     selectedFeedbackIds,
@@ -205,35 +199,37 @@ export default function Feedbacks() {
         )}
 
         {feedbacks.length > 0 && (
-          <FeedbackList
-            feedbacks={feedbacks}
-            onFeedbackClick={handleFeedbackClick}
-            sortColumn={sortColumn}
-            sortDirection={sortDirection}
-            onSort={handleSort}
-            onClearSort={handleClearSort}
-            isFilterOpen={isFilterOpen}
-            onFilterToggle={() => setIsFilterOpen(!isFilterOpen)}
-            selectedSentiments={selectedSentiments}
-            selectedPriorities={selectedPriorities}
-            selectedTags={selectedTags}
-            availableTags={getAvailableTags(feedbacks)}
-            onSentimentChange={handleSentimentChange}
-            onPriorityChange={handlePriorityChange}
-            onTagChange={handleTagChange}
-            onClearAllFilters={handleClearAllFilters}
-            activeFilterCount={getActiveFilterCount()}
-            isSearchOpen={isSearchOpen}
-            onSearchToggle={() => setIsSearchOpen(!isSearchOpen)}
-            searchQuery={searchQuery}
-            onSearchChange={handleSearchChange}
-            onClearSearch={handleClearSearch}
-            selectedIds={selectedFeedbackIds}
-            onSelectionChange={handleSelectionChange}
-            onDeleteSingle={handleDeleteSingle}
-            onDeleteMultiple={handleDeleteMultiple}
-            isDeletingIds={isDeletingIds}
-          />
+          <ErrorBoundary>
+            <FeedbackList
+              feedbacks={feedbacks}
+              onFeedbackClick={handleFeedbackClick}
+              sortColumn={sortColumn}
+              sortDirection={sortDirection}
+              onSort={handleSort}
+              onClearSort={handleClearSort}
+              isFilterOpen={isFilterOpen}
+              onFilterToggle={() => setIsFilterOpen(!isFilterOpen)}
+              selectedSentiments={selectedSentiments}
+              selectedPriorities={selectedPriorities}
+              selectedTags={selectedTags}
+              availableTags={getAvailableTags(feedbacks)}
+              onSentimentChange={handleSentimentChange}
+              onPriorityChange={handlePriorityChange}
+              onTagChange={handleTagChange}
+              onClearAllFilters={handleClearAllFilters}
+              activeFilterCount={getActiveFilterCount()}
+              isSearchOpen={isSearchOpen}
+              onSearchToggle={() => setIsSearchOpen(!isSearchOpen)}
+              searchQuery={searchQuery}
+              onSearchChange={handleSearchChange}
+              onClearSearch={handleClearSearch}
+              selectedIds={selectedFeedbackIds}
+              onSelectionChange={handleSelectionChange}
+              onDeleteSingle={handleDeleteSingle}
+              onDeleteMultiple={handleDeleteMultiple}
+              isDeletingIds={isDeletingIds}
+            />
+          </ErrorBoundary>
         )}
 
         {feedbacks.length > 0 && (
@@ -277,18 +273,21 @@ export default function Feedbacks() {
         </div>
       </div>
 
-      <FeedbackDetailModal
-        feedbackId={selectedFeedbackId}
-        onClose={handleCloseModal}
-        onDelete={handleDeleteSingle}
-        onUpdateNextAction={handleUpdateNextAction}
-        isDeleting={
-          selectedFeedbackId
-            ? isDeletingIds.includes(selectedFeedbackId)
-            : false
-        }
-        isUpdating={isUpdating}
-      />
+      <ErrorBoundary>
+        {" "}
+        <FeedbackDetailModal
+          feedbackId={selectedFeedbackId}
+          onClose={handleCloseModal}
+          onDelete={handleDeleteSingle}
+          onUpdateNextAction={handleUpdateNextAction}
+          isDeleting={
+            selectedFeedbackId
+              ? isDeletingIds.includes(selectedFeedbackId)
+              : false
+          }
+          isUpdating={isUpdating}
+        />
+      </ErrorBoundary>
 
       <ConfirmationDialog
         isOpen={deleteConfirmation?.isOpen || false}
