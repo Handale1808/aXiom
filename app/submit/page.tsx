@@ -48,7 +48,7 @@ export default function Submit() {
             FEEDBACK_ANALYSIS_TERMINAL
           </h1>
           <p className="mt-2 text-center text-sm tracking-widest text-[#006694] font-bold">
-            [NEURAL_PROCESSING_ACTIVE]
+            [SPECIMEN_FEEDBACK_PROTOCOL]
           </p>
         </div>
 
@@ -63,7 +63,10 @@ export default function Submit() {
               [SYSTEM_INSTRUCTIONS]
             </h3>
             <p className="text-cyan-100/70 leading-relaxed">
-              Input your feedback below. Our advanced xenomorphic AI will process your data through quantum neural networks to extract actionable insights. Genetic algorithms optimize analysis in real-time.
+              Report your alien-enhanced feline's behavior, abilities, and any
+              genetic anomalies. Our advanced xenomorphic AI will analyze
+              specimen performance through quantum neural networks. Genetic
+              algorithms optimize DNA integration protocols in real-time.
             </p>
           </div>
 
@@ -80,12 +83,21 @@ export default function Submit() {
               PROCESSING_DATA
             </div>
             <div className="flex justify-center gap-1">
-              <div className="h-2 w-2 animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]" style={{ animationDelay: "0ms" }} />
-              <div className="h-2 w-2 animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]" style={{ animationDelay: "150ms" }} />
-              <div className="h-2 w-2 animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]" style={{ animationDelay: "300ms" }} />
+              <div
+                className="h-2 w-2 animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]"
+                style={{ animationDelay: "0ms" }}
+              />
+              <div
+                className="h-2 w-2 animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]"
+                style={{ animationDelay: "150ms" }}
+              />
+              <div
+                className="h-2 w-2 animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]"
+                style={{ animationDelay: "300ms" }}
+              />
             </div>
             <p className="mt-3 text-sm text-cyan-100/60">
-              Analyzing genetic feedback patterns...
+              Analyzing specimen biomarkers and enhancement stability...
             </p>
           </div>
         )}
@@ -96,7 +108,7 @@ export default function Submit() {
             <div className="absolute -right-px -top-px h-4 w-4 border-r-2 border-t-2 border-red-500" />
             <div className="absolute -bottom-px -left-px h-4 w-4 border-b-2 border-l-2 border-red-500" />
             <div className="absolute -bottom-px -right-px h-4 w-4 border-b-2 border-r-2 border-red-500" />
-            
+
             <div className="flex items-center gap-3">
               <div className="h-3 w-3 animate-pulse bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)]" />
               <div>
@@ -112,11 +124,11 @@ export default function Submit() {
         {result && (
           <div className="space-y-6">
             <AnalysisResult analysis={result.analysis} />
-            
+
             <div className="relative border-2 border-[#30D6D6] bg-[#30D6D6]/5 p-6 text-center">
               <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-transparent via-[#30D6D6] to-transparent" />
               <div className="absolute right-0 top-0 h-full w-1 bg-gradient-to-b from-transparent via-[#30D6D6] to-transparent" />
-              
+
               <div className="flex items-center justify-center gap-2 mb-2">
                 <div className="h-2 w-2 bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]" />
                 <span className="text-xs tracking-[0.3em] text-[#30D6D6]">
@@ -125,7 +137,7 @@ export default function Submit() {
                 <div className="h-2 w-2 bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]" />
               </div>
               <p className="text-sm text-cyan-100/70">
-                Feedback successfully integrated into xenomorphic database
+                Specimen data successfully integrated into xenomorphic database
               </p>
             </div>
           </div>

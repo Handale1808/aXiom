@@ -19,7 +19,7 @@ export default function Home() {
             </div>
           </div>
           <p className="text-lg text-[#30D6D6]/80 tracking-wide pl-4 text-center">
-            Alien genetics meet Earth's cutest
+            Alien genetics meet Earth's fluffiest
           </p>
         </div>
 

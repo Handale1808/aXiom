@@ -79,7 +79,11 @@ export default function Feedbacks() {
             [ARCHIVE_INFO]
           </h3>
           <p className="text-cyan-100/70 leading-relaxed">
-            Browse all feedback transmissions processed through our xenomorphic analysis system. Click any entry to view complete diagnostic data.
+            Browse all feline feedback transmissions processed through our
+            xenomorphic analysis system.
+          </p>
+          <p className="text-cyan-100/70 leading-relaxed">
+            Click any entry to view complete diagnostic data.
           </p>
         </div>
 
@@ -90,9 +94,18 @@ export default function Feedbacks() {
               LOADING_DATABASE
             </div>
             <div className="flex justify-center gap-1">
-              <div className="h-2 w-2 animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]" style={{ animationDelay: "0ms" }} />
-              <div className="h-2 w-2 animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]" style={{ animationDelay: "150ms" }} />
-              <div className="h-2 w-2 animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]" style={{ animationDelay: "300ms" }} />
+              <div
+                className="h-2 w-2 animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]"
+                style={{ animationDelay: "0ms" }}
+              />
+              <div
+                className="h-2 w-2 animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]"
+                style={{ animationDelay: "150ms" }}
+              />
+              <div
+                className="h-2 w-2 animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]"
+                style={{ animationDelay: "300ms" }}
+              />
             </div>
             <p className="mt-3 text-sm text-cyan-100/60">
               Retrieving feedback records...
@@ -106,7 +119,7 @@ export default function Feedbacks() {
             <div className="absolute -right-px -top-px h-4 w-4 border-r-2 border-t-2 border-red-500" />
             <div className="absolute -bottom-px -left-px h-4 w-4 border-b-2 border-l-2 border-red-500" />
             <div className="absolute -bottom-px -right-px h-4 w-4 border-b-2 border-r-2 border-red-500" />
-            
+
             <div className="flex items-center gap-3">
               <div className="h-3 w-3 animate-pulse bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)]" />
               <div>
@@ -122,7 +135,7 @@ export default function Feedbacks() {
         {!isLoading && feedbacks.length === 0 && !error && (
           <div className="relative border-2 border-[#006694]/50 bg-black/50 p-12 text-center backdrop-blur-sm">
             <div className="absolute left-1/2 top-8 h-3 w-3 -translate-x-1/2 bg-[#006694] shadow-[0_0_10px_rgba(0,102,148,0.8)]" />
-            
+
             <div className="mb-4 text-xs tracking-[0.3em] text-[#006694]">
               DATABASE_EMPTY
             </div>
@@ -143,7 +156,8 @@ export default function Feedbacks() {
         )}
 
         <div className="mt-8 border-t border-[#30D6D6]/20 pt-4 text-center text-xs text-[#30D6D6]/40 tracking-wider">
-          AXIOM_ARCHIVE_v2.847 | {feedbacks.length} RECORDS_INDEXED | DATABASE_ACTIVE
+          AXIOM_ARCHIVE_v2.847 | {feedbacks.length} RECORDS_INDEXED |
+          DATABASE_ACTIVE
         </div>
       </div>
       <FeedbackDetailModal
