@@ -31,9 +31,11 @@ export default function FeedbackList({
 
   const getPriorityIndicator = (priority: string) => {
     const p = priority.toLowerCase();
-    if (p.includes("high") || p.includes("urgent")) return 3;
-    if (p.includes("medium") || p.includes("moderate")) return 2;
-    return 1;
+    if (p.includes("p3")) return { color: "#30D6D6" };
+    if (p.includes("p2")) return { color: "#6CBE4D" };
+    if (p.includes("p1")) return { color: "#6CBE4D" };
+    if (p.includes("p0")) return { color: "#BB489A" };
+    return { color: "#BB489A" };
   };
 
   return (
@@ -70,19 +72,34 @@ export default function FeedbackList({
               {feedback.text}
             </div>
             <div className="flex items-center gap-2 text-xs">
-              <div className="h-2 w-2 bg-[#006694] shadow-[0_0_8px_rgba(0,102,148,0.8)]" />
-              <span className={`font-bold capitalize ${getSentimentColor(feedback.analysis.sentiment)}`}>
+              <span
+                className={`font-bold capitalize ${getSentimentColor(
+                  feedback.analysis.sentiment
+                )}`}
+              >
                 {feedback.analysis.sentiment}
               </span>
             </div>
             <div className="flex items-center gap-1 text-xs">
-              {Array.from({ length: getPriorityIndicator(feedback.analysis.priority) }).map((_, i) => (
-                <div
-                  key={i}
-                  className="h-2 w-2 bg-[#30D6D6] shadow-[0_0_8px_rgba(48,214,214,0.8)]"
-                />
-              ))}
-              <span className="ml-2 text-[#30D6D6]">{feedback.analysis.priority}</span>
+              {(() => {
+                const { color } = getPriorityIndicator(
+                  feedback.analysis.priority
+                );
+                return (
+                  <>
+                    <div
+                      className="h-2 w-2"
+                      style={{
+                        backgroundColor: color,
+                        boxShadow: `0 0 8px ${color}80`,
+                      }}
+                    />
+                    <span className="ml-2 text-[#30D6D6]">
+                      {feedback.analysis.priority}
+                    </span>
+                  </>
+                );
+              })()}
             </div>
             <div className="flex items-center text-xs text-[#006694] group-hover:text-[#30D6D6]">
               {">"} VIEW
