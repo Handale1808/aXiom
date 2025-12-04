@@ -8,6 +8,7 @@ import { useFeedbackData } from "@/lib/hooks/useFeedbackData";
 import { useFeedbackFilters } from "@/lib/hooks/useFeedbackFilters";
 import { useFeedbackActions } from "@/lib/hooks/useFeedbackActions";
 import ErrorBoundary from "@/lib/components/ErrorBoundary";
+import { getLastRequestId } from "@/lib/apiClient";
 
 export default function Feedbacks() {
   const [selectedFeedbackId, setSelectedFeedbackId] = useState<string | null>(
@@ -157,6 +158,11 @@ export default function Feedbacks() {
               [SYSTEM_ERROR]
             </div>
             <p className="text-red-200">{error}</p>
+            {getLastRequestId() && (
+              <p className="text-xs text-red-400/50 mt-3 font-mono">
+                Error ID: {getLastRequestId()}
+              </p>
+            )}
           </div>
         )}
 
