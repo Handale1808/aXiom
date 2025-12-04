@@ -31,6 +31,10 @@ export default function Feedbacks() {
     type: "single" | "bulk";
   } | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [page, setPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(50);
+  const [total, setTotal] = useState<number>(0);
+  const [hasMore, setHasMore] = useState<boolean>(false);
 
   const loadFiltersFromStorage = () => {
     try {
@@ -161,13 +165,26 @@ export default function Feedbacks() {
     setError(null);
 
     try {
+      // Build server-side query where compatible
+      const params = new URLSearchParams();
+      params.set("page", String(page));
+      params.set("pageSize", String(pageSize));
+      if (searchQuery) params.set("search", searchQuery);
+      if (selectedSentiments.length === 1)
+        params.set("sentiment", selectedSentiments[0]);
+      if (selectedPriorities.length === 1)
+        params.set("priority", selectedPriorities[0]);
+      if (selectedTags.length === 1) params.set("tag", selectedTags[0]);
+
       const data = await apiFetch<{
         success: true;
         data: any[];
         pagination: any;
-      }>("/api/feedback");
+      }>(`/api/feedback?${params.toString()}`);
 
       setFeedbacks(data.data);
+      setTotal(data.pagination.total);
+      setHasMore(data.pagination.hasMore);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load feedbacks");
     } finally {
@@ -318,8 +335,12 @@ export default function Feedbacks() {
 
   useEffect(() => {
     loadFiltersFromStorage();
-    fetchFeedbacks();
   }, []);
+
+  useEffect(() => {
+    fetchFeedbacks();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, pageSize, selectedSentiments, selectedPriorities, selectedTags, searchQuery]);
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {
@@ -333,6 +354,19 @@ export default function Feedbacks() {
   const handleClearSort = () => {
     setSortColumn(null);
     setSortDirection("asc");
+  };
+
+  const handlePrevPage = () => {
+    setPage((p) => Math.max(1, p - 1));
+  };
+
+  const handleNextPage = () => {
+    if (hasMore) setPage((p) => p + 1);
+  };
+
+  const handlePageSizeChange = (newSize: number) => {
+    setPageSize(newSize);
+    setPage(1);
   };
 
   return (
@@ -470,6 +504,40 @@ export default function Feedbacks() {
             onDeleteMultiple={handleDeleteMultiple}
             isDeletingIds={isDeletingIds}
           />
+        )}
+
+        {feedbacks.length > 0 && (
+          <div className="mt-6 flex items-center justify-between border-t border-[#30D6D6]/20 pt-4">
+            <div className="text-xs text-[#30D6D6]/70">
+              Page {page} • Page Size
+              <select
+                className="ml-2 bg-black border border-[#30D6D6]/50 text-[#30D6D6] px-2 py-1 text-xs"
+                value={pageSize}
+                onChange={(e) => handlePageSizeChange(parseInt(e.target.value))}
+              >
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+              </select>
+              <span className="ml-3">Total {total}</span>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={handlePrevPage}
+                disabled={page === 1 || isLoading}
+                className="border border-[#30D6D6]/50 bg-black px-4 py-2 text-xs font-bold tracking-wider text-[#30D6D6] disabled:opacity-40"
+              >
+                PREV
+              </button>
+              <button
+                onClick={handleNextPage}
+                disabled={!hasMore || isLoading}
+                className="border border-[#30D6D6]/50 bg-black px-4 py-2 text-xs font-bold tracking-wider text-[#30D6D6] disabled:opacity-40"
+              >
+                NEXT
+              </button>
+            </div>
+          </div>
         )}
 
         {feedbacks.length > 0 && getFilteredFeedbacks().length === 0 && (
