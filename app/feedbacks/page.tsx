@@ -4,6 +4,7 @@
 import { useState, useEffect } from "react";
 import FeedbackList from "@/lib/components/FeedbackList";
 import FeedbackDetailModal from "@/lib/components/FeedbackDetailModal";
+import FeedbackFilters from "@/lib/components/FeedbackFilters";
 
 export default function Feedbacks() {
   const [feedbacks, setFeedbacks] = useState<any[]>([]);
@@ -14,6 +15,109 @@ export default function Feedbacks() {
   );
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [selectedSentiments, setSelectedSentiments] = useState<string[]>([]);
+  const [selectedPriorities, setSelectedPriorities] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  const loadFiltersFromStorage = () => {
+    try {
+      const saved = localStorage.getItem("feedbackFilters");
+      if (saved) {
+        const { sentiments, priorities, tags } = JSON.parse(saved);
+        setSelectedSentiments(sentiments || []);
+        setSelectedPriorities(priorities || []);
+        setSelectedTags(tags || []);
+      }
+    } catch (error) {
+      console.error("Failed to load filters from storage:", error);
+    }
+  };
+
+  const saveFiltersToStorage = (
+    sentiments: string[],
+    priorities: string[],
+    tags: string[]
+  ) => {
+    try {
+      localStorage.setItem(
+        "feedbackFilters",
+        JSON.stringify({ sentiments, priorities, tags })
+      );
+    } catch (error) {
+      console.error("Failed to save filters to storage:", error);
+    }
+  };
+
+  const getAvailableTags = (): string[] => {
+    const tagsSet = new Set<string>();
+    feedbacks.forEach((feedback) => {
+      if (feedback.analysis.tags) {
+        feedback.analysis.tags.forEach((tag) => {
+          if (tag && tag.trim()) {
+            tagsSet.add(tag);
+          }
+        });
+      }
+    });
+    return Array.from(tagsSet).sort();
+  };
+
+  const getFilteredFeedbacks = () => {
+    return feedbacks.filter((feedback) => {
+      const sentimentMatch =
+        selectedSentiments.length === 0 ||
+        selectedSentiments.includes(feedback.analysis.sentiment);
+
+      const priorityMatch =
+        selectedPriorities.length === 0 ||
+        selectedPriorities.includes(feedback.analysis.priority);
+
+      const tagsMatch =
+        selectedTags.length === 0 ||
+        (feedback.analysis.tags &&
+          selectedTags.every((selectedTag) =>
+            feedback.analysis.tags.includes(selectedTag)
+          ));
+
+      return sentimentMatch && priorityMatch && tagsMatch;
+    });
+  };
+
+  const getActiveFilterCount = () => {
+    return (
+      selectedSentiments.length +
+      selectedPriorities.length +
+      selectedTags.length
+    );
+  };
+
+  const handleSentimentChange = (sentiments: string[]) => {
+    setSelectedSentiments(sentiments);
+    saveFiltersToStorage(sentiments, selectedPriorities, selectedTags);
+  };
+
+  const handlePriorityChange = (priorities: string[]) => {
+    setSelectedPriorities(priorities);
+    saveFiltersToStorage(selectedSentiments, priorities, selectedTags);
+  };
+
+  const handleTagChange = (tags: string[]) => {
+    setSelectedTags(tags);
+    saveFiltersToStorage(selectedSentiments, selectedPriorities, tags);
+  };
+
+  const handleClearAllFilters = () => {
+    setSelectedSentiments([]);
+    setSelectedPriorities([]);
+    setSelectedTags([]);
+    setIsFilterOpen(false);
+    try {
+      localStorage.removeItem("feedbackFilters");
+    } catch (error) {
+      console.error("Failed to clear filters from storage:", error);
+    }
+  };
 
   const fetchFeedbacks = async () => {
     setIsLoading(true);
@@ -44,6 +148,7 @@ export default function Feedbacks() {
   };
 
   useEffect(() => {
+    loadFiltersFromStorage();
     fetchFeedbacks();
   }, []);
 
@@ -168,9 +273,50 @@ export default function Feedbacks() {
           </div>
         )}
 
+        <div className="flex gap-2">
+          <FeedbackFilters
+            isOpen={isFilterOpen}
+            onToggle={() => setIsFilterOpen(!isFilterOpen)}
+            selectedSentiments={selectedSentiments}
+            selectedPriorities={selectedPriorities}
+            selectedTags={selectedTags}
+            availableTags={getAvailableTags()}
+            onSentimentChange={handleSentimentChange}
+            onPriorityChange={handlePriorityChange}
+            onTagChange={handleTagChange}
+            onClearAll={handleClearAllFilters}
+            activeFilterCount={getActiveFilterCount()}
+          />
+        </div>
+
+        {feedbacks.length > 0 && getFilteredFeedbacks().length === 0 && (
+          <div className="relative border-2 border-yellow-500/50 bg-yellow-950/20 p-12 text-center backdrop-blur-sm mb-8">
+            <div className="absolute -left-px -top-px h-4 w-4 border-l-2 border-t-2 border-yellow-500" />
+            <div className="absolute -right-px -top-px h-4 w-4 border-r-2 border-t-2 border-yellow-500" />
+            <div className="absolute -bottom-px -left-px h-4 w-4 border-b-2 border-l-2 border-yellow-500" />
+            <div className="absolute -bottom-px -right-px h-4 w-4 border-b-2 border-r-2 border-yellow-500" />
+
+            <div className="mb-4 text-xs tracking-[0.3em] text-yellow-500">
+              [FILTER_MISMATCH]
+            </div>
+            <p className="text-cyan-100/70 mb-2">
+              No feedback matches your current filter selection.
+            </p>
+            <p className="text-sm text-yellow-500/70 mb-4">
+              Active filters: {getActiveFilterCount()} applied
+            </p>
+            <button
+              onClick={handleClearAllFilters}
+              className="border border-yellow-500/50 bg-black px-6 py-2 text-xs font-bold tracking-wider text-yellow-500 transition-all hover:bg-yellow-500/10 hover:border-yellow-500"
+            >
+              CLEAR_ALL_FILTERS
+            </button>
+          </div>
+        )}
+
         {feedbacks.length > 0 && (
           <FeedbackList
-            feedbacks={feedbacks}
+            feedbacks={getFilteredFeedbacks()}
             onFeedbackClick={handleFeedbackClick}
             sortColumn={sortColumn}
             sortDirection={sortDirection}

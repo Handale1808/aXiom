@@ -6,6 +6,7 @@ interface FeedbackItem {
   analysis: {
     sentiment: string;
     priority: string;
+    tags?: string[];
   };
   createdAt?: string;
 }
@@ -161,8 +162,22 @@ export default function FeedbackList({
               }
             }}
           >
-            <div className="text-sm text-cyan-100/90 truncate">
-              {feedback.text}
+            <div className="flex flex-col gap-1">
+              <div className="text-sm text-cyan-100/90 truncate">
+                {feedback.text}
+              </div>
+              {feedback.analysis.tags && feedback.analysis.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {feedback.analysis.tags.map((tag, idx) => (
+                    <span
+                      key={idx}
+                      className="text-[10px] px-2 py-0.5 border border-[#30D6D6]/50 bg-black text-[#30D6D6] rounded-md"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="flex items-center gap-2 text-xs">
               <span
