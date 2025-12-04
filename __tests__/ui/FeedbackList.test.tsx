@@ -60,9 +60,7 @@ describe("FeedbackList", () => {
   it("renders correct number of feedback items", () => {
     const { container } = render(<FeedbackList feedbacks={mockFeedbacks} />);
 
-    const feedbackItems = container.querySelectorAll(
-      ".space-y-4 > div"
-    );
+    const feedbackItems = container.querySelectorAll(".space-y-4 > div");
     expect(feedbackItems).toHaveLength(3);
   });
 
@@ -88,10 +86,8 @@ describe("FeedbackList", () => {
   it("uses unique keys for each feedback item", () => {
     const { container } = render(<FeedbackList feedbacks={mockFeedbacks} />);
 
-    const feedbackItems = container.querySelectorAll(
-      ".space-y-4 > div"
-    );
-    
+    const feedbackItems = container.querySelectorAll(".space-y-4 > div");
+
     feedbackItems.forEach((item, index) => {
       expect(item).toBeInTheDocument();
     });

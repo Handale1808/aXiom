@@ -9,6 +9,7 @@ We implemented AI-powered feedback analysis using **Anthropic's Claude API** wit
 I selected the **Anthropic API** because Claude consistently provides concise, direct, and context-aware outputs. For this project, I prioritised a model that minimises unnecessary verbosity and delivers clear, no-nonsense responses, which aligns closely with my workflow and the requirements of the system.
 
 **Model**: `claude-sonnet-4-20250514`
+
 - Balances speed and intelligence
 - Excellent at following strict JSON formatting instructions
 - Strong at sentiment analysis and prioritisation tasks
@@ -16,6 +17,7 @@ I selected the **Anthropic API** because Claude consistently provides concise, d
 ## Implementation Details
 
 ### Core Features
+
 - Structured prompt engineering for consistent JSON output
 - Response validation with type checking
 - Mock mode fallback when no API key provided
@@ -23,6 +25,7 @@ I selected the **Anthropic API** because Claude consistently provides concise, d
 - Comprehensive error handling and logging
 
 ### Output Schema
+
 ```typescript
 {
   summary: string;        // 1-2 sentence summary
@@ -34,6 +37,7 @@ I selected the **Anthropic API** because Claude consistently provides concise, d
 ```
 
 ### Priority Levels
+
 - **P0**: Critical issues affecting core functionality or user safety
 - **P1**: Important issues affecting user experience significantly
 - **P2**: Moderate issues or feature requests
@@ -49,6 +53,7 @@ I chose **exponential backoff retries** rather than caching because:
 4. **Simplicity**: 3 retries with backoff (1s, 2s, 4s) handles transient failures without added infrastructure
 
 ### Retry Strategy
+
 ```typescript
 retryWithBackoff(fn, maxRetries: 3)
 - Attempt 1: immediate
@@ -68,11 +73,13 @@ Most API failures are transient (rate limits, network blips), so 3 retries provi
 5. **No Raw Logging**: User content and full prompts never logged, only metadata
 
 ## Current Architecture (Synchronous)
+
 ```
 User submits → POST /api/feedback → AI analysis → Store in DB → Return result
 ```
 
 **Flow:**
+
 1. Validate input
 2. Call Anthropic API (with retries)
 3. Validate and parse JSON response
@@ -86,6 +93,7 @@ User submits → POST /api/feedback → AI analysis → Store in DB → Return r
 ### Recommended Approach: Vercel Background Functions
 
 **New Flow:**
+
 ```
 User submits → Store immediately → Return success → Background job analyzes → Update DB
 ```
@@ -93,6 +101,7 @@ User submits → Store immediately → Return success → Background job analyze
 ### Implementation Plan
 
 1. **Immediate Response**
+
 ```typescript
 // POST /api/feedback
 const feedback = {
@@ -100,59 +109,64 @@ const feedback = {
   email,
   createdAt: new Date(),
   analysis: null,
-  analysisStatus: 'pending'  // new field
+  analysisStatus: "pending", // new field
 };
 await collection.insertOne(feedback);
 
 // Trigger background function
-await fetch('/api/analyze-background', {
-  method: 'POST',
-  body: JSON.stringify({ feedbackId: feedback._id })
+await fetch("/api/analyze-background", {
+  method: "POST",
+  body: JSON.stringify({ feedbackId: feedback._id }),
 });
 
-return NextResponse.json({ 
-  success: true, 
-  data: feedback 
-}, { status: 201 });
+return NextResponse.json(
+  {
+    success: true,
+    data: feedback,
+  },
+  { status: 201 }
+);
 ```
 
 2. **Background Worker**
+
 ```typescript
 // app/api/analyze-background/route.ts
 export const maxDuration = 60; // Vercel background function config
 
 async function POST(request: NextRequest) {
   const { feedbackId } = await request.json();
-  
+
   // Fetch feedback
   const feedback = await collection.findOne({ _id: feedbackId });
-  
+
   // Perform AI analysis (with retries)
   const analysis = await analyzeFeedback(feedback.text);
-  
+
   // Update DB
   await collection.updateOne(
     { _id: feedbackId },
-    { 
-      $set: { 
+    {
+      $set: {
         analysis,
-        analysisStatus: 'completed',
-        analyzedAt: new Date()
-      }
+        analysisStatus: "completed",
+        analyzedAt: new Date(),
+      },
     }
   );
 }
 ```
 
 3. **Frontend Polling**
+
 ```typescript
 // Poll for analysis completion
 const pollForAnalysis = async (feedbackId: string) => {
   const interval = setInterval(async () => {
     const response = await fetch(`/api/feedback/${feedbackId}`);
     const data = await response.json();
-    
-    if (data.data.analysisStatus === 'completed') {
+
+    if (data.data.analysisStatus === "completed") {
       clearInterval(interval);
       // Update UI with analysis
     }
@@ -163,22 +177,26 @@ const pollForAnalysis = async (feedbackId: string) => {
 ### Benefits of Async Approach
 
 **User Experience:**
+
 - Instant feedback submission (< 100ms response)
 - No waiting for AI processing
 - Can continue browsing while analysis runs
 - Progressive enhancement: show "Analyzing..." status
 
 **Reliability:**
+
 - API timeouts don't affect user submission
 - Background jobs can be retried independently
 - Failed analyses don't block user workflow
 
 **Scalability:**
+
 - Handles traffic spikes without blocking requests
 - Can rate-limit background jobs separately
 - Easier to add job queuing/prioritization later
 
 **Monitoring:**
+
 - Separate metrics for submission vs. analysis success
 - Easier to identify AI API issues
 - Can track analysis queue depth and processing time
@@ -186,9 +204,10 @@ const pollForAnalysis = async (feedbackId: string) => {
 ### Alternative: WebSockets for Real-Time Updates
 
 Instead of polling, use WebSocket connection:
+
 ```typescript
 // Server pushes update when analysis completes
-socket.emit('analysisComplete', { feedbackId, analysis });
+socket.emit("analysisComplete", { feedbackId, analysis });
 ```
 
 **Trade-off**: More complex but better UX (instant updates vs. 2s polling delay).
@@ -196,17 +215,22 @@ socket.emit('analysisComplete', { feedbackId, analysis });
 ## Logging and Observability
 
 We log AI request metadata without exposing sensitive data:
+
 ```typescript
-console.log(`AI analysis completed in ${duration}ms using claude-sonnet-4-20250514`);
+console.log(
+  `AI analysis completed in ${duration}ms using claude-sonnet-4-20250514`
+);
 ```
 
 **What we log:**
+
 - Request duration
 - Model used
 - Success/failure status
 - Retry attempts
 
 **What we DON'T log:**
+
 - User feedback text
 - Email addresses
 - Full prompts
@@ -215,12 +239,14 @@ console.log(`AI analysis completed in ${duration}ms using claude-sonnet-4-202505
 ## Trade-offs
 
 ### Pros:
+
 - High-quality, consistent analysis from Claude
 - Resilient to transient API failures
 - Simple architecture (no queue infrastructure needed currently)
 - Strong safety guardrails against PII leakage
 
 ### Cons:
+
 - Synchronous processing blocks user experience
 - Single point of failure (Anthropic API)
 - No fallback to alternative AI provider

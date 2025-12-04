@@ -13,7 +13,7 @@ async function getHandler(
 ) {
   const { requestId } = context;
   const url = new URL(request.url);
-  const id = url.pathname.split('/').pop();
+  const id = url.pathname.split("/").pop();
 
   debug("Processing single feedback request", {
     requestId,
@@ -21,7 +21,11 @@ async function getHandler(
   });
 
   if (!id || !/^[0-9a-fA-F]{24}$/.test(id)) {
-    throw new ValidationError("Invalid feedback ID format", undefined, requestId);
+    throw new ValidationError(
+      "Invalid feedback ID format",
+      undefined,
+      requestId
+    );
   }
 
   try {
@@ -77,7 +81,7 @@ async function deleteHandler(
 ) {
   const { requestId } = context;
   const url = new URL(request.url);
-  const id = url.pathname.split('/').pop();
+  const id = url.pathname.split("/").pop();
 
   debug("Processing delete feedback request", {
     requestId,
@@ -85,7 +89,11 @@ async function deleteHandler(
   });
 
   if (!id || !/^[0-9a-fA-F]{24}$/.test(id)) {
-    throw new ValidationError("Invalid feedback ID format", undefined, requestId);
+    throw new ValidationError(
+      "Invalid feedback ID format",
+      undefined,
+      requestId
+    );
   }
 
   try {
@@ -141,7 +149,7 @@ async function patchHandler(
 ) {
   const { requestId } = context;
   const url = new URL(request.url);
-  const id = url.pathname.split('/').pop();
+  const id = url.pathname.split("/").pop();
 
   debug("Processing update feedback request", {
     requestId,
@@ -149,7 +157,11 @@ async function patchHandler(
   });
 
   if (!id || !/^[0-9a-fA-F]{24}$/.test(id)) {
-    throw new ValidationError("Invalid feedback ID format", undefined, requestId);
+    throw new ValidationError(
+      "Invalid feedback ID format",
+      undefined,
+      requestId
+    );
   }
 
   try {

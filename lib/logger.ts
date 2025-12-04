@@ -7,7 +7,7 @@ interface LogData {
   error?: string;
 }
 
-export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+export type LogLevel = "debug" | "info" | "warn" | "error";
 
 export interface BaseLogData {
   timestamp: string;
@@ -43,21 +43,26 @@ export interface AILogData extends BaseLogData {
 }
 
 function formatLogData(data: BaseLogData): string {
-  const isProduction = process.env.NODE_ENV === 'production';
-  
+  const isProduction = process.env.NODE_ENV === "production";
+
   if (isProduction) {
     return JSON.stringify(data);
   }
-  
+
   const { timestamp, level, message, requestId, ...rest } = data;
   const levelStr = level.toUpperCase().padEnd(5);
-  const reqIdStr = requestId ? `[${requestId}]` : '';
-  const restStr = Object.keys(rest).length > 0 ? ` ${JSON.stringify(rest)}` : '';
-  
+  const reqIdStr = requestId ? `[${requestId}]` : "";
+  const restStr =
+    Object.keys(rest).length > 0 ? ` ${JSON.stringify(rest)}` : "";
+
   return `[${timestamp}] ${levelStr} ${reqIdStr} ${message}${restStr}`;
 }
 
-function log(level: LogLevel, message: string, data?: Partial<BaseLogData>): void {
+function log(
+  level: LogLevel,
+  message: string,
+  data?: Partial<BaseLogData>
+): void {
   const logData: BaseLogData = {
     timestamp: new Date().toISOString(),
     level,
@@ -68,42 +73,42 @@ function log(level: LogLevel, message: string, data?: Partial<BaseLogData>): voi
   const formatted = formatLogData(logData);
 
   switch (level) {
-    case 'error':
+    case "error":
       console.error(formatted);
       break;
-    case 'warn':
+    case "warn":
       console.warn(formatted);
       break;
-    case 'info':
+    case "info":
       console.info(formatted);
       break;
-    case 'debug':
+    case "debug":
       console.debug(formatted);
       break;
   }
 }
 
 export function debug(message: string, data?: Partial<BaseLogData>): void {
-  log('debug', message, data);
+  log("debug", message, data);
 }
 
 export function info(message: string, data?: Partial<BaseLogData>): void {
-  log('info', message, data);
+  log("info", message, data);
 }
 
 export function warn(message: string, data?: Partial<BaseLogData>): void {
-  log('warn', message, data);
+  log("warn", message, data);
 }
 
 export function error(message: string, data?: Partial<BaseLogData>): void {
-  log('error', message, data);
+  log("error", message, data);
 }
 
 export function logRequest(data: RequestLogData): void {
   const { method, path, status, latency, requestId, error: errorMsg } = data;
-  
+
   if (errorMsg) {
-    error('Request failed', {
+    error("Request failed", {
       method,
       path,
       status,
@@ -112,7 +117,7 @@ export function logRequest(data: RequestLogData): void {
       error: errorMsg,
     });
   } else {
-    info('Request completed', {
+    info("Request completed", {
       method,
       path,
       status,
@@ -127,20 +132,20 @@ export function generateRequestId(): string {
 }
 
 export function sanitizeEmail(email?: string): string {
-  return email ? '[email present]' : '[no email]';
+  return email ? "[email present]" : "[no email]";
 }
 
 export function sanitizeFilter(filter: any): any {
-  if (!filter || typeof filter !== 'object') {
+  if (!filter || typeof filter !== "object") {
     return filter;
   }
 
   const sanitized: any = {};
   for (const [key, value] of Object.entries(filter)) {
-    if (typeof value === 'string' && value.length > 100) {
-      sanitized[key] = value.substring(0, 100) + '...';
-    } else if (key.toLowerCase().includes('email')) {
-      sanitized[key] = '[redacted]';
+    if (typeof value === "string" && value.length > 100) {
+      sanitized[key] = value.substring(0, 100) + "...";
+    } else if (key.toLowerCase().includes("email")) {
+      sanitized[key] = "[redacted]";
     } else {
       sanitized[key] = value;
     }
@@ -152,5 +157,5 @@ export function truncateText(text: string, maxLength: number = 50): string {
   if (text.length <= maxLength) {
     return text;
   }
-  return text.substring(0, maxLength) + '...';
+  return text.substring(0, maxLength) + "...";
 }

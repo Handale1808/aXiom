@@ -290,7 +290,7 @@ OUTPUT REQUIREMENTS:
 
 Feedback text: "${text}"
 
-Return only the JSON object with no additional text, explanations, or markdown formatting:`
+Return only the JSON object with no additional text, explanations, or markdown formatting:`,
             },
           ],
         });

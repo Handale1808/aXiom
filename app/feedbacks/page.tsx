@@ -7,9 +7,10 @@ import FeedbackDetailModal from "@/lib/components/FeedbackDetailModal";
 import FeedbackFilters from "@/lib/components/FeedbackFilters";
 import ConfirmationDialog from "@/lib/components/ConfirmationDialog";
 import { apiFetch } from "@/lib/apiClient";
+import type { FeedbackWithId, ApiSuccessResponse } from "@/lib/types/api";
 
 export default function Feedbacks() {
-  const [feedbacks, setFeedbacks] = useState<any[]>([]);
+  const [feedbacks, setFeedbacks] = useState<FeedbackWithId[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedFeedbackId, setSelectedFeedbackId] = useState<string | null>(
@@ -23,13 +24,18 @@ export default function Feedbacks() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+
   const [selectedFeedbackIds, setSelectedFeedbackIds] = useState<string[]>([]);
   const [isDeletingIds, setIsDeletingIds] = useState<string[]>([]);
-  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+  interface DeleteConfirmation {
     isOpen: boolean;
     feedbackIds: string[];
     type: "single" | "bulk";
-  } | null>(null);
+  }
+
+  const [deleteConfirmation, setDeleteConfirmation] =
+    useState<DeleteConfirmation | null>(null);
+
   const [isUpdating, setIsUpdating] = useState(false);
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(50);
@@ -259,8 +265,8 @@ export default function Feedbacks() {
     setIsUpdating(true);
 
     try {
-      const data = await apiFetch<{ success: true; data: any }>(
-        `/api/feedback/${id}`,
+      const data = await apiFetch<ApiSuccessResponse<FeedbackWithId>>(
+  `/api/feedback/${id}`,
         {
           method: "PATCH",
           body: JSON.stringify({ nextAction: newNextAction }),
@@ -340,7 +346,14 @@ export default function Feedbacks() {
   useEffect(() => {
     fetchFeedbacks();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, pageSize, selectedSentiments, selectedPriorities, selectedTags, searchQuery]);
+  }, [
+    page,
+    pageSize,
+    selectedSentiments,
+    selectedPriorities,
+    selectedTags,
+    searchQuery,
+  ]);
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {
