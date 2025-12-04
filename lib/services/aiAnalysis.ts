@@ -256,6 +256,8 @@ TAGS GUIDELINES:
 - Be concrete: "child-safety", "lethal-behavior", "aggression", "attachment-conflict", "mutation", "bioluminescence", "health-decline"
 - Include relevant categories: body systems, behavior types, safety concerns, emotional factors
 - Prioritize tags that help routing and response planning
+- Include "unrelated" for feedback not about alien-cat products
+- Include "gibberish" for incomprehensible input
 
 URGENCY INDICATORS:
 Populate with specific phrases or situations indicating emergency:
@@ -274,7 +276,24 @@ KEY DECISION RULES:
 4. Customer dissatisfaction with non-dangerous issues = P1 or P2 based on severity
 5. Unexpected mutations liked by customer = P3 (document for research)
 
+UNRELATED OR INVALID INPUT HANDLING:
+If feedback is not about alien-cat hybrid products:
+- Set priority to P3
+- Add "unrelated" tag
+- Set nextAction to reach out for clarification about their alien-cat product
+- Leave urgencyIndicators empty
+- Set customerSatisfied and safetyThreat to false
+
+If feedback is gibberish or incomprehensible:
+- Set priority to P3
+- Add "gibberish" tag
+- Set nextAction to contact customer to request clear feedback about their alien-cat
+- Leave urgencyIndicators empty
+- Set customerSatisfied and safetyThreat to false
+
 NEXT ACTION INSTRUCTIONS:
+For unrelated or gibberish input: Specify reaching out to customer for clarification about their alien-cat product.
+For all other cases:
 Do not simply repeat standard actions. Reason about the specific situation:
 - What is the actual immediate need?
 - What will the customer realistically accept or cooperate with?
