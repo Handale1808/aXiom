@@ -55,7 +55,7 @@ export default function FeedbackFilters({
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 z-10 w-[800px] border-2 border-[#30D6D6]/30 bg-black/95 p-6 backdrop-blur-sm transform -translate-x-[-82.5%]">
+        <div className="absolute right-0 top-full mt-2 z-10 w-[800px] border-2 border-[#30D6D6]/30 bg-black/95 p-6 backdrop-blur-sm transform -translate-x-[13%]">
           <div className="absolute -left-px -top-px h-4 w-4 border-l-2 border-t-2 border-[#30D6D6]" />
           <div className="absolute -right-px -top-px h-4 w-4 border-r-2 border-t-2 border-[#30D6D6]" />
           <div className="absolute -bottom-px -left-px h-4 w-4 border-b-2 border-l-2 border-[#30D6D6]" />

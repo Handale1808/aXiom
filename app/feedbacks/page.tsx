@@ -53,7 +53,7 @@ export default function Feedbacks() {
     const tagsSet = new Set<string>();
     feedbacks.forEach((feedback) => {
       if (feedback.analysis.tags) {
-        feedback.analysis.tags.forEach((tag : string) => {
+        feedback.analysis.tags.forEach((tag: string) => {
           if (tag && tag.trim()) {
             tagsSet.add(tag);
           }
@@ -273,10 +273,16 @@ export default function Feedbacks() {
           </div>
         )}
 
-        <div className="flex gap-2">
-          <FeedbackFilters
-            isOpen={isFilterOpen}
-            onToggle={() => setIsFilterOpen(!isFilterOpen)}
+        {feedbacks.length > 0 && (
+          <FeedbackList
+            feedbacks={getFilteredFeedbacks()}
+            onFeedbackClick={handleFeedbackClick}
+            sortColumn={sortColumn}
+            sortDirection={sortDirection}
+            onSort={handleSort}
+            onClearSort={handleClearSort}
+            isFilterOpen={isFilterOpen}
+            onFilterToggle={() => setIsFilterOpen(!isFilterOpen)}
             selectedSentiments={selectedSentiments}
             selectedPriorities={selectedPriorities}
             selectedTags={selectedTags}
@@ -284,10 +290,10 @@ export default function Feedbacks() {
             onSentimentChange={handleSentimentChange}
             onPriorityChange={handlePriorityChange}
             onTagChange={handleTagChange}
-            onClearAll={handleClearAllFilters}
+            onClearAllFilters={handleClearAllFilters}
             activeFilterCount={getActiveFilterCount()}
           />
-        </div>
+        )}
 
         {feedbacks.length > 0 && getFilteredFeedbacks().length === 0 && (
           <div className="relative border-2 border-yellow-500/50 bg-yellow-950/20 p-12 text-center backdrop-blur-sm mb-8">
@@ -312,17 +318,6 @@ export default function Feedbacks() {
               CLEAR_ALL_FILTERS
             </button>
           </div>
-        )}
-
-        {feedbacks.length > 0 && (
-          <FeedbackList
-            feedbacks={getFilteredFeedbacks()}
-            onFeedbackClick={handleFeedbackClick}
-            sortColumn={sortColumn}
-            sortDirection={sortDirection}
-            onSort={handleSort}
-            onClearSort={handleClearSort}
-          />
         )}
 
         <div className="mt-8 border-t border-[#30D6D6]/20 pt-4 text-center text-xs text-[#30D6D6]/40 tracking-wider">
