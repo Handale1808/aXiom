@@ -14,7 +14,7 @@ export default function Header() {
       <div className="mx-auto flex max-w-7xl items-center justify-between">
         <div className="flex items-center gap-3">
           <Image
-            src="/logo.png"
+            src="/logo1.png"
             alt="aXiom Logo"
             width={40}
             height={40}
