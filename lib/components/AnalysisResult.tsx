@@ -121,15 +121,6 @@ export default function AnalysisResult({
             <span className="text-xs font-bold tracking-wider text-[#006694]">
               RECOMMENDED_ACTION:
             </span>
-            {!isEditingNextAction && onEditStart && (
-              <button
-                data-testid="edit-button"
-                onClick={onEditStart}
-                className="border border-yellow-500/50 bg-black px-3 py-1 text-xs font-bold tracking-wider text-yellow-500 transition-all hover:bg-yellow-500/10 hover:border-yellow-500"
-              >
-                EDIT
-              </button>
-            )}
           </div>
 
           {!isEditingNextAction ? (

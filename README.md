@@ -152,13 +152,6 @@ aXiom/
 4. Click any row to view full details
 5. Bulk delete with checkboxes
 
-### Editing Next Actions
-
-1. Open feedback detail modal
-2. Click **EDIT** next to "Next Action"
-3. Modify the AI recommendation
-4. Save changes (updates database)
-
 ## API Endpoints
 
 ### `POST /api/feedback`
