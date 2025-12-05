@@ -1,7 +1,3 @@
-/**
- * @jest-environment jsdom
- */
-
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import AnalysisResult from "@/lib/components/AnalysisResult";
 
