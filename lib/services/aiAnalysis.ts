@@ -2,6 +2,13 @@ import Anthropic from "@anthropic-ai/sdk";
 import type { IAnalysis } from "@/models/Feedback";
 import { debug, info, warn, error as logError } from "@/lib/logger";
 
+class ValidationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ValidationError";
+  }
+}
+
 const anthropic = process.env.ANTHROPIC_API_KEY
   ? new Anthropic({
       apiKey: process.env.ANTHROPIC_API_KEY,
@@ -22,6 +29,11 @@ async function retryWithBackoff<T>(
       return await fn();
     } catch (error) {
       lastError = error as Error;
+
+      // Don't retry validation errors
+      if (error instanceof ValidationError) {
+        throw error;
+      }
 
       if (attempt < maxRetries - 1) {
         const delay = Math.pow(2, attempt) * 1000;
@@ -72,16 +84,16 @@ function getMockAnalysis(text: string): IAnalysis {
 }
 
 function validateAnalysis(data: any): IAnalysis {
-  if (!data || typeof data !== "object") {
-    throw new Error("Invalid analysis: not an object");
+  if (!data || typeof data !== "object" || Array.isArray(data)) {
+    throw new ValidationError("Invalid analysis: not an object");
   }
 
   if (typeof data.summary !== "string") {
-    throw new Error("Invalid analysis: summary must be a string");
+    throw new ValidationError("Invalid analysis: summary must be a string");
   }
 
   if (!["positive", "neutral", "negative"].includes(data.sentiment)) {
-    throw new Error(
+    throw new ValidationError(
       "Invalid analysis: sentiment must be positive, neutral, or negative"
     );
   }
@@ -91,15 +103,19 @@ function validateAnalysis(data: any): IAnalysis {
     data.tags.length < 1 ||
     data.tags.length > 5
   ) {
-    throw new Error("Invalid analysis: tags must be an array of 1-5 items");
+    throw new ValidationError(
+      "Invalid analysis: tags must be an array of 1-5 items"
+    );
   }
 
   if (!["P0", "P1", "P2", "P3"].includes(data.priority)) {
-    throw new Error("Invalid analysis: priority must be P0, P1, P2, or P3");
+    throw new ValidationError(
+      "Invalid analysis: priority must be P0, P1, P2, or P3"
+    );
   }
 
   if (typeof data.nextAction !== "string") {
-    throw new Error("Invalid analysis: nextAction must be a string");
+    throw new ValidationError("Invalid analysis: nextAction must be a string");
   }
 
   return data as IAnalysis;
@@ -327,7 +343,7 @@ Return only the JSON object with no additional text, explanations, or markdown f
 
         const content = message.content[0];
         if (content.type !== "text") {
-          throw new Error("Unexpected response type from API");
+          throw new ValidationError("Unexpected response type from API");
         }
 
         let responseText = content.text.trim();
@@ -350,7 +366,11 @@ Return only the JSON object with no additional text, explanations, or markdown f
             error: (parseError as Error).message,
             responseText: responseText.substring(0, 200),
           });
-          throw parseError;
+          // Check if it's already a ValidationError, if so rethrow as-is
+          if (parseError instanceof ValidationError) {
+            throw parseError;
+          }
+          throw new ValidationError("Invalid JSON response from API");
         }
 
         try {
@@ -366,12 +386,14 @@ Return only the JSON object with no additional text, explanations, or markdown f
           logError("Analysis validation failed", {
             requestId,
             error: (validationError as Error).message,
-            receivedData: {
-              hasSummary: !!parsed.summary,
-              sentiment: parsed.sentiment,
-              priority: parsed.priority,
-              tagCount: Array.isArray(parsed.tags) ? parsed.tags.length : 0,
-            },
+            receivedData: parsed
+              ? {
+                  hasSummary: !!parsed.summary,
+                  sentiment: parsed.sentiment,
+                  priority: parsed.priority,
+                  tagCount: Array.isArray(parsed.tags) ? parsed.tags.length : 0,
+                }
+              : null,
           });
           throw validationError;
         }
