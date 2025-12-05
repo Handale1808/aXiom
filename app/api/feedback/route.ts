@@ -163,9 +163,27 @@ async function getHandler(
         { "analysis.tags": { $regex: search, $options: "i" } },
       ];
     }
-    if (sentiment) filter["analysis.sentiment"] = sentiment;
-    if (priority) filter["analysis.priority"] = priority;
-    if (tag) filter["analysis.tags"] = tag;
+    if (sentiment) {
+      const sentiments = searchParams.getAll("sentiment");
+      if (sentiments.length === 1) {
+        filter["analysis.sentiment"] = {
+          $regex: new RegExp(`^${sentiments[0]}$`, "i"),
+        };
+      } else {
+        filter["analysis.sentiment"] = {
+          $in: sentiments.map((s) => new RegExp(`^${s}$`, "i")),
+        };
+      }
+    }
+    if (priority) {
+      const priorities = searchParams.getAll("priority");
+      filter["analysis.priority"] =
+        priorities.length === 1 ? priorities[0] : { $in: priorities };
+    }
+    if (tag) {
+      const tags = searchParams.getAll("tag");
+      filter["analysis.tags"] = tags.length === 1 ? tags[0] : { $in: tags };
+    }
 
     debug("Querying feedbacks", {
       requestId,
