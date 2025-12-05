@@ -71,14 +71,20 @@ export default function ConfirmationDialog({
 
         <div className="flex gap-3 justify-end">
           <button
-            onClick={handleClose}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleClose();
+            }}
             disabled={isLoading}
             className="border border-[#006694] bg-black px-6 py-2 text-sm font-bold tracking-wider text-[#006694] transition-all hover:bg-[#006694] hover:text-black disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {cancelText}
           </button>
           <button
-            onClick={onConfirm}
+            onClick={(e) => {
+              e.stopPropagation();
+              onConfirm();
+            }}
             disabled={isLoading}
             className={`border ${buttonColor} bg-black px-6 py-2 text-sm font-bold tracking-wider transition-all hover:text-black disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2`}
           >

@@ -121,14 +121,6 @@ export default function AnalysisResult({
             <span className="text-xs font-bold tracking-wider text-[#006694]">
               RECOMMENDED_ACTION:
             </span>
-            {!isEditingNextAction && onEditStart && (
-              <button
-                onClick={onEditStart}
-                className="border border-yellow-500/50 bg-black px-3 py-1 text-xs font-bold tracking-wider text-yellow-500 transition-all hover:bg-yellow-500/10 hover:border-yellow-500"
-              >
-                EDIT
-              </button>
-            )}
           </div>
 
           {!isEditingNextAction ? (
@@ -139,6 +131,7 @@ export default function AnalysisResult({
             <div className="mt-2 space-y-3">
               <div>
                 <textarea
+                  data-testid="next-action-input"
                   value={editedNextAction}
                   onChange={(e) => onNextActionChange?.(e.target.value)}
                   disabled={isUpdating}
@@ -159,6 +152,7 @@ export default function AnalysisResult({
 
               <div className="flex gap-2 justify-end">
                 <button
+                  data-testid="cancel-edit-button"
                   onClick={onEditCancel}
                   disabled={isUpdating}
                   className="border border-[#006694] bg-black px-4 py-2 text-xs font-bold tracking-wider text-[#006694] transition-all hover:bg-[#006694]/10 disabled:opacity-50 disabled:cursor-not-allowed"

@@ -1,11 +1,22 @@
 import { NextRequest } from "next/server";
-import { POST, GET } from "@/app/api/feedback/route";
+import { POST, GET, DELETE } from "@/app/api/feedback/route";
 import * as aiAnalysis from "@/lib/services/aiAnalysis";
 
-// Mock the AI analysis service
 jest.mock("@/lib/services/aiAnalysis");
 
-// Mock MongoDB - must be before importing
+jest.mock("@/lib/logger", () => ({
+  debug: jest.fn(),
+  info: jest.fn(),
+  warn: jest.fn(),
+  error: jest.fn(),
+  sanitizeEmail: jest.fn((email) => email),
+  generateRequestId: jest.fn(() => "test-request-id"),
+}));
+
+jest.mock("@/lib/databaseLogger", () => ({
+  withDatabaseLogging: jest.fn((fn) => fn()),
+}));
+
 jest.mock("@/lib/mongodb", () => {
   const mockCollection = {
     insertOne: jest.fn(),
@@ -13,6 +24,7 @@ jest.mock("@/lib/mongodb", () => {
     findOne: jest.fn(),
     updateOne: jest.fn(),
     deleteOne: jest.fn(),
+    deleteMany: jest.fn(),
     countDocuments: jest.fn(),
     sort: jest.fn().mockReturnThis(),
     limit: jest.fn().mockReturnThis(),
@@ -35,7 +47,6 @@ jest.mock("@/lib/mongodb", () => {
   };
 });
 
-// Import after mocking
 const { mockCollection } = require("@/lib/mongodb");
 const mockAnalyzeFeedback = jest.mocked(aiAnalysis.analyzeFeedback);
 
@@ -46,7 +57,6 @@ describe("Feedback API Routes", () => {
 
   describe("POST /api/feedback", () => {
     it("should create feedback successfully with valid data", async () => {
-      // Arrange: Mock AI analysis response
       const mockAnalysis = {
         summary: "User loves the product",
         sentiment: "positive" as const,
@@ -57,12 +67,10 @@ describe("Feedback API Routes", () => {
 
       mockAnalyzeFeedback.mockResolvedValueOnce(mockAnalysis);
 
-      // Mock MongoDB insertOne to return a fake ID
       mockCollection.insertOne.mockResolvedValueOnce({
         insertedId: "507f1f77bcf86cd799439011",
       });
 
-      // Create a mock request
       const request = new NextRequest("http://localhost:3000/api/feedback", {
         method: "POST",
         body: JSON.stringify({
@@ -71,11 +79,9 @@ describe("Feedback API Routes", () => {
         }),
       });
 
-      // Act: Call the POST handler
       const response = await POST(request);
       const data = await response.json();
 
-      // Assert: Check response
       expect(response.status).toBe(201);
       expect(data.success).toBe(true);
       expect(data.data.text).toBe("I love this product!");
@@ -83,11 +89,12 @@ describe("Feedback API Routes", () => {
       expect(data.data.analysis).toEqual(mockAnalysis);
       expect(data.data._id).toBe("507f1f77bcf86cd799439011");
 
-      // Verify AI analysis was called
-      expect(mockAnalyzeFeedback).toHaveBeenCalledWith("I love this product!");
+      expect(mockAnalyzeFeedback).toHaveBeenCalledWith(
+        "I love this product!",
+        expect.any(String)
+      );
       expect(mockAnalyzeFeedback).toHaveBeenCalledTimes(1);
 
-      // Verify MongoDB insertOne was called
       expect(mockCollection.insertOne).toHaveBeenCalledTimes(1);
       expect(mockCollection.insertOne).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -99,7 +106,6 @@ describe("Feedback API Routes", () => {
     });
 
     it("should return 400 error when text is missing", async () => {
-      // Arrange: Create request without text
       const request = new NextRequest("http://localhost:3000/api/feedback", {
         method: "POST",
         body: JSON.stringify({
@@ -107,26 +113,20 @@ describe("Feedback API Routes", () => {
         }),
       });
 
-      // Act: Call the POST handler
       const response = await POST(request);
       const data = await response.json();
 
-      // Assert: Check error response structure
       expect(response.status).toBe(400);
       expect(data.error).toBeDefined();
       expect(data.error.code).toBe("VALIDATION_ERROR");
       expect(data.error.message).toBe("Text is required");
       expect(data.error.fields.text).toBe("Text is required");
 
-      // Verify AI analysis was NOT called (validation failed before it)
       expect(mockAnalyzeFeedback).not.toHaveBeenCalled();
-
-      // Verify MongoDB was NOT called
       expect(mockCollection.insertOne).not.toHaveBeenCalled();
     });
 
     it("should handle database errors gracefully", async () => {
-      // Arrange: Mock AI analysis to succeed
       mockAnalyzeFeedback.mockResolvedValueOnce({
         summary: "Test",
         sentiment: "neutral" as const,
@@ -135,12 +135,10 @@ describe("Feedback API Routes", () => {
         nextAction: "Review",
       });
 
-      // Mock MongoDB to throw an error
       mockCollection.insertOne.mockRejectedValueOnce(
         new Error("Database connection failed")
       );
 
-      // Create request
       const request = new NextRequest("http://localhost:3000/api/feedback", {
         method: "POST",
         body: JSON.stringify({
@@ -148,24 +146,20 @@ describe("Feedback API Routes", () => {
         }),
       });
 
-      // Act: Call the POST handler
       const response = await POST(request);
       const data = await response.json();
 
-      // Assert: Check error response structure
       expect(response.status).toBe(500);
       expect(data.error).toBeDefined();
       expect(data.error.code).toBe("DATABASE_ERROR");
       expect(data.error.message).toBe("Failed to create feedback");
 
-      // Verify AI analysis WAS called (error happened after analysis)
       expect(mockAnalyzeFeedback).toHaveBeenCalledTimes(1);
     });
   });
 
   describe("GET /api/feedback", () => {
     it("should fetch all feedback successfully", async () => {
-      // Arrange: Mock feedback data
       const mockFeedbacks = [
         {
           _id: "1",
@@ -198,14 +192,11 @@ describe("Feedback API Routes", () => {
       mockCollection.toArray.mockResolvedValueOnce(mockFeedbacks);
       mockCollection.countDocuments.mockResolvedValueOnce(2);
 
-      // Create a mock GET request
       const request = new NextRequest("http://localhost:3000/api/feedback");
 
-      // Act: Call the GET handler
       const response = await GET(request);
       const data = await response.json();
 
-      // Assert: Check response
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
       expect(data.data).toHaveLength(2);
@@ -216,7 +207,6 @@ describe("Feedback API Routes", () => {
     });
 
     it("should filter feedback by sentiment", async () => {
-      // Arrange: Mock filtered data
       const mockFeedbacks = [
         {
           _id: "1",
@@ -234,20 +224,16 @@ describe("Feedback API Routes", () => {
       mockCollection.toArray.mockResolvedValueOnce(mockFeedbacks);
       mockCollection.countDocuments.mockResolvedValueOnce(1);
 
-      // Create request with sentiment filter
       const request = new NextRequest(
         "http://localhost:3000/api/feedback?sentiment=positive"
       );
 
-      // Act
       const response = await GET(request);
       const data = await response.json();
 
-      // Assert
       expect(response.status).toBe(200);
       expect(data.data).toHaveLength(1);
 
-      // Verify the filter was applied to MongoDB query
       expect(mockCollection.find).toHaveBeenCalledWith(
         expect.objectContaining({
           "analysis.sentiment": "positive",
@@ -255,49 +241,316 @@ describe("Feedback API Routes", () => {
       );
     });
 
-    it("should apply pagination parameters", async () => {
-      // Arrange
+    it("should filter feedback by priority", async () => {
+      const mockFeedbacks = [
+        {
+          _id: "1",
+          text: "Urgent issue",
+          analysis: {
+            sentiment: "negative",
+            summary: "Bug report",
+            tags: ["bug"],
+            priority: "P0",
+            nextAction: "Fix immediately",
+          },
+        },
+      ];
+
+      mockCollection.toArray.mockResolvedValueOnce(mockFeedbacks);
+      mockCollection.countDocuments.mockResolvedValueOnce(1);
+
+      const request = new NextRequest(
+        "http://localhost:3000/api/feedback?priority=P0"
+      );
+
+      const response = await GET(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.data).toHaveLength(1);
+      expect(mockCollection.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          "analysis.priority": "P0",
+        })
+      );
+    });
+
+    it("should filter feedback by tag", async () => {
+      mockCollection.toArray.mockResolvedValueOnce([]);
+      mockCollection.countDocuments.mockResolvedValueOnce(0);
+
+      const request = new NextRequest(
+        "http://localhost:3000/api/feedback?tag=bug"
+      );
+
+      const response = await GET(request);
+
+      expect(response.status).toBe(200);
+      expect(mockCollection.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          "analysis.tags": "bug",
+        })
+      );
+    });
+
+    it("should support text search", async () => {
+      mockCollection.toArray.mockResolvedValueOnce([]);
+      mockCollection.countDocuments.mockResolvedValueOnce(0);
+
+      const request = new NextRequest(
+        "http://localhost:3000/api/feedback?search=product"
+      );
+
+      const response = await GET(request);
+
+      expect(response.status).toBe(200);
+      expect(mockCollection.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          $text: { $search: "product" },
+        })
+      );
+    });
+
+    it("should support page-based pagination", async () => {
       mockCollection.toArray.mockResolvedValueOnce([]);
       mockCollection.countDocuments.mockResolvedValueOnce(100);
 
-      // Create request with pagination
+      const request = new NextRequest(
+        "http://localhost:3000/api/feedback?page=3&pageSize=10"
+      );
+
+      const response = await GET(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.pagination.page).toBe(3);
+      expect(data.pagination.pageSize).toBe(10);
+      expect(mockCollection.skip).toHaveBeenCalledWith(20);
+      expect(mockCollection.limit).toHaveBeenCalledWith(10);
+    });
+
+    it("should apply pagination parameters", async () => {
+      mockCollection.toArray.mockResolvedValueOnce([]);
+      mockCollection.countDocuments.mockResolvedValueOnce(100);
+
       const request = new NextRequest(
         "http://localhost:3000/api/feedback?limit=10&skip=20"
       );
 
-      // Act
       const response = await GET(request);
       const data = await response.json();
 
-      // Assert
       expect(response.status).toBe(200);
       expect(data.pagination.limit).toBe(10);
       expect(data.pagination.skip).toBe(20);
       expect(data.pagination.total).toBe(100);
       expect(data.pagination.hasMore).toBe(true);
 
-      // Verify limit and skip were called
       expect(mockCollection.limit).toHaveBeenCalledWith(10);
       expect(mockCollection.skip).toHaveBeenCalledWith(20);
     });
 
+    it("should combine multiple filters", async () => {
+      mockCollection.toArray.mockResolvedValueOnce([]);
+      mockCollection.countDocuments.mockResolvedValueOnce(0);
+
+      const request = new NextRequest(
+        "http://localhost:3000/api/feedback?sentiment=negative&priority=P0&tag=bug"
+      );
+
+      const response = await GET(request);
+
+      expect(response.status).toBe(200);
+      expect(mockCollection.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          "analysis.sentiment": "negative",
+          "analysis.priority": "P0",
+          "analysis.tags": "bug",
+        })
+      );
+    });
+
     it("should handle database errors in GET", async () => {
-      // Arrange: Mock database error
       mockCollection.toArray.mockRejectedValueOnce(
         new Error("Database query failed")
       );
 
-      // Create request
       const request = new NextRequest("http://localhost:3000/api/feedback");
 
-      // Act
       const response = await GET(request);
       const data = await response.json();
 
-      // Assert: Check error response
       expect(response.status).toBe(500);
       expect(data.error).toBeDefined();
       expect(data.error.code).toBe("DATABASE_ERROR");
+    });
+  });
+
+  describe("DELETE /api/feedback", () => {
+    it("should delete multiple feedbacks successfully", async () => {
+      mockCollection.deleteMany.mockResolvedValueOnce({
+        deletedCount: 2,
+      });
+
+      const request = new NextRequest("http://localhost:3000/api/feedback", {
+        method: "DELETE",
+        body: JSON.stringify({
+          ids: ["507f1f77bcf86cd799439011", "507f1f77bcf86cd799439012"],
+        }),
+      });
+
+      const response = await DELETE(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.success).toBe(true);
+      expect(data.deletedCount).toBe(2);
+      expect(data.deletedIds).toHaveLength(2);
+    });
+
+    it("should delete a single feedback successfully", async () => {
+      mockCollection.deleteMany.mockResolvedValueOnce({
+        deletedCount: 1,
+      });
+
+      const request = new NextRequest("http://localhost:3000/api/feedback", {
+        method: "DELETE",
+        body: JSON.stringify({
+          ids: ["507f1f77bcf86cd799439011"],
+        }),
+      });
+
+      const response = await DELETE(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.success).toBe(true);
+      expect(data.deletedCount).toBe(1);
+      expect(data.deletedIds).toEqual(["507f1f77bcf86cd799439011"]);
+    });
+
+    it("should return 400 when ids is not an array", async () => {
+      const request = new NextRequest("http://localhost:3000/api/feedback", {
+        method: "DELETE",
+        body: JSON.stringify({
+          ids: "not-an-array",
+        }),
+      });
+
+      const response = await DELETE(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(400);
+      expect(data.error.code).toBe("VALIDATION_ERROR");
+      expect(data.error.message).toBe("ids must be an array");
+      expect(mockCollection.deleteMany).not.toHaveBeenCalled();
+    });
+
+    it("should return 400 when ids array is empty", async () => {
+      const request = new NextRequest("http://localhost:3000/api/feedback", {
+        method: "DELETE",
+        body: JSON.stringify({
+          ids: [],
+        }),
+      });
+
+      const response = await DELETE(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(400);
+      expect(data.error.code).toBe("VALIDATION_ERROR");
+      expect(data.error.message).toBe("ids array cannot be empty");
+      expect(mockCollection.deleteMany).not.toHaveBeenCalled();
+    });
+
+    it("should return 400 for invalid ObjectId format", async () => {
+      const request = new NextRequest("http://localhost:3000/api/feedback", {
+        method: "DELETE",
+        body: JSON.stringify({
+          ids: ["invalid-id"],
+        }),
+      });
+
+      const response = await DELETE(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(400);
+      expect(data.error.code).toBe("VALIDATION_ERROR");
+      expect(data.error.message).toBe(
+        "All ids must be valid MongoDB ObjectId strings"
+      );
+      expect(mockCollection.deleteMany).not.toHaveBeenCalled();
+    });
+
+    it("should return 400 when one id in array is invalid", async () => {
+      const request = new NextRequest("http://localhost:3000/api/feedback", {
+        method: "DELETE",
+        body: JSON.stringify({
+          ids: ["507f1f77bcf86cd799439011", "bad-id"],
+        }),
+      });
+
+      const response = await DELETE(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(400);
+      expect(data.error.code).toBe("VALIDATION_ERROR");
+      expect(mockCollection.deleteMany).not.toHaveBeenCalled();
+    });
+
+    it("should return 400 when ids is missing", async () => {
+      const request = new NextRequest("http://localhost:3000/api/feedback", {
+        method: "DELETE",
+        body: JSON.stringify({}),
+      });
+
+      const response = await DELETE(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(400);
+      expect(data.error.code).toBe("VALIDATION_ERROR");
+      expect(mockCollection.deleteMany).not.toHaveBeenCalled();
+    });
+
+    it("should handle database errors in DELETE", async () => {
+      mockCollection.deleteMany.mockRejectedValueOnce(
+        new Error("Database error")
+      );
+
+      const request = new NextRequest("http://localhost:3000/api/feedback", {
+        method: "DELETE",
+        body: JSON.stringify({
+          ids: ["507f1f77bcf86cd799439011"],
+        }),
+      });
+
+      const response = await DELETE(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(500);
+      expect(data.error.code).toBe("DATABASE_ERROR");
+      expect(data.error.message).toBe("Failed to delete feedbacks");
+    });
+
+    it("should return correct count when some ids not found", async () => {
+      mockCollection.deleteMany.mockResolvedValueOnce({
+        deletedCount: 1,
+      });
+
+      const request = new NextRequest("http://localhost:3000/api/feedback", {
+        method: "DELETE",
+        body: JSON.stringify({
+          ids: ["507f1f77bcf86cd799439011", "507f1f77bcf86cd799439012"],
+        }),
+      });
+
+      const response = await DELETE(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.success).toBe(true);
+      expect(data.deletedCount).toBe(1);
+      expect(data.deletedIds).toHaveLength(2);
     });
   });
 });
