@@ -158,7 +158,10 @@ async function getHandler(
 
     const filter: any = {};
     if (search) {
-      filter.$text = { $search: search };
+      filter.$or = [
+        { text: { $regex: search, $options: "i" } },
+        { "analysis.tags": { $regex: search, $options: "i" } },
+      ];
     }
     if (sentiment) filter["analysis.sentiment"] = sentiment;
     if (priority) filter["analysis.priority"] = priority;
@@ -177,11 +180,7 @@ async function getHandler(
       () =>
         collection
           .find(filter)
-          .sort(
-            search
-              ? { score: { $meta: "textScore" }, createdAt: -1 }
-              : { createdAt: -1 }
-          )
+          .sort({ createdAt: -1 })
           .limit(limit)
           .skip(skip)
           .toArray(),

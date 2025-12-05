@@ -399,7 +399,7 @@ FeedbackList renders with filters/sorting
 
 ### Indexing Strategy
 
-- **Text search:** `{text: "text", "analysis.summary": "text"}` with 2:1 weighting (feedback more important than summary)
+- **Text search:** `{text: "text", "tags": "text"}` with 2:1 weighting (feedback more important than tags)
 - **Filter indexes:** sentiment, priority, tags, createdAt (descending for newest-first)
 - 5 indexes = write overhead, but acceptable for small dataset (<100k documents)
 - Single collection sufficient for project scope
