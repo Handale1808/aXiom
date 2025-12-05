@@ -332,3 +332,18 @@ Key Lessons Learnt
 * Abstract rules aren't enough; show concrete cases
 * Never trust AI output without verification
 * Unusual scenarios (loving a dangerous cat) need explicit handling
+
+Testing Strategy:
+
+Framework: Jest with TypeScript
+* Unit tests for AI analysis logic
+* Integration tests for API interactions
+* End-to-end tests for critical workflows
+* Mocking external dependencies
+* Snapshot testing for UI components
+
+Future Enhancements
+* Full frontend component suite
+* AI prompt effectiveness testing
+* Integration tests with real database
+* E2E tests with Playwright
