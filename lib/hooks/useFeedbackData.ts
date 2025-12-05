@@ -43,21 +43,25 @@ export function useFeedbackData({
       const params = new URLSearchParams();
       params.set("page", String(page));
       params.set("pageSize", String(pageSize));
-      
+
       if (searchQuery) {
         params.set("search", searchQuery);
       }
-      
-      if (selectedSentiments.length === 1) {
-        params.set("sentiment", selectedSentiments[0]);
+
+      if (selectedSentiments.length > 0) {
+        selectedSentiments.forEach((sentiment) =>
+          params.append("sentiment", sentiment)
+        );
       }
-      
-      if (selectedPriorities.length === 1) {
-        params.set("priority", selectedPriorities[0]);
+
+      if (selectedPriorities.length > 0) {
+        selectedPriorities.forEach((priority) =>
+          params.append("priority", priority)
+        );
       }
-      
-      if (selectedTags.length === 1) {
-        params.set("tag", selectedTags[0]);
+
+      if (selectedTags.length > 0) {
+        selectedTags.forEach((tag) => params.append("tag", tag));
       }
 
       const data = await apiFetch<{
@@ -79,7 +83,14 @@ export function useFeedbackData({
     } finally {
       setIsLoading(false);
     }
-  }, [page, pageSize, searchQuery, selectedSentiments, selectedPriorities, selectedTags]);
+  }, [
+    page,
+    pageSize,
+    searchQuery,
+    selectedSentiments,
+    selectedPriorities,
+    selectedTags,
+  ]);
 
   useEffect(() => {
     fetchFeedbacks();
