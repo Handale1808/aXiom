@@ -185,58 +185,37 @@ export default function Feedbacks() {
           </div>
         )}
 
-        {!isLoading && feedbacks.length === 0 && (
-          <div className="relative border-2 border-[#006694]/50 bg-[#006694]/10 p-12 text-center backdrop-blur-sm">
-            <div className="absolute -left-px -top-px h-4 w-4 border-l-2 border-t-2 border-[#006694]" />
-            <div className="absolute -right-px -top-px h-4 w-4 border-r-2 border-t-2 border-[#006694]" />
-            <div className="absolute -bottom-px -left-px h-4 w-4 border-b-2 border-l-2 border-[#006694]" />
-            <div className="absolute -bottom-px -right-px h-4 w-4 border-b-2 border-r-2 border-[#006694]" />
-
-            <div className="mb-4 text-xs tracking-[0.3em] text-[#006694]">
-              [NO_DATA_FOUND]
-            </div>
-            <p className="text-cyan-100/70">
-              No feedback entries detected in the archive.
-            </p>
-            <p className="mt-2 text-sm text-[#006694]">
-              Initialize first entry via SUBMIT terminal.
-            </p>
-          </div>
-        )}
-
-        {feedbacks.length > 0 && (
-          <ErrorBoundary>
-            <FeedbackList
-              feedbacks={feedbacks}
-              onFeedbackClick={handleFeedbackClick}
-              sortColumn={sortColumn}
-              sortDirection={sortDirection}
-              onSort={handleSort}
-              onClearSort={handleClearSort}
-              isFilterOpen={isFilterOpen}
-              onFilterToggle={() => setIsFilterOpen(!isFilterOpen)}
-              selectedSentiments={selectedSentiments}
-              selectedPriorities={selectedPriorities}
-              selectedTags={selectedTags}
-              availableTags={getAvailableTags(feedbacks)}
-              onSentimentChange={handleSentimentChange}
-              onPriorityChange={handlePriorityChange}
-              onTagChange={handleTagChange}
-              onClearAllFilters={handleClearAllFilters}
-              activeFilterCount={getActiveFilterCount()}
-              isSearchOpen={isSearchOpen}
-              onSearchToggle={() => setIsSearchOpen(!isSearchOpen)}
-              searchQuery={searchQuery}
-              onSearchChange={handleSearchChange}
-              onClearSearch={handleClearSearch}
-              selectedIds={selectedFeedbackIds}
-              onSelectionChange={handleSelectionChange}
-              onDeleteSingle={handleDeleteSingle}
-              onDeleteMultiple={handleDeleteMultiple}
-              isDeletingIds={isDeletingIds}
-            />
-          </ErrorBoundary>
-        )}
+        <ErrorBoundary>
+          <FeedbackList
+            feedbacks={feedbacks}
+            onFeedbackClick={handleFeedbackClick}
+            sortColumn={sortColumn}
+            sortDirection={sortDirection}
+            onSort={handleSort}
+            onClearSort={handleClearSort}
+            isFilterOpen={isFilterOpen}
+            onFilterToggle={() => setIsFilterOpen(!isFilterOpen)}
+            selectedSentiments={selectedSentiments}
+            selectedPriorities={selectedPriorities}
+            selectedTags={selectedTags}
+            availableTags={getAvailableTags(feedbacks)}
+            onSentimentChange={handleSentimentChange}
+            onPriorityChange={handlePriorityChange}
+            onTagChange={handleTagChange}
+            onClearAllFilters={handleClearAllFilters}
+            activeFilterCount={getActiveFilterCount()}
+            isSearchOpen={isSearchOpen}
+            onSearchToggle={() => setIsSearchOpen(!isSearchOpen)}
+            searchQuery={searchQuery}
+            onSearchChange={handleSearchChange}
+            onClearSearch={handleClearSearch}
+            selectedIds={selectedFeedbackIds}
+            onSelectionChange={handleSelectionChange}
+            onDeleteSingle={handleDeleteSingle}
+            onDeleteMultiple={handleDeleteMultiple}
+            isDeletingIds={isDeletingIds}
+          />
+        </ErrorBoundary>
 
         {feedbacks.length > 0 && (
           <div className="mt-6 flex items-center justify-between border-t border-[#30D6D6]/20 pt-4">

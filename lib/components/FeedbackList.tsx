@@ -96,7 +96,8 @@ export default function FeedbackList({
     return sorted;
   }, [feedbacks, sortColumn, sortDirection]);
 
-  const isAllSelected = selectedIds.length > 0 && selectedIds.length === feedbacks.length;
+  const isAllSelected =
+    selectedIds.length > 0 && selectedIds.length === feedbacks.length;
 
   const handleSelectAll = () => {
     if (isAllSelected) {
@@ -108,7 +109,9 @@ export default function FeedbackList({
 
   const handleSelect = (id: string) => {
     if (selectedIds.includes(id)) {
-      onSelectionChange?.(selectedIds.filter((selectedId) => selectedId !== id));
+      onSelectionChange?.(
+        selectedIds.filter((selectedId) => selectedId !== id)
+      );
     } else {
       onSelectionChange?.([...selectedIds, id]);
     }
@@ -121,10 +124,6 @@ export default function FeedbackList({
   const handleDeleteSelected = () => {
     onDeleteMultiple?.(selectedIds);
   };
-
-  if (hasNoResults) {
-    return null;
-  }
 
   return (
     <div className="mb-8">
@@ -151,29 +150,29 @@ export default function FeedbackList({
         onClearSelection={handleClearSelection}
         onDeleteSelected={handleDeleteSelected}
       />
-
-      <div className="border border-[#30D6D6]/20">
-        <FeedbackListHeader
-          sortColumn={sortColumn}
-          sortDirection={sortDirection}
-          onSort={onSort || (() => {})}
-          isAllSelected={isAllSelected}
-          onSelectAll={handleSelectAll}
-        />
-
-        {getSortedFeedbacks.map((feedback, index) => (
-          <FeedbackListItem
-            key={feedback._id}
-            feedback={feedback}
-            isSelected={selectedIds.includes(feedback._id)}
-            isDeleting={isDeletingIds.includes(feedback._id)}
-            onSelect={handleSelect}
-            onClick={onFeedbackClick || (() => {})}
-            onDelete={onDeleteSingle || (() => {})}
-            index={index}
-          />
-        ))}
-      </div>
+      {hasNoResults ? (
+        <div className="border border-[#30D6D6]/20 p-8 text-center">
+          <div className="text-sm text-[#30D6D6]/70">No results found</div>
+          <div className="text-xs text-[#006694] mt-2">
+            Try adjusting your search or filters
+          </div>
+        </div>
+      ) : (
+        <div className="border border-[#30D6D6]/20">
+          {getSortedFeedbacks.map((feedback, index) => (
+            <FeedbackListItem
+              key={feedback._id}
+              feedback={feedback}
+              isSelected={selectedIds.includes(feedback._id)}
+              isDeleting={isDeletingIds.includes(feedback._id)}
+              onSelect={handleSelect}
+              onClick={onFeedbackClick || (() => {})}
+              onDelete={onDeleteSingle || (() => {})}
+              index={index}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
