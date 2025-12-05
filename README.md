@@ -7,13 +7,13 @@ An intelligent feedback analysis application that uses AI to automatically triag
 
 ## Features
 
-- 🤖 **AI-Powered Analysis** - Automatic sentiment detection, priority classification, and tagging using Anthropic Claude
-- 📊 **Advanced Filtering** - Search, filter by sentiment/priority/tags, with localStorage persistence
-- 🔄 **Real-time Updates** - Edit AI-generated recommendations, bulk delete operations
-- 📱 **Responsive Design** - Modern UI with Tailwind CSS and custom theming
-- 🧪 **Comprehensive Testing** - 80%+ test coverage with Jest
-- 📝 **Structured Logging** - Request ID correlation for debugging
-- 🔒 **Type Safety** - Full TypeScript implementation
+- **AI-Powered Analysis** - Automatic sentiment detection, priority classification, and tagging using Anthropic Claude
+- **Advanced Filtering** - Search, filter by sentiment/priority/tags, with localStorage persistence
+- **Real-time Updates** - Edit AI-generated recommendations, bulk delete operations
+- **Responsive Design** - Modern UI with Tailwind CSS and custom theming
+- **Comprehensive Testing** - 80%+ test coverage with Jest
+- **Structured Logging** - Request ID correlation for debugging
+- **Type Safety** - Full TypeScript implementation
 
 ## Tech Stack
 
