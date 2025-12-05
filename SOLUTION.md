@@ -242,3 +242,43 @@ Error Boundary
 * Shows meaningful error messages with retry options
 * Catches React component errors and provides fallback UI
 
+Data Model Choices:
+
+MongoDB (NoSQL) vs Relational Database
+* I chose MongoDB because it demonstrates adaptability—learning new technology quickly
+* No complex relationships needed - feedback is self-contained
+* Schema flexibility allows easy evolution without migrations
+* Fast document retrieval without joins
+
+Document Structure
+{
+  _id: ObjectId,    // MongoDB default for uniqueness + timestamp
+  text: string,
+  email?: string,   // Optional; future: separate users table
+  createdAt: Date,
+  analysis: {       // Embedded for atomic retrieval
+    summary: string,
+    sentiment: "positive" | "neutral" | "negative",
+    tags: string[], // Array for simplicity; future: tag metadata table
+    priority: "P0" | "P1" | "P2" | "P3",    // Strings for readability; future: priority table with descriptions
+    nextAction: string
+  }
+}
+
+Key Design Decisions
+* Analysis always retrieved with feedback; embedding avoids joins
+* 1:1 relationship makes tight coupling acceptable
+* email stored directly (future: users collection with admin/customer roles)
+* tags as array (future: tag categorization and metadata)
+* priority as strings (future: priority table with SLA rules)
+* createdAt as Date (simple; could optimize to timestamps later)
+* Hard deletes sufficient for assessment scope
+* In future I would add status field and deletedAt timestamp
+* Editing nextAction overwrites (assumes correction of AI mistakes)
+* Indexing strategy:
+    - Text search: {text: "text", "analysis.summary": "text"} with 2:1 weighting (feedback more important than summary)
+    - Filter indexes: sentiment, priority, tags, createdAt (descending for newest-first)
+    - 5 indexes = write overhead, but acceptable for small dataset (<100k documents)
+    - Single collection sufficient for project scope
+    - Future: compound indexes, sharding, or archiving at 1M+ documents
+
