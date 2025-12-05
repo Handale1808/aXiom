@@ -35,18 +35,17 @@ export default function Feedbacks() {
     handleClearSearch,
     handleClearAllFilters,
     getActiveFilterCount,
-    getAvailableTags,
   } = useFeedbackFilters();
 
-  const { feedbacks, isLoading, error, total, hasMore, refetch, setFeedbacks } =
-    useFeedbackData({
-      page,
-      pageSize,
-      selectedSentiments,
-      selectedPriorities,
-      selectedTags,
-      searchQuery,
-    });
+const { feedbacks, isLoading, error, total, hasMore, refetch, setFeedbacks, allAvailableTags } =
+  useFeedbackData({
+    page,
+    pageSize,
+    selectedSentiments,
+    selectedPriorities,
+    selectedTags,
+    searchQuery,
+  });
 
   const {
     selectedFeedbackIds,
@@ -198,7 +197,7 @@ export default function Feedbacks() {
             selectedSentiments={selectedSentiments}
             selectedPriorities={selectedPriorities}
             selectedTags={selectedTags}
-            availableTags={getAvailableTags(feedbacks)}
+            availableTags={allAvailableTags}
             onSentimentChange={handleSentimentChange}
             onPriorityChange={handlePriorityChange}
             onTagChange={handleTagChange}

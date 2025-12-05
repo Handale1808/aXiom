@@ -21,7 +21,6 @@ interface UseFeedbackFiltersReturn {
   handleClearSearch: () => void;
   handleClearAllFilters: () => void;
   getActiveFilterCount: () => number;
-  getAvailableTags: (feedbacks: FeedbackWithId[]) => string[];
 }
 
 export function useFeedbackFilters(): UseFeedbackFiltersReturn {
@@ -115,19 +114,6 @@ export function useFeedbackFilters(): UseFeedbackFiltersReturn {
     );
   }, [selectedSentiments.length, selectedPriorities.length, selectedTags.length]);
 
-  const getAvailableTags = useCallback((feedbacks: FeedbackWithId[]): string[] => {
-    const tagsSet = new Set<string>();
-    feedbacks.forEach((feedback) => {
-      if (feedback.analysis.tags) {
-        feedback.analysis.tags.forEach((tag: string) => {
-          if (tag && tag.trim()) {
-            tagsSet.add(tag);
-          }
-        });
-      }
-    });
-    return Array.from(tagsSet).sort();
-  }, []);
 
   useEffect(() => {
     loadFiltersFromStorage();
@@ -153,6 +139,5 @@ export function useFeedbackFilters(): UseFeedbackFiltersReturn {
     handleClearSearch,
     handleClearAllFilters,
     getActiveFilterCount,
-    getAvailableTags,
   };
 }

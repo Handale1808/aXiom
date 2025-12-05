@@ -19,6 +19,7 @@ interface UseFeedbackDataReturn {
   hasMore: boolean;
   refetch: () => Promise<void>;
   setFeedbacks: React.Dispatch<React.SetStateAction<FeedbackWithId[]>>;
+  allAvailableTags: string[];
 }
 
 export function useFeedbackData({
@@ -34,6 +35,47 @@ export function useFeedbackData({
   const [error, setError] = useState<string | null>(null);
   const [total, setTotal] = useState<number>(0);
   const [hasMore, setHasMore] = useState<boolean>(false);
+  const [allAvailableTags, setAllAvailableTags] = useState<string[]>([]);
+
+  // function to fetch all tags (unfiltered request)
+  const fetchAllTags = useCallback(async () => {
+    try {
+      const params = new URLSearchParams();
+      params.set("page", "1");
+      params.set("pageSize", "1000"); // Large page size to get all tags
+
+      const data = await apiFetch<{
+        success: true;
+        data: FeedbackWithId[];
+        pagination: {
+          total: number;
+          limit: number;
+          skip: number;
+          hasMore: boolean;
+        };
+      }>(`/api/feedback?${params.toString()}`);
+
+      // Extract all unique tags
+      const tagsSet = new Set<string>();
+      data.data.forEach((feedback) => {
+        if (feedback.analysis.tags) {
+          feedback.analysis.tags.forEach((tag: string) => {
+            if (tag && tag.trim()) {
+              tagsSet.add(tag);
+            }
+          });
+        }
+      });
+
+      setAllAvailableTags(Array.from(tagsSet).sort());
+    } catch (err) {
+      console.error("Failed to fetch all tags:", err);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchAllTags();
+  }, [fetchAllTags]);
 
   const fetchFeedbacks = useCallback(async () => {
     setIsLoading(true);
@@ -104,5 +146,6 @@ export function useFeedbackData({
     hasMore,
     refetch: fetchFeedbacks,
     setFeedbacks,
+    allAvailableTags,
   };
 }
