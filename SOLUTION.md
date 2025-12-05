@@ -200,6 +200,7 @@ DEVELOPMENT TOOLS
     * AI-powered IDE features (code completion, refactoring, navigation, etc.)
     * Cascade is a wonderful addition that makes finding where you put what really easy
     * Has all the plugins I need
+    * Built in AI speeds up development a LOT
 
     ESLint
     * Enforces code structure and consistency
@@ -282,3 +283,52 @@ Key Design Decisions
     - Single collection sufficient for project scope
     - Future: compound indexes, sharding, or archiving at 1M+ documents
 
+AI Prompt Engineering:
+
+Creative Scenario Choice
+* Fictional bioengineering company splicing alien DNA with cats
+* More engaging than generic business scenarios; adds humor while testing AI's ability to handle unusual contexts professionally
+* Demonstrates AI can maintain structured analysis even with absurd subject matter
+
+Structured Output Enforcement
+* Multiple explicit instructions: "Return ONLY a valid JSON object with no markdown formatting, code blocks, or additional text"
+* AI models frequently wrap JSON in markdown code blocks (```json) despite instructions
+* Prompt instructions + code-level validation with validateAnalysis() function
+* AI doesn't always follow instructions—redundancy is critical
+
+Saftey Measures
+* PII Protection
+    - "Never include personally identifiable information"
+    - Defense-in-depth approach; protect users even if they accidentally include PII
+    - Alien clientele is very important to me (fictional users deserve privacy too)
+* Safety-First Priority Logic
+    - "CRITICAL PRINCIPLE: Objective safety threats to human/alien life always require immediate intervention, regardless of customer satisfaction."
+    - Without explicit instruction, AI would not classify feedback like "my cat is eating children but I love that about him" as P0
+    - Hard rule that safety threats = P0, always, regardless of customer sentiment
+* Sentiment Complexity Handling
+    - Detailed guidelines for emotional nuance: sarcasm, understatement, conflict between attachment and danger
+    - Testing revealed AI struggled with complex emotions (e.g., loving a dangerous cat)
+    - Explicit definitions for each sentiment category with edge case examples
+* Invalid Input Handling
+    - Specific instructions for unrelated feedback and gibberish
+    - Want to tally and mass-delete invalid entries efficiently
+    - Tags: "unrelated" and "gibberish" for easy filtering
+
+JSON Schema
+{
+  "summary": "string",                                  // 2 sentences max
+  "sentiment": "positive" | "neutral" | "negative",
+  "tags": ["string"],                                   // 2-5 single-word nouns
+  "priority": "P0" | "P1" | "P2" | "P3",
+  "nextAction": "string",
+  "urgencyIndicators": ["string"],                      // Future: store these
+  "customerSatisfied": boolean,                         // Future: store these
+  "safetyThreat": boolean                               // Future: store these
+}
+
+Key Lessons Learnt
+* AI doesn't infer context well—spell everything out
+* Single mentions get ignored
+* Abstract rules aren't enough; show concrete cases
+* Never trust AI output without verification
+* Unusual scenarios (loving a dangerous cat) need explicit handling
