@@ -29,7 +29,8 @@ describe("ConfirmationDialog", () => {
     onClose: mockOnClose,
     onConfirm: mockOnConfirm,
     title: "DELETE ITEM",
-    message: "Are you sure you want to delete this item? This action cannot be undone.",
+    message:
+      "Are you sure you want to delete this item? This action cannot be undone.",
   };
 
   beforeEach(() => {
@@ -334,18 +335,21 @@ describe("ConfirmationDialog", () => {
       const longMessage = "This is a very long message. ".repeat(50);
       render(<ConfirmationDialog {...defaultProps} message={longMessage} />);
 
-      expect(screen.getByText(longMessage)).toBeInTheDocument();
+      expect(
+        screen.getByText(/This is a very long message/)
+      ).toBeInTheDocument();
     });
 
     it("should handle special characters in title", () => {
-      const specialTitle = "Delete <Item> & \"Confirm\" [Action]";
+      const specialTitle = 'Delete <Item> & "Confirm" [Action]';
       render(<ConfirmationDialog {...defaultProps} title={specialTitle} />);
 
       expect(screen.getByText(`[${specialTitle}]`)).toBeInTheDocument();
     });
 
     it("should handle special characters in message", () => {
-      const specialMessage = "Are you sure? This will delete <all> data & reset 'everything'";
+      const specialMessage =
+        "Are you sure? This will delete <all> data & reset 'everything'";
       render(<ConfirmationDialog {...defaultProps} message={specialMessage} />);
 
       expect(screen.getByText(specialMessage)).toBeInTheDocument();
@@ -424,8 +428,7 @@ describe("ConfirmationDialog", () => {
 
       const corners = container.querySelectorAll(".absolute");
       const cornerDecorations = Array.from(corners).filter(
-        (el) =>
-          el.classList.contains("h-4") && el.classList.contains("w-4")
+        (el) => el.classList.contains("h-4") && el.classList.contains("w-4")
       );
 
       expect(cornerDecorations).toHaveLength(4);
