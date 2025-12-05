@@ -4,6 +4,19 @@ import * as aiAnalysis from "@/lib/services/aiAnalysis";
 
 jest.mock("@/lib/services/aiAnalysis");
 
+jest.mock("@/lib/logger", () => ({
+  debug: jest.fn(),
+  info: jest.fn(),
+  warn: jest.fn(),
+  error: jest.fn(),
+  sanitizeEmail: jest.fn((email) => email),
+  generateRequestId: jest.fn(() => "test-request-id"),
+}));
+
+jest.mock("@/lib/databaseLogger", () => ({
+  withDatabaseLogging: jest.fn((fn) => fn()),
+}));
+
 jest.mock("@/lib/mongodb", () => {
   const mockCollection = {
     insertOne: jest.fn(),
