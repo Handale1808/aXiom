@@ -150,6 +150,13 @@ export default function FeedbackList({
         onClearSelection={handleClearSelection}
         onDeleteSelected={handleDeleteSelected}
       />
+      <FeedbackListHeader
+        sortColumn={sortColumn}
+        sortDirection={sortDirection}
+        onSort={onSort || (() => {})}
+        isAllSelected={isAllSelected}
+        onSelectAll={handleSelectAll}
+      />
       {hasNoResults ? (
         <div className="border border-[#30D6D6]/20 p-8 text-center">
           <div className="text-sm text-[#30D6D6]/70">No results found</div>
