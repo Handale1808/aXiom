@@ -6,13 +6,12 @@ export type Size = "tiny" | "small" | "medium" | "large" | "massive";
 
 export interface IPhysicalTraits {
   legs: number;
-  arms: number;
   wings: number;
-  tailType: TailType;
+  tails: number;
   skinType: SkinType;
   size: Size;
   colour: string;
-  eyeCount: number;
+  eyes: number;
   hasClaws: boolean;
   hasFangs: boolean;
 }
