@@ -14,6 +14,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "update-user": "dotenv -e .env.local -- tsx scripts/update-user.ts",
+    "populate-abilities": "dotenv -e .env.local -- tsx scripts/populate-abilities.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
