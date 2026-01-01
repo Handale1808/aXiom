@@ -14,6 +14,39 @@ export default function ProceduralCat({ traits }: ProceduralCatProps) {
     return base + (seededRandom(seed) - 0.5) * amount * 2;
   };
 
+  const generateBlobPath = (centerX: number, centerY: number, radius: number, seed: number) => {
+    const points = 8;
+    const angleStep = (Math.PI * 2) / points;
+    let path = '';
+
+    for (let i = 0; i <= points; i++) {
+      const angle = i * angleStep;
+      const radiusVariation = jitter(radius, seed + i * 10, radius * 0.3);
+      const x = centerX + Math.cos(angle) * radiusVariation;
+      const y = centerY + Math.sin(angle) * radiusVariation;
+
+      if (i === 0) {
+        path += `M ${x} ${y}`;
+      } else {
+        const prevAngle = (i - 1) * angleStep;
+        const prevRadiusVariation = jitter(radius, seed + (i - 1) * 10, radius * 0.3);
+        const prevX = centerX + Math.cos(prevAngle) * prevRadiusVariation;
+        const prevY = centerY + Math.sin(prevAngle) * prevRadiusVariation;
+
+        const cp1x = prevX + Math.cos(prevAngle + angleStep / 3) * (radiusVariation * 0.2);
+        const cp1y = prevY + Math.sin(prevAngle + angleStep / 3) * (radiusVariation * 0.2);
+        const cp2x = x - Math.cos(angle - angleStep / 3) * (radiusVariation * 0.2);
+        const cp2y = y - Math.sin(angle - angleStep / 3) * (radiusVariation * 0.2);
+
+        path += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${x} ${y}`;
+      }
+    }
+
+    return path + ' Z';
+  };
+
+  const blobSeed = traits.eyes * 1000 + traits.legs * 100 + traits.tails * 10 + traits.wings;
+
   const hexToHsl = (hex: string): [number, number, number] => {
     const r = parseInt(hex.slice(1, 3), 16) / 255;
     const g = parseInt(hex.slice(3, 5), 16) / 255;
@@ -133,7 +166,10 @@ export default function ProceduralCat({ traits }: ProceduralCatProps) {
           );
         })}
 
-      <ellipse cx={jitter(100, 200)} cy={jitter(100, 201)} rx={60} ry={40} fill={traits.color} />
+      <path
+        d={generateBlobPath(100, 95, 50, blobSeed)}
+        fill={traits.color}
+      />
 
       {traits.legs > 0 &&
         Array.from({ length: traits.legs }).map((_, i) => {
@@ -184,7 +220,7 @@ export default function ProceduralCat({ traits }: ProceduralCatProps) {
           return (
             <circle
               key={`eye-${i}`}
-              cx={jitter(58 + xOffset, i * 500)}
+              cx={jitter(65 + xOffset, i * 500)}
               cy={jitter(80 + yOffset, i * 500 + 1)}
               r={jitter(3, i * 500 + 2)}
               fill="white"
