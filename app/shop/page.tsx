@@ -2,12 +2,21 @@
 
 import { useState } from "react";
 import { useUser } from "@/lib/context/UserContext";
-import FormWithHeading, { type TabWithContent } from "@/lib/components/FormWithHeading";
+import FormWithHeading, {
+  type TabWithContent,
+} from "@/lib/components/FormWithHeading";
 import CatGrid, { type Cat } from "@/lib/components/CatGrid";
+import Portal from "@/lib/components/PortalTEMP";
+import { generateRandomCatTraits } from "@/lib/utils/catGenerator";
+import { CatTraits } from "@/lib/types/cat-drawing";
 
 export default function ShopPage() {
   const { isAdmin, isLoading } = useUser();
   const [activeTab, setActiveTab] = useState("admin");
+  const [isPortalOpen, setIsPortalOpen] = useState(false);
+  const [currentCatTraits, setCurrentCatTraits] = useState<CatTraits | null>(
+    null
+  );
 
   const mockCats: Cat[] = [
     { id: "1", emoji: "🐱", name: "SPECIMEN_ALPHA" },
@@ -21,7 +30,13 @@ export default function ShopPage() {
   const [cats] = useState<Cat[]>(mockCats);
 
   const handleGenerateCats = () => {
-    console.log("Generate cats button clicked");
+    const traits = generateRandomCatTraits();
+    setCurrentCatTraits(traits);
+    setIsPortalOpen(true);
+  };
+
+  const handleClosePortal = () => {
+    setIsPortalOpen(false);
   };
 
   if (isLoading) {
@@ -85,6 +100,13 @@ export default function ShopPage() {
           <CatGrid cats={cats} showContainer={true} />
         )}
       </div>
+      {isPortalOpen && currentCatTraits && (
+        <Portal
+          isOpen={isPortalOpen}
+          onClose={handleClosePortal}
+          traits={currentCatTraits}
+        />
+      )}
     </div>
   );
 }
