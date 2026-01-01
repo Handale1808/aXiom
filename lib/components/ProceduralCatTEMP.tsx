@@ -289,7 +289,7 @@ export default function ProceduralCat({ traits }: ProceduralCatProps) {
 
       {traits.wings > 0 &&
         Array.from({ length: traits.wings }).map((_, i) => {
-          const t = i / (traits.wings - 1 || 1);
+          const t = traits.wings === 1 ? 0.5 : i / (traits.wings - 1);
           const curvePoint = getTopCurvePoint(t, blobPoints);
           const hueJitter = jitter(0, i * 400 + 10, 5);
           const wingColor = getComplementaryColor(traits.color, hueJitter);
