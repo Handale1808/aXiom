@@ -2,15 +2,35 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
+import { useState } from "react";
 
 export default function Header() {
   const pathname = usePathname();
+  const router = useRouter();
   const { data: session, status } = useSession();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {
-    await signOut({ callbackUrl: "/login" });
+    setIsLoggingOut(true);
+
+    try {
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (response.ok) {
+        await signOut({ callbackUrl: "/login" });
+      } else {
+        console.error("Logout API failed");
+        setIsLoggingOut(false);
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+      setIsLoggingOut(false);
+    }
   };
 
   return (
@@ -91,9 +111,10 @@ export default function Header() {
           {status === "authenticated" ? (
             <button
               onClick={handleLogout}
-              className="relative bg-black px-6 py-2 text-sm font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black group"
+              disabled={isLoggingOut}
+              className="relative bg-black px-6 py-2 text-sm font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black group disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              LOG_OUT
+              {isLoggingOut ? "LOGGING_OUT..." : "LOG_OUT"}
             </button>
           ) : (
             <Link href="/login">
