@@ -1,13 +1,17 @@
-// lib/components/Header.tsx
-
 "use client";
 
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
 
 export default function Header() {
   const pathname = usePathname();
+  const { data: session, status } = useSession();
+
+  const handleLogout = async () => {
+    await signOut({ callbackUrl: "/login" });
+  };
 
   return (
     <header className="border-b-2 border-[#30D6D6]/30 bg-black p-4 font-mono">
@@ -83,21 +87,30 @@ export default function Header() {
               ABOUT
             </button>
           </Link>
-          <Link href="/login">
-          <button className="relative bg-black px-6 py-2 text-sm font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black group">
-              {pathname === "/login" && (
-                <>
-                  <span className="absolute top-0 left-0 h-2 w-2 border-t-2 border-l-2 border-[#30D6D6]"></span>
-                  <span className="absolute top-0 right-0 h-2 w-2 border-t-2 border-r-2 border-[#30D6D6]"></span>
-                  <span className="absolute bottom-0 left-0 h-2 w-2 border-b-2 border-l-2 border-[#30D6D6]"></span>
-                  <span className="absolute bottom-0 right-0 h-2 w-2 border-b-2 border-r-2 border-[#30D6D6]"></span>
-                </>
-              )}
-              LOG_IN
+
+          {status === "authenticated" ? (
+            <button
+              onClick={handleLogout}
+              className="relative bg-black px-6 py-2 text-sm font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black group"
+            >
+              LOG_OUT
             </button>
-          </Link>
+          ) : (
+            <Link href="/login">
+              <button className="relative bg-black px-6 py-2 text-sm font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black group">
+                {pathname === "/login" && (
+                  <>
+                    <span className="absolute top-0 left-0 h-2 w-2 border-t-2 border-l-2 border-[#30D6D6]"></span>
+                    <span className="absolute top-0 right-0 h-2 w-2 border-t-2 border-r-2 border-[#30D6D6]"></span>
+                    <span className="absolute bottom-0 left-0 h-2 w-2 border-b-2 border-l-2 border-[#30D6D6]"></span>
+                    <span className="absolute bottom-0 right-0 h-2 w-2 border-b-2 border-r-2 border-[#30D6D6]"></span>
+                  </>
+                )}
+                LOG_IN
+              </button>
+            </Link>
+          )}
         </nav>
-        
       </div>
     </header>
   );

@@ -1,12 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import LoginAbout from "@/lib/components/LoginAbout";
 import FormWithHeading from "@/lib/components/FormWithHeading";
 
 type AuthMode = "login" | "signup";
 
 export default function AuthPage() {
+  const router = useRouter();
+  const { data: session, status } = useSession();
   const [mode, setMode] = useState<AuthMode>("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -14,6 +18,14 @@ export default function AuthPage() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (status === "authenticated" && session?.user) {
+      const redirectUrl = session.user.isAdmin ? "/feedbacks" : "/submit";
+      router.push(redirectUrl);
+    }
+  }, [status, session, router]);
 
   const validatePassword = (pass: string): string | null => {
     if (pass.length < 8) {
@@ -31,44 +43,117 @@ export default function AuthPage() {
     return null;
   };
 
-  const handleSubmit = () => {
+  const handleLogin = async () => {
     const newErrors: Record<string, string> = {};
 
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       newErrors.email = "INVALID_EMAIL_FORMAT";
     }
 
-    if (mode === "signup") {
-      if (!firstName.trim()) {
-        newErrors.firstName = "FIRST_NAME_REQUIRED";
-      }
-      if (!lastName.trim()) {
-        newErrors.lastName = "LAST_NAME_REQUIRED";
-      }
-
-      const passwordError = validatePassword(password);
-      if (passwordError) {
-        newErrors.password = passwordError;
-      }
-
-      if (password !== confirmPassword) {
-        newErrors.confirmPassword = "PASSWORDS_DO_NOT_MATCH";
-      }
-    } else {
-      if (!password) {
-        newErrors.password = "PASSWORD_REQUIRED";
-      }
+    if (!password) {
+      newErrors.password = "PASSWORD_REQUIRED";
     }
 
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      console.log("Auth submitted:", {
-        mode,
+      setIsLoading(true);
+
+      const result = await signIn("credentials", {
         email,
         password,
-        ...(mode === "signup" && { firstName, lastName }),
+        redirect: false,
       });
+
+      setIsLoading(false);
+
+      if (result?.error) {
+        setErrors({ password: "INVALID_CREDENTIALS" });
+      } else if (result?.ok) {
+        // Redirect happens in useEffect when session updates
+      }
+    }
+  };
+
+  const handleSignup = async () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = "INVALID_EMAIL_FORMAT";
+    }
+
+    if (!firstName.trim()) {
+      newErrors.firstName = "FIRST_NAME_REQUIRED";
+    }
+
+    if (!lastName.trim()) {
+      newErrors.lastName = "LAST_NAME_REQUIRED";
+    }
+
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      newErrors.password = passwordError;
+    }
+
+    if (password !== confirmPassword) {
+      newErrors.confirmPassword = "PASSWORDS_DO_NOT_MATCH";
+    }
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
+      setIsLoading(true);
+
+      try {
+        const response = await fetch("/api/auth/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email,
+            firstName,
+            lastName,
+            password,
+            confirmPassword,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          if (data.error?.fields) {
+            setErrors(data.error.fields);
+          } else {
+            setErrors({ email: data.error?.code || "SIGNUP_FAILED" });
+          }
+          setIsLoading(false);
+        } else {
+          // Auto-signin after successful signup
+          const result = await signIn("credentials", {
+            email,
+            password,
+            redirect: false,
+          });
+
+          setIsLoading(false);
+
+          if (result?.ok) {
+            // Redirect happens in useEffect when session updates
+          } else {
+            setErrors({ password: "AUTHENTICATION_FAILED" });
+          }
+        }
+      } catch (error) {
+        setIsLoading(false);
+        setErrors({ email: "NETWORK_ERROR" });
+      }
+    }
+  };
+
+  const handleSubmit = () => {
+    if (mode === "login") {
+      handleLogin();
+    } else {
+      handleSignup();
     }
   };
 
@@ -81,6 +166,21 @@ export default function AuthPage() {
     setFirstName("");
     setLastName("");
   };
+
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen bg-black p-4 font-mono flex items-center justify-center">
+        <div className="border-2 border-[#30D6D6]/30 bg-black/50 p-8">
+          <div className="flex items-center gap-3">
+            <div className="h-3 w-3 animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]" />
+            <div className="text-sm tracking-[0.3em] text-[#30D6D6]">
+              [AUTHENTICATING...]
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const tabs = [
     { id: "login", label: "LOGIN" },
@@ -161,7 +261,7 @@ export default function AuthPage() {
   const submitButton = {
     text: mode === "login" ? "AUTHENTICATE" : "CREATE_ACCOUNT",
     onClick: handleSubmit,
-    disabled: false,
+    disabled: isLoading,
   };
 
   const disclaimer =
