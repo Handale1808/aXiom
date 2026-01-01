@@ -20,13 +20,13 @@ export default function ProceduralCat({ traits }: ProceduralCatProps) {
     radius: number,
     seed: number
   ) => {
-    const points = 8;
+    const points = jitter(8, seed);
     const angleStep = (Math.PI * 2) / points;
     let path = "";
 
     for (let i = 0; i <= points; i++) {
       const angle = i * angleStep;
-      const radiusVariation = jitter(radius, seed + i * 10, radius * 0.3);
+      const radiusVariation = jitter(radius, seed + i * 10, radius * 0.15);
       const x = centerX + Math.cos(angle) * radiusVariation;
       const y = centerY + Math.sin(angle) * radiusVariation;
 
@@ -37,19 +37,20 @@ export default function ProceduralCat({ traits }: ProceduralCatProps) {
         const prevRadiusVariation = jitter(
           radius,
           seed + (i - 1) * 10,
-          radius * 0.3
+          radius * 0.15
         );
         const prevX = centerX + Math.cos(prevAngle) * prevRadiusVariation;
         const prevY = centerY + Math.sin(prevAngle) * prevRadiusVariation;
 
+        const normalAngle = (prevAngle + angle) / 2;
+        const bulge = seededRandom(seed + i * 100) > 0.5 ? 1.3 : 0.9;
+
         const cp1x =
-          prevX + Math.cos(prevAngle + angleStep / 3) * (radiusVariation * 0.2);
+          prevX + Math.cos(normalAngle) * radiusVariation * 0.3 * bulge;
         const cp1y =
-          prevY + Math.sin(prevAngle + angleStep / 3) * (radiusVariation * 0.2);
-        const cp2x =
-          x - Math.cos(angle - angleStep / 3) * (radiusVariation * 0.2);
-        const cp2y =
-          y - Math.sin(angle - angleStep / 3) * (radiusVariation * 0.2);
+          prevY + Math.sin(normalAngle) * radiusVariation * 0.3 * bulge;
+        const cp2x = x + Math.cos(normalAngle) * radiusVariation * 0.3 * bulge;
+        const cp2y = y + Math.sin(normalAngle) * radiusVariation * 0.3 * bulge;
 
         path += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${x} ${y}`;
       }
@@ -60,6 +61,30 @@ export default function ProceduralCat({ traits }: ProceduralCatProps) {
 
   const blobSeed =
     traits.eyes * 1000 + traits.legs * 100 + traits.tails * 10 + traits.wings;
+
+    const generateBlobPoints = (
+  centerX: number,
+  centerY: number,
+  radius: number,
+  seed: number
+) => {
+  const pointCount = jitter(8, seed);
+  const angleStep = (Math.PI * 2) / pointCount;
+  const points: Array<{ x: number; y: number; angle: number }> = [];
+
+  for (let i = 0; i <= pointCount; i++) {
+    const angle = i * angleStep;
+    const radiusVariation = jitter(radius, seed + i * 10, radius * 0.15);
+    const x = centerX + Math.cos(angle) * radiusVariation;
+    const y = centerY + Math.sin(angle) * radiusVariation;
+    
+    points.push({ x, y, angle });
+  }
+
+  return points;
+};
+
+const blobPoints = generateBlobPoints(100, 95, 50, blobSeed);
 
   const hexToHsl = (hex: string): [number, number, number] => {
     const r = parseInt(hex.slice(1, 3), 16) / 255;
@@ -153,6 +178,58 @@ export default function ProceduralCat({ traits }: ProceduralCatProps) {
     ];
   };
 
+  const isPointInBlob = (
+    x: number,
+    y: number,
+    centerX: number,
+    centerY: number,
+    radius: number,
+    seed: number
+  ) => {
+    const dx = x - centerX;
+    const dy = y - centerY;
+    const angle = Math.atan2(dy, dx);
+
+    const points = 8;
+    const angleStep = (Math.PI * 2) / points;
+    const normalizedAngle = (angle + Math.PI * 2) % (Math.PI * 2);
+    const closestPointIndex = Math.round(normalizedAngle / angleStep);
+    const radiusVariation = jitter(
+      radius,
+      seed + closestPointIndex * 10,
+      radius * 0.3
+    );
+
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    return distance < radiusVariation * 0.8;
+  };
+
+  const getTopCurvePoint = (
+    t: number,
+    centerX: number,
+    centerY: number,
+    radius: number,
+    seed: number
+  ) => {
+    const topStartAngle = Math.PI * 1.25;
+    const topEndAngle = Math.PI * 1.75;
+    const angle = topStartAngle + (topEndAngle - topStartAngle) * t;
+
+    const points = 8;
+    const angleStep = (Math.PI * 2) / points;
+    const closestPointIndex = Math.round(angle / angleStep);
+    const radiusVariation = jitter(
+      radius,
+      seed + closestPointIndex * 10,
+      radius * 0.3
+    );
+
+    const x = centerX + Math.cos(angle) * radiusVariation;
+    const y = centerY + Math.sin(angle) * radiusVariation;
+
+    return { x, y, angle };
+  };
+
   const getBottomCurvePoint = (
     t: number,
     centerX: number,
@@ -191,20 +268,26 @@ export default function ProceduralCat({ traits }: ProceduralCatProps) {
           const startAngle = -angleSpread / 2;
           const angleStep = totalTails > 1 ? angleSpread / (totalTails - 1) : 0;
           const angle = startAngle + angleStep * i;
-          const originX = jitter(155, i * 100);
+          const originX = jitter(140, i * 100);
           const originY = jitter(100, i * 100 + 1);
           const tailColor = triadicColors[i % 3];
 
+          const tailPath = `
+      M 0,0
+      Q ${jitter(15, i * 100 + 20)},${jitter(-20, i * 100 + 21)} ${jitter(25, i * 100 + 22)},${jitter(-35, i * 100 + 23)}
+      Q ${jitter(30, i * 100 + 24)},${jitter(-45, i * 100 + 25)} ${jitter(32, i * 100 + 26)},${jitter(-60, i * 100 + 27)}
+    `;
+
           return (
-            <ellipse
+            <path
               key={`tail-${i}`}
-              cx={jitter(160, i * 100 + 8)}
-              cy={jitter(100, i * 100 + 9)}
-              rx={jitter(25, i * 100 + 10)}
-              ry={jitter(6, i * 100 + 11)}
-              fill={tailColor}
-              opacity={jitter(0.6, i * 100 + 4, 0.1)}
-              transform={`rotate(${angle} ${originX} ${originY})`}
+              d={tailPath}
+              fill="none"
+              stroke={tailColor}
+              strokeWidth={jitter(4, i * 100 + 30, 1)}
+              strokeLinecap="round"
+              opacity={jitter(0.7, i * 100 + 4, 0.1)}
+              transform={`translate(${originX}, ${originY}) rotate(${angle})`}
             />
           );
         })}
@@ -236,20 +319,19 @@ export default function ProceduralCat({ traits }: ProceduralCatProps) {
 
       {traits.wings > 0 &&
         Array.from({ length: traits.wings }).map((_, i) => {
-          const xOffset = -20 + i * 6;
-          const baseX = 100 + xOffset;
-          const jitteredX = jitter(baseX, i * 400);
-          const jitteredY = jitter(60, i * 400 + 1);
-          const jitteredY2 = jitter(40, i * 400 + 2);
+          const t = i / (traits.wings - 1 || 1);
+          const curvePoint = getTopCurvePoint(t, 100, 95, 50, blobSeed);
           const hueJitter = jitter(0, i * 400 + 10, 5);
           const wingColor = getComplementaryColor(traits.color, hueJitter);
+          const perpAngle = curvePoint.angle - Math.PI / 2;
 
           return (
             <polygon
               key={`wing-${i}`}
-              points={`${jitteredX},${jitteredY} ${jitteredX - 10},${jitteredY2} ${jitteredX + 10},${jitteredY2}`}
+              points="0,-15 -8,0 8,0"
               fill={wingColor}
               opacity={jitter(0.6, i * 400 + 3, 0.1)}
+              transform={`translate(${curvePoint.x}, ${curvePoint.y}) rotate(${(perpAngle * 180) / Math.PI})`}
             />
           );
         })}
@@ -258,13 +340,26 @@ export default function ProceduralCat({ traits }: ProceduralCatProps) {
         Array.from({ length: traits.eyes }).map((_, i) => {
           const col = i % 4;
           const row = Math.floor(i / 4);
-          const xOffset = col * 12;
-          const yOffset = row * 15;
+          const baseXOffset = col * 12;
+          const baseYOffset = row * 15;
+
+          let eyeX = jitter(65 + baseXOffset, i * 500);
+          let eyeY = jitter(80 + baseYOffset, i * 500 + 1);
+
+          const maxAttempts = 10;
+          for (let attempt = 0; attempt < maxAttempts; attempt++) {
+            if (isPointInBlob(eyeX, eyeY, 100, 95, 50, blobSeed)) {
+              break;
+            }
+            eyeX = jitter(80, i * 500 + attempt * 2);
+            eyeY = jitter(90, i * 500 + attempt * 2 + 1);
+          }
+
           return (
             <circle
               key={`eye-${i}`}
-              cx={jitter(65 + xOffset, i * 500)}
-              cy={jitter(80 + yOffset, i * 500 + 1)}
+              cx={eyeX}
+              cy={eyeY}
               r={jitter(3, i * 500 + 2)}
               fill="white"
             />
