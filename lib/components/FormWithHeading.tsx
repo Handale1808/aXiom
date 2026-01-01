@@ -13,12 +13,31 @@ interface Field {
   onChange: (value: string) => void;
 }
 
+interface ButtonConfig {
+  id: string;
+  text: string;
+  onClick: () => void;
+  disabled?: boolean;
+}
+
+interface TabContent {
+  fields?: Field[];
+  buttons?: ButtonConfig[];
+  customContent?: React.ReactNode;
+}
+
+interface TabWithContent {
+  id: string;
+  label: string;
+  content: TabContent;
+}
+
 interface FormWithHeadingProps {
-  tabs?: Tab[];
+  tabs?: Tab[] | TabWithContent[];
   activeTab?: string;
   onTabChange?: (tabId: string) => void;
-  fields: Field[];
-  submitButton: {
+  fields?: Field[];
+  submitButton?: {
     text: string;
     onClick: () => void;
     disabled?: boolean;
@@ -34,6 +53,12 @@ export default function FormWithHeading({
   submitButton,
   disclaimer,
 }: FormWithHeadingProps) {
+  const isLegacyMode = fields !== undefined && submitButton !== undefined;
+  
+  const activeTabContent = !isLegacyMode && tabs
+    ? (tabs as TabWithContent[]).find(tab => tab.id === activeTab)?.content
+    : undefined;
+
   return (
     <div className="relative border-2 border-[#30D6D6]/30 bg-black/50 p-6">
       <div className="absolute -left-px -top-px h-4 w-4 border-l-2 border-t-2 border-[#30D6D6]" />
@@ -60,42 +85,91 @@ export default function FormWithHeading({
       )}
 
       <div className="space-y-4">
-        {fields.map((field) => (
-          <div key={field.name}>
-            <label className="mb-2 block text-xs font-bold tracking-widest text-[#30D6D6]">
-              [{field.label}]
-            </label>
-            <input
-              type={field.type}
-              value={field.value}
-              onChange={(e) => field.onChange(e.target.value)}
-              placeholder={field.placeholder}
-              className="w-full border-2 border-[#006694]/50 bg-black/80 p-3 text-cyan-100 placeholder-[#006694]/50 focus:border-[#30D6D6] focus:outline-none focus:ring-1 focus:ring-[#30D6D6]"
-            />
-            {field.error && (
-              <div className="mt-2 text-xs text-red-400 tracking-wider">
-                [{field.error}]
+        {isLegacyMode && (
+          <>
+            {fields!.map((field) => (
+              <div key={field.name}>
+                <label className="mb-2 block text-xs font-bold tracking-widest text-[#30D6D6]">
+                  [{field.label}]
+                </label>
+                <input
+                  type={field.type}
+                  value={field.value}
+                  onChange={(e) => field.onChange(e.target.value)}
+                  placeholder={field.placeholder}
+                  className="w-full border-2 border-[#006694]/50 bg-black/80 p-3 text-cyan-100 placeholder-[#006694]/50 focus:border-[#30D6D6] focus:outline-none focus:ring-1 focus:ring-[#30D6D6]"
+                />
+                {field.error && (
+                  <div className="mt-2 text-xs text-red-400 tracking-wider">
+                    [{field.error}]
+                  </div>
+                )}
+              </div>
+            ))}
+
+            <button
+              onClick={submitButton!.onClick}
+              disabled={submitButton!.disabled}
+              className="group relative w-full overflow-hidden border-2 border-[#30D6D6] bg-black py-4 font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_20px_rgba(48,214,214,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:text-[#30D6D6]"
+            >
+              <span className="relative z-10">{submitButton!.text}</span>
+            </button>
+
+            {disclaimer && (
+              <div className="relative border border-[#006694]/30 bg-black/30 p-3 mt-4">
+                <p className="text-xs text-cyan-100/50 leading-relaxed">
+                  {disclaimer}
+                </p>
               </div>
             )}
-          </div>
-        ))}
+          </>
+        )}
 
-        <button
-          onClick={submitButton.onClick}
-          disabled={submitButton.disabled}
-          className="group relative w-full overflow-hidden border-2 border-[#30D6D6] bg-black py-4 font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_20px_rgba(48,214,214,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:text-[#30D6D6]"
-        >
-          <span className="relative z-10">{submitButton.text}</span>
-        </button>
+        {!isLegacyMode && activeTabContent && (
+          <>
+            {activeTabContent.fields?.map((field) => (
+              <div key={field.name}>
+                <label className="mb-2 block text-xs font-bold tracking-widest text-[#30D6D6]">
+                  [{field.label}]
+                </label>
+                <input
+                  type={field.type}
+                  value={field.value}
+                  onChange={(e) => field.onChange(e.target.value)}
+                  placeholder={field.placeholder}
+                  className="w-full border-2 border-[#006694]/50 bg-black/80 p-3 text-cyan-100 placeholder-[#006694]/50 focus:border-[#30D6D6] focus:outline-none focus:ring-1 focus:ring-[#30D6D6]"
+                />
+                {field.error && (
+                  <div className="mt-2 text-xs text-red-400 tracking-wider">
+                    [{field.error}]
+                  </div>
+                )}
+              </div>
+            ))}
 
-        {disclaimer && (
-          <div className="relative border border-[#006694]/30 bg-black/30 p-3 mt-4">
-            <p className="text-xs text-cyan-100/50 leading-relaxed">
-              {disclaimer}
-            </p>
-          </div>
+            {activeTabContent.buttons && activeTabContent.buttons.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                {activeTabContent.buttons.map((button) => (
+                  <button
+                    key={button.id}
+                    onClick={button.onClick}
+                    disabled={button.disabled}
+                    className="group relative w-full overflow-hidden border-2 border-[#30D6D6] bg-black py-4 font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_20px_rgba(48,214,214,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:text-[#30D6D6]"
+                  >
+                    <span className="relative z-10">{button.text}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {activeTabContent.customContent && (
+              <div>{activeTabContent.customContent}</div>
+            )}
+          </>
         )}
       </div>
     </div>
   );
 }
+
+export type { ButtonConfig, TabContent, TabWithContent };
