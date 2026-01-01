@@ -14,41 +14,51 @@ export default function ProceduralCat({ traits }: ProceduralCatProps) {
     return base + (seededRandom(seed) - 0.5) * amount * 2;
   };
 
-  const generateBlobPath = (
+  const generateBlobPoints = (
     centerX: number,
     centerY: number,
     radius: number,
     seed: number
   ) => {
-    const points = jitter(8, seed);
-    const angleStep = (Math.PI * 2) / points;
-    let path = "";
+    const pointCount = Math.floor(jitter(16, seed, 4));
+    const angleStep = (Math.PI * 2) / pointCount;
+    const points: Array<{ x: number; y: number; angle: number }> = [];
 
-    for (let i = 0; i <= points; i++) {
+    for (let i = 0; i <= pointCount; i++) {
       const angle = i * angleStep;
       const radiusVariation = jitter(radius, seed + i * 10, radius * 0.15);
       const x = centerX + Math.cos(angle) * radiusVariation;
       const y = centerY + Math.sin(angle) * radiusVariation;
 
+      points.push({ x, y, angle });
+    }
+
+    return points;
+  };
+
+  const generateBlobPath = (
+    points: Array<{ x: number; y: number; angle: number }>,
+    seed: number
+  ) => {
+    let path = "";
+
+    for (let i = 0; i <= points.length - 1; i++) {
+      const { x, y } = points[i];
+
       if (i === 0) {
         path += `M ${x} ${y}`;
       } else {
-        const prevAngle = (i - 1) * angleStep;
-        const prevRadiusVariation = jitter(
-          radius,
-          seed + (i - 1) * 10,
-          radius * 0.15
-        );
-        const prevX = centerX + Math.cos(prevAngle) * prevRadiusVariation;
-        const prevY = centerY + Math.sin(prevAngle) * prevRadiusVariation;
-
-        const normalAngle = (prevAngle + angle) / 2;
+        const prev = points[i - 1];
+        const normalAngle = (prev.angle + points[i].angle) / 2;
         const bulge = seededRandom(seed + i * 100) > 0.5 ? 1.3 : 0.9;
+        const radiusVariation = Math.sqrt(
+          Math.pow(x - 100, 2) + Math.pow(y - 95, 2)
+        );
 
         const cp1x =
-          prevX + Math.cos(normalAngle) * radiusVariation * 0.3 * bulge;
+          prev.x + Math.cos(normalAngle) * radiusVariation * 0.3 * bulge;
         const cp1y =
-          prevY + Math.sin(normalAngle) * radiusVariation * 0.3 * bulge;
+          prev.y + Math.sin(normalAngle) * radiusVariation * 0.3 * bulge;
         const cp2x = x + Math.cos(normalAngle) * radiusVariation * 0.3 * bulge;
         const cp2y = y + Math.sin(normalAngle) * radiusVariation * 0.3 * bulge;
 
@@ -62,29 +72,7 @@ export default function ProceduralCat({ traits }: ProceduralCatProps) {
   const blobSeed =
     traits.eyes * 1000 + traits.legs * 100 + traits.tails * 10 + traits.wings;
 
-    const generateBlobPoints = (
-  centerX: number,
-  centerY: number,
-  radius: number,
-  seed: number
-) => {
-  const pointCount = jitter(8, seed);
-  const angleStep = (Math.PI * 2) / pointCount;
-  const points: Array<{ x: number; y: number; angle: number }> = [];
-
-  for (let i = 0; i <= pointCount; i++) {
-    const angle = i * angleStep;
-    const radiusVariation = jitter(radius, seed + i * 10, radius * 0.15);
-    const x = centerX + Math.cos(angle) * radiusVariation;
-    const y = centerY + Math.sin(angle) * radiusVariation;
-    
-    points.push({ x, y, angle });
-  }
-
-  return points;
-};
-
-const blobPoints = generateBlobPoints(100, 95, 50, blobSeed);
+  const blobPoints = generateBlobPoints(100, 95, 50, blobSeed);
 
   const hexToHsl = (hex: string): [number, number, number] => {
     const r = parseInt(hex.slice(1, 3), 16) / 255;
@@ -206,54 +194,34 @@ const blobPoints = generateBlobPoints(100, 95, 50, blobSeed);
 
   const getTopCurvePoint = (
     t: number,
-    centerX: number,
-    centerY: number,
-    radius: number,
-    seed: number
+    points: Array<{ x: number; y: number; angle: number }>
   ) => {
-    const topStartAngle = Math.PI * 1.25;
-    const topEndAngle = Math.PI * 1.75;
-    const angle = topStartAngle + (topEndAngle - topStartAngle) * t;
-
-    const points = 8;
-    const angleStep = (Math.PI * 2) / points;
-    const closestPointIndex = Math.round(angle / angleStep);
-    const radiusVariation = jitter(
-      radius,
-      seed + closestPointIndex * 10,
-      radius * 0.3
+    const topPoints = points.filter(
+      (p) => p.angle >= Math.PI * 1.25 && p.angle <= Math.PI * 1.75
     );
 
-    const x = centerX + Math.cos(angle) * radiusVariation;
-    const y = centerY + Math.sin(angle) * radiusVariation;
+    if (topPoints.length === 0) return points[0];
 
-    return { x, y, angle };
+    const index = Math.floor(t * (topPoints.length - 1));
+    return topPoints[index];
   };
 
   const getBottomCurvePoint = (
     t: number,
-    centerX: number,
-    centerY: number,
-    radius: number,
-    seed: number
+    points: Array<{ x: number; y: number; angle: number }>
   ) => {
-    const bottomStartAngle = Math.PI * 0.25;
-    const bottomEndAngle = Math.PI * 0.75;
-    const angle = bottomStartAngle + (bottomEndAngle - bottomStartAngle) * t;
-
-    const points = 8;
-    const angleStep = (Math.PI * 2) / points;
-    const closestPointIndex = Math.round(angle / angleStep);
-    const radiusVariation = jitter(
-      radius,
-      seed + closestPointIndex * 10,
-      radius * 0.3
+    const bottomPoints = points.filter(
+      (p) => p.angle >= Math.PI * -20 && p.angle <= Math.PI * 0.9
     );
 
-    const x = centerX + Math.cos(angle) * radiusVariation;
-    const y = centerY + 10 + Math.sin(angle) * radiusVariation;
+    if (bottomPoints.length === 0) return points[0];
 
-    return { x, y, angle };
+    const index = Math.min(
+      Math.floor(t * bottomPoints.length),
+      bottomPoints.length - 1
+    );
+
+    return bottomPoints[index];
   };
 
   const analogousColors = getAnalogousColors(traits.color);
@@ -292,22 +260,24 @@ const blobPoints = generateBlobPoints(100, 95, 50, blobSeed);
           );
         })}
 
-      <path d={generateBlobPath(100, 95, 50, blobSeed)} fill={traits.color} />
+      <path d={generateBlobPath(blobPoints, blobSeed)} fill={traits.color} />
 
       {traits.legs > 0 &&
         Array.from({ length: traits.legs }).map((_, i) => {
-          const t = i / (traits.legs - 1 || 1);
-          const curvePoint = getBottomCurvePoint(t, 100, 95, 50, blobSeed);
+          const t = traits.legs === 1 ? 0.5 : i / (traits.legs - 1);
+          const curvePoint = getBottomCurvePoint(t, blobPoints);
           const legColor = analogousColors[i % 3];
           const perpAngle = curvePoint.angle + Math.PI / 2;
+
+          console.log("Leg", i, "curvePoint:", curvePoint, "t:", t);
 
           return (
             <rect
               key={`leg-${i}`}
               x={-3}
-              y={0}
+              y={-30}
               width={6}
-              height={25}
+              height={30}
               rx={3}
               ry={3}
               fill={legColor}
@@ -320,7 +290,7 @@ const blobPoints = generateBlobPoints(100, 95, 50, blobSeed);
       {traits.wings > 0 &&
         Array.from({ length: traits.wings }).map((_, i) => {
           const t = i / (traits.wings - 1 || 1);
-          const curvePoint = getTopCurvePoint(t, 100, 95, 50, blobSeed);
+          const curvePoint = getTopCurvePoint(t, blobPoints);
           const hueJitter = jitter(0, i * 400 + 10, 5);
           const wingColor = getComplementaryColor(traits.color, hueJitter);
           const perpAngle = curvePoint.angle - Math.PI / 2;
