@@ -27,7 +27,10 @@ export default function CatDetails({ cat, abilities }: CatDetailsProps) {
   const passiveAbilities = abilities.filter((a) => a.isPassive);
   const activeAbilities = abilities.filter((a) => !a.isPassive);
 
-  const statsTotal = Object.values(cat.stats).reduce((sum, val) => sum + val, 0);
+  const statsTotal = Object.values(cat.stats).reduce(
+    (sum, val) => sum + val,
+    0
+  );
   const resistancesTotal = Object.values(cat.resistances).reduce(
     (sum, val) => sum + val,
     0
@@ -43,89 +46,83 @@ export default function CatDetails({ cat, abilities }: CatDetailsProps) {
       label: "PHYSICAL_TRAITS",
       content: {
         customContent: (
-          <div className="space-y-6">
-            <div className="w-full h-64 flex items-center justify-center border-2 border-[#30D6D6]/30 bg-black/30">
-              <GenerateImage traits={cat.physicalTraits} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <div className="text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
+                [EYES]
+              </div>
+              <div className="text-cyan-100">{cat.physicalTraits.eyes}</div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <div className="text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
-                  [EYES]
-                </div>
-                <div className="text-cyan-100">{cat.physicalTraits.eyes}</div>
+            <div>
+              <div className="text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
+                [LEGS]
               </div>
+              <div className="text-cyan-100">{cat.physicalTraits.legs}</div>
+            </div>
 
-              <div>
-                <div className="text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
-                  [LEGS]
-                </div>
-                <div className="text-cyan-100">{cat.physicalTraits.legs}</div>
+            <div>
+              <div className="text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
+                [WINGS]
               </div>
+              <div className="text-cyan-100">{cat.physicalTraits.wings}</div>
+            </div>
 
-              <div>
-                <div className="text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
-                  [WINGS]
-                </div>
-                <div className="text-cyan-100">{cat.physicalTraits.wings}</div>
+            <div>
+              <div className="text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
+                [TAILS]
               </div>
+              <div className="text-cyan-100">{cat.physicalTraits.tails}</div>
+            </div>
 
-              <div>
-                <div className="text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
-                  [TAILS]
-                </div>
-                <div className="text-cyan-100">{cat.physicalTraits.tails}</div>
+            <div>
+              <div className="text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
+                [SKIN_TYPE]
               </div>
-
-              <div>
-                <div className="text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
-                  [SKIN_TYPE]
-                </div>
-                <div className="text-cyan-100 uppercase">
-                  {cat.physicalTraits.skinType}
-                </div>
+              <div className="text-cyan-100 uppercase">
+                {cat.physicalTraits.skinType}
               </div>
+            </div>
 
-              <div>
-                <div className="text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
-                  [SIZE]
-                </div>
-                <div className="text-cyan-100 uppercase">
-                  {cat.physicalTraits.size}
-                </div>
+            <div>
+              <div className="text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
+                [SIZE]
               </div>
-
-              <div>
-                <div className="text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
-                  [COLOUR]
-                </div>
-                <div className="flex items-center gap-2">
-                  <div
-                    className="w-6 h-6 border border-[#30D6D6]"
-                    style={{ backgroundColor: cat.physicalTraits.colour }}
-                  />
-                  <span className="text-cyan-100 uppercase">
-                    {cat.physicalTraits.colour}
-                  </span>
-                </div>
+              <div className="text-cyan-100 uppercase">
+                {cat.physicalTraits.size}
               </div>
+            </div>
 
-              <div>
-                <div className="text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
-                  [HAS_CLAWS]
-                </div>
-                <div className="text-cyan-100">
-                  {cat.physicalTraits.hasClaws ? "YES" : "NO"}
-                </div>
+            <div>
+              <div className="text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
+                [COLOUR]
               </div>
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-6 h-6 border border-[#30D6D6]"
+                  style={{ backgroundColor: cat.physicalTraits.colour }}
+                />
+                <span className="text-cyan-100 uppercase">
+                  {cat.physicalTraits.colour}
+                </span>
+              </div>
+            </div>
 
-              <div>
-                <div className="text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
-                  [HAS_FANGS]
-                </div>
-                <div className="text-cyan-100">
-                  {cat.physicalTraits.hasFangs ? "YES" : "NO"}
-                </div>
+            <div>
+              <div className="text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
+                [HAS_CLAWS]
+              </div>
+              <div className="text-cyan-100">
+                {cat.physicalTraits.hasClaws ? "YES" : "NO"}
+              </div>
+            </div>
+
+            <div>
+              <div className="text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
+                [HAS_FANGS]
+              </div>
+              <div className="text-cyan-100">
+                {cat.physicalTraits.hasFangs ? "YES" : "NO"}
               </div>
             </div>
           </div>
@@ -332,6 +329,10 @@ export default function CatDetails({ cat, abilities }: CatDetailsProps) {
           {cat.name}
         </h2>
         <p className="text-sm text-cyan-100/70 mt-2">{cat.description}</p>
+      </div>
+
+      <div className="w-full h-64 flex items-center justify-center border-2 border-[#30D6D6]/30 bg-black/30">
+        <GenerateImage traits={cat.physicalTraits} />
       </div>
 
       <FormWithHeading
