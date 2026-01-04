@@ -34,20 +34,17 @@ export function generateBehavior(): IBehavior {
   let remainingPoints =
     GENERATION_LIMITS.BEHAVIOR_MAX_TOTAL - behaviorNames.length * minValue;
 
-  while (remainingPoints > 0) {
-    const shuffledBehaviors = shuffle(behaviorNames);
+  // Distribute remaining points randomly
+  const shuffledBehaviors = shuffle(behaviorNames);
 
-    for (const trait of shuffledBehaviors) {
-      if (remainingPoints === 0) break;
+  for (const trait of shuffledBehaviors) {
+    if (remainingPoints === 0) break;
 
-      if (behavior[trait] < maxValue) {
-        behavior[trait]++;
-        remainingPoints--;
-      }
-    }
+    const maxAddition = Math.min(maxValue - behavior[trait], remainingPoints);
 
-    const allMaxed = behaviorNames.every((trait) => behavior[trait] === maxValue);
-    if (allMaxed) break;
+    const addition = randomInt(0, maxAddition);
+    behavior[trait] += addition;
+    remainingPoints -= addition;
   }
 
   return behavior;

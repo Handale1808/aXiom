@@ -38,28 +38,20 @@ export function generateResistances(): IResistances {
   let remainingPoints =
     GENERATION_LIMITS.RESISTANCES_MAX_TOTAL - resistanceNames.length * minValue;
 
-  while (remainingPoints > 0) {
-    const shuffledResistances = shuffle(resistanceNames);
+  // Distribute remaining points randomly
+  const shuffledResistances = shuffle(resistanceNames);
 
-    for (const resistance of shuffledResistances) {
-      if (remainingPoints === 0) break;
+  for (const resistance of shuffledResistances) {
+    if (remainingPoints === 0) break;
 
-      const increment = Math.min(randomInt(1, 10), remainingPoints);
-
-      if (resistances[resistance] + increment <= maxValue) {
-        resistances[resistance] += increment;
-        remainingPoints -= increment;
-      } else if (resistances[resistance] < maxValue) {
-        const remainingSpace = maxValue - resistances[resistance];
-        resistances[resistance] += remainingSpace;
-        remainingPoints -= remainingSpace;
-      }
-    }
-
-    const allMaxed = resistanceNames.every(
-      (resistance) => resistances[resistance] === maxValue
+    const maxAddition = Math.min(
+      maxValue - resistances[resistance],
+      remainingPoints
     );
-    if (allMaxed) break;
+
+    const addition = randomInt(0, maxAddition);
+    resistances[resistance] += addition;
+    remainingPoints -= addition;
   }
 
   return resistances;

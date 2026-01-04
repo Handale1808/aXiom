@@ -38,20 +38,17 @@ export function generateStats(): IStats {
   let remainingPoints =
     GENERATION_LIMITS.STATS_MAX_TOTAL - statNames.length * minValue;
 
-  while (remainingPoints > 0) {
-    const shuffledStats = shuffle(statNames);
+  // Distribute remaining points randomly
+  const shuffledStats = shuffle(statNames);
 
-    for (const stat of shuffledStats) {
-      if (remainingPoints === 0) break;
+  for (const stat of shuffledStats) {
+    if (remainingPoints === 0) break;
 
-      if (stats[stat] < maxValue) {
-        stats[stat]++;
-        remainingPoints--;
-      }
-    }
+    const maxAddition = Math.min(maxValue - stats[stat], remainingPoints);
 
-    const allMaxed = statNames.every((stat) => stats[stat] === maxValue);
-    if (allMaxed) break;
+    const addition = randomInt(0, maxAddition);
+    stats[stat] += addition;
+    remainingPoints -= addition;
   }
 
   return stats;
