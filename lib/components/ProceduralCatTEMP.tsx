@@ -298,10 +298,10 @@ export default function ProceduralCat({ traits }: ProceduralCatProps) {
           return (
             <polygon
               key={`wing-${i}`}
-              points="0,-75 -8,0 8,0"
+              points="0,-15 -8,0 8,0"
               fill={wingColor}
               opacity={jitter(0.6, i * 400 + 3, 0.1)}
-              transform={`translate(${curvePoint.x}, ${curvePoint.y}) rotate(${(perpAngle * 180) / Math.PI})`}
+              transform={`translate(${curvePoint.x }, ${curvePoint.y - 20}) rotate(${(perpAngle * 180) / Math.PI})`}
             />
           );
         })}
