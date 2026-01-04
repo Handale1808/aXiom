@@ -241,8 +241,8 @@ export default function GenerateImage({ traits }: GenerateImageProps) {
 
           const tailPath = `
       M 0,0
-      Q ${jitter(15, i * 100 + 20)},${jitter(-20, i * 100 + 21)} ${jitter(25, i * 100 + 22)},${jitter(-35, i * 100 + 23)}
-      Q ${jitter(30, i * 100 + 24)},${jitter(-45, i * 100 + 25)} ${jitter(32, i * 100 + 26)},${jitter(-60, i * 100 + 27)}
+      C ${jitter(12, i * 100 + 20)},${jitter(-10, i * 100 + 21)} ${jitter(18, i * 100 + 22)},${jitter(-30, i * 100 + 23)} ${jitter(20, i * 100 + 24)},${jitter(-35, i * 100 + 25)}
+      S ${jitter(15, i * 100 + 26)},${jitter(-55, i * 100 + 27)} ${jitter(25, i * 100 + 28)},${jitter(-65, i * 100 + 29)}
     `;
 
           return (
@@ -298,7 +298,7 @@ export default function GenerateImage({ traits }: GenerateImageProps) {
               points="0,-15 -8,0 8,0"
               fill={wingColor}
               opacity={jitter(0.6, i * 400 + 3, 0.1)}
-              transform={`translate(${curvePoint.x }, ${curvePoint.y - 20}) rotate(${(perpAngle * 180) / Math.PI})`}
+              transform={`translate(${curvePoint.x}, ${curvePoint.y - 20}) rotate(${(perpAngle * 180) / Math.PI})`}
             />
           );
         })}
