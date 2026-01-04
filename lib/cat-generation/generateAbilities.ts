@@ -118,12 +118,16 @@ export async function generateAbilities(
     const selectedRule = selectAbilityByChance(eligibleRules);
 
     if (selectedRule) {
-      const ability = abilityMap.get(abilityIdStr);
-      if (ability) {
-        grantedAbilities.push(ability);
+      const randomRoll = Math.random();
+      
+      if (randomRoll < selectedRule.chance) {
+        const ability = abilityMap.get(abilityIdStr);
+        if (ability) {
+          grantedAbilities.push(ability);
 
-        if (selectedRule.exclusiveGroup) {
-          usedExclusiveGroups.add(selectedRule.exclusiveGroup);
+          if (selectedRule.exclusiveGroup) {
+            usedExclusiveGroups.add(selectedRule.exclusiveGroup);
+          }
         }
       }
     }

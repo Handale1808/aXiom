@@ -361,7 +361,7 @@ const ABILITIES_DATA = [
 const ABILITY_RULES_DATA = [
   {
     abilityKey: "HIGH_JUMP",
-    chance: 0.5,
+    chance: 0.085,
     priority: 50,
     exclusiveGroup: "movement",
     conditions: [
@@ -372,7 +372,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "WALL_CLING",
-    chance: 0.4,
+    chance: 0.084,
     priority: 45,
     exclusiveGroup: null,
     conditions: [
@@ -383,7 +383,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "GLIDE",
-    chance: 0.6,
+    chance: 0.086,
     priority: 55,
     exclusiveGroup: "movement",
     conditions: [
@@ -393,7 +393,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "BURST_SPRINT",
-    chance: 0.7,
+    chance: 0.087,
     priority: 40,
     exclusiveGroup: "movement",
     conditions: [
@@ -403,7 +403,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "SERPENTINE_MOVEMENT",
-    chance: 0.5,
+    chance: 0.085,
     priority: 35,
     exclusiveGroup: "movement",
     conditions: [
@@ -413,7 +413,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "DIMENSION_BLINK",
-    chance: 0.2,
+    chance: 0.082,
     priority: 80,
     exclusiveGroup: "movement",
     conditions: [
@@ -423,7 +423,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "RENDING_CLAWS",
-    chance: 0.6,
+    chance: 0.086,
     priority: 50,
     exclusiveGroup: null,
     conditions: [
@@ -433,7 +433,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "VENOM_BITE",
-    chance: 0.4,
+    chance: 0.084,
     priority: 55,
     exclusiveGroup: null,
     conditions: [
@@ -443,7 +443,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "ACID_SPIT",
-    chance: 0.3,
+    chance: 0.083,
     priority: 60,
     exclusiveGroup: null,
     conditions: [
@@ -453,7 +453,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "CHARGE_ATTACK",
-    chance: 0.5,
+    chance: 0.085,
     priority: 50,
     exclusiveGroup: null,
     conditions: [
@@ -464,26 +464,29 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "NATURAL_ARMOUR",
-    chance: 0.6,
+    chance: 0.086,
     priority: 50,
     exclusiveGroup: null,
     conditions: [
-      { source: "trait", key: "skinType", op: "in", value: ["scales", "chitin"] },
+      {
+        source: "trait",
+        key: "skinType",
+        op: "in",
+        value: ["scales", "chitin"],
+      },
       { source: "stat", key: "endurance", op: ">=", value: 6 },
     ],
   },
   {
     abilityKey: "TOXIN_METABOLISM",
-    chance: 0.8,
+    chance: 0.088,
     priority: 40,
     exclusiveGroup: null,
-    conditions: [
-      { source: "resistance", key: "poison", op: ">=", value: 70 },
-    ],
+    conditions: [{ source: "resistance", key: "poison", op: ">=", value: 70 }],
   },
   {
     abilityKey: "THERMAL_ADAPTATION",
-    chance: 0.5,
+    chance: 0.085,
     priority: 45,
     exclusiveGroup: null,
     conditions: [
@@ -493,7 +496,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "THERMAL_ADAPTATION",
-    chance: 0.5,
+    chance: 0.085,
     priority: 45,
     exclusiveGroup: null,
     conditions: [
@@ -503,7 +506,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "CAMOUFLAGE",
-    chance: 0.4,
+    chance: 0.084,
     priority: 50,
     exclusiveGroup: null,
     conditions: [
@@ -513,7 +516,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "NIGHT_VISION",
-    chance: 0.7,
+    chance: 0.087,
     priority: 40,
     exclusiveGroup: null,
     conditions: [
@@ -523,16 +526,14 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "OMNIDIRECTIONAL_SIGHT",
-    chance: 0.6,
+    chance: 0.086,
     priority: 50,
     exclusiveGroup: null,
-    conditions: [
-      { source: "trait", key: "eyes", op: ">=", value: 4 },
-    ],
+    conditions: [{ source: "trait", key: "eyes", op: ">=", value: 4 }],
   },
   {
     abilityKey: "VIBRATION_SENSE",
-    chance: 0.5,
+    chance: 0.085,
     priority: 45,
     exclusiveGroup: null,
     conditions: [
@@ -542,7 +543,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "EMOTIONAL_SENSE",
-    chance: 0.4,
+    chance: 0.084,
     priority: 55,
     exclusiveGroup: null,
     conditions: [
@@ -552,16 +553,14 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "FIRE_IMMUNITY",
-    chance: 0.9,
+    chance: 0.09,
     priority: 70,
     exclusiveGroup: "elemental",
-    conditions: [
-      { source: "resistance", key: "fire", op: ">=", value: 90 },
-    ],
+    conditions: [{ source: "resistance", key: "fire", op: ">=", value: 90 }],
   },
   {
     abilityKey: "RADIATION_FEEDER",
-    chance: 0.5,
+    chance: 0.085,
     priority: 60,
     exclusiveGroup: "elemental",
     conditions: [
@@ -571,7 +570,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "STATIC_DISCHARGE",
-    chance: 0.3,
+    chance: 0.083,
     priority: 50,
     exclusiveGroup: null,
     conditions: [
@@ -581,7 +580,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "ACID_BODY",
-    chance: 0.4,
+    chance: 0.084,
     priority: 65,
     exclusiveGroup: "elemental",
     conditions: [
@@ -591,7 +590,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "PSYCHIC_SCREAM",
-    chance: 0.4,
+    chance: 0.084,
     priority: 60,
     exclusiveGroup: null,
     conditions: [
@@ -601,7 +600,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "TELEKINETIC_POUNCE",
-    chance: 0.3,
+    chance: 0.083,
     priority: 55,
     exclusiveGroup: null,
     conditions: [
@@ -611,7 +610,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "MIND_SHIELD",
-    chance: 0.6,
+    chance: 0.086,
     priority: 50,
     exclusiveGroup: null,
     conditions: [
@@ -621,7 +620,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "PSYCHIC_DETECTION",
-    chance: 0.5,
+    chance: 0.085,
     priority: 45,
     exclusiveGroup: null,
     conditions: [
@@ -631,16 +630,14 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "UNPREDICTABLE",
-    chance: 0.8,
+    chance: 0.088,
     priority: 40,
     exclusiveGroup: null,
-    conditions: [
-      { source: "behavior", key: "chaos", op: ">=", value: 7 },
-    ],
+    conditions: [{ source: "behavior", key: "chaos", op: ">=", value: 7 }],
   },
   {
     abilityKey: "PACK_COORDINATION",
-    chance: 0.5,
+    chance: 0.085,
     priority: 45,
     exclusiveGroup: null,
     conditions: [
@@ -650,7 +647,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "BERSERK",
-    chance: 0.6,
+    chance: 0.086,
     priority: 60,
     exclusiveGroup: "mental",
     conditions: [
@@ -660,7 +657,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "STOIC",
-    chance: 0.4,
+    chance: 0.084,
     priority: 55,
     exclusiveGroup: "mental",
     conditions: [
@@ -670,29 +667,39 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "CRYSTALLINE_HIDE",
-    chance: 0.5,
+    chance: 0.085,
     priority: 55,
     exclusiveGroup: null,
     conditions: [
-      { source: "trait", key: "skinType", op: "in", value: ["scales", "chitin"] },
+      {
+        source: "trait",
+        key: "skinType",
+        op: "in",
+        value: ["scales", "chitin"],
+      },
       { source: "resistance", key: "cold", op: ">=", value: 60 },
       { source: "stat", key: "endurance", op: ">=", value: 7 },
     ],
   },
   {
     abilityKey: "PHASE_WHISKERS",
-    chance: 0.3,
+    chance: 0.083,
     priority: 65,
     exclusiveGroup: null,
     conditions: [
       { source: "stat", key: "psychic", op: ">=", value: 7 },
       { source: "stat", key: "perception", op: ">=", value: 6 },
-      { source: "trait", key: "size", op: "in", value: ["tiny", "small", "medium"] },
+      {
+        source: "trait",
+        key: "size",
+        op: "in",
+        value: ["tiny", "small", "medium"],
+      },
     ],
   },
   {
     abilityKey: "SONIC_PURR",
-    chance: 0.4,
+    chance: 0.084,
     priority: 60,
     exclusiveGroup: null,
     conditions: [
@@ -703,7 +710,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "GRAVITATIONAL_POUNCE",
-    chance: 0.2,
+    chance: 0.082,
     priority: 75,
     exclusiveGroup: null,
     conditions: [
@@ -714,7 +721,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "BIOLUMINESCENT_LURE",
-    chance: 0.5,
+    chance: 0.085,
     priority: 50,
     exclusiveGroup: null,
     conditions: [
@@ -725,7 +732,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "TEMPORAL_REFLEXES",
-    chance: 0.3,
+    chance: 0.083,
     priority: 70,
     exclusiveGroup: null,
     conditions: [
@@ -736,7 +743,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "MIRROR_FUR",
-    chance: 0.4,
+    chance: 0.084,
     priority: 60,
     exclusiveGroup: null,
     conditions: [
@@ -758,7 +765,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "PHEROMONE_CLOUD",
-    chance: 0.5,
+    chance: 0.085,
     priority: 50,
     exclusiveGroup: null,
     conditions: [
@@ -769,7 +776,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "REGENERATIVE_PURR",
-    chance: 0.6,
+    chance: 0.086,
     priority: 55,
     exclusiveGroup: null,
     conditions: [
@@ -780,7 +787,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "MAGNETIC_PAWS",
-    chance: 0.4,
+    chance: 0.084,
     priority: 50,
     exclusiveGroup: null,
     conditions: [
@@ -791,7 +798,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "ECHOLOCATION_MEOW",
-    chance: 0.6,
+    chance: 0.086,
     priority: 45,
     exclusiveGroup: null,
     conditions: [
@@ -801,7 +808,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "CHROMATIC_SHIFT",
-    chance: 0.5,
+    chance: 0.085,
     priority: 40,
     exclusiveGroup: null,
     conditions: [
@@ -812,7 +819,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "TAIL_WHIP_VORTEX",
-    chance: 0.5,
+    chance: 0.085,
     priority: 55,
     exclusiveGroup: null,
     conditions: [
@@ -823,7 +830,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "QUANTUM_UNCERTAINTY",
-    chance: 0.2,
+    chance: 0.082,
     priority: 80,
     exclusiveGroup: null,
     conditions: [
@@ -834,7 +841,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "PLASMA_BREATH",
-    chance: 0.3,
+    chance: 0.083,
     priority: 70,
     exclusiveGroup: "elemental",
     conditions: [
@@ -845,7 +852,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "NEURAL_LINK",
-    chance: 0.4,
+    chance: 0.084,
     priority: 60,
     exclusiveGroup: null,
     conditions: [
@@ -856,18 +863,23 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "SHADOW_MELD",
-    chance: 0.5,
+    chance: 0.085,
     priority: 55,
     exclusiveGroup: null,
     conditions: [
       { source: "stat", key: "agility", op: ">=", value: 6 },
       { source: "stat", key: "perception", op: ">=", value: 5 },
-      { source: "trait", key: "colour", op: "in", value: ["black", "dark grey", "midnight blue"] },
+      {
+        source: "trait",
+        key: "colour",
+        op: "in",
+        value: ["black", "dark grey", "midnight blue"],
+      },
     ],
   },
   {
     abilityKey: "OSMOTIC_CONSUMPTION",
-    chance: 0.4,
+    chance: 0.084,
     priority: 50,
     exclusiveGroup: null,
     conditions: [
@@ -878,7 +890,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "ANTIMATTER_CLAWS",
-    chance: 0.1,
+    chance: 0.081,
     priority: 90,
     exclusiveGroup: null,
     conditions: [
@@ -890,7 +902,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "REALITY_ANCHOR",
-    chance: 0.3,
+    chance: 0.083,
     priority: 65,
     exclusiveGroup: null,
     conditions: [
@@ -912,7 +924,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "CRYOGENIC_EXHALE",
-    chance: 0.4,
+    chance: 0.084,
     priority: 60,
     exclusiveGroup: "elemental",
     conditions: [
@@ -922,7 +934,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "PHOTOSYNTHETIC_FUR",
-    chance: 0.5,
+    chance: 0.085,
     priority: 45,
     exclusiveGroup: null,
     conditions: [
@@ -933,7 +945,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "BLOOD_SCENT_TRACKING",
-    chance: 0.7,
+    chance: 0.087,
     priority: 50,
     exclusiveGroup: null,
     conditions: [
