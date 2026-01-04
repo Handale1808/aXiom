@@ -359,8 +359,589 @@ const ABILITIES_DATA = [
 ];
 
 const ABILITY_RULES_DATA = [
- //redo
-]
+  {
+    abilityKey: "HIGH_JUMP",
+    chance: 0.5,
+    priority: 50,
+    exclusiveGroup: "movement",
+    conditions: [
+      { source: "stat", key: "strength", op: ">=", value: 5 },
+      { source: "stat", key: "agility", op: ">=", value: 4 },
+      { source: "trait", key: "legs", op: ">=", value: 3 },
+    ],
+  },
+  {
+    abilityKey: "WALL_CLING",
+    chance: 0.4,
+    priority: 45,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "trait", key: "hasClaws", op: "=", value: true },
+      { source: "stat", key: "agility", op: ">=", value: 6 },
+      { source: "trait", key: "size", op: "!=", value: "massive" },
+    ],
+  },
+  {
+    abilityKey: "GLIDE",
+    chance: 0.6,
+    priority: 55,
+    exclusiveGroup: "movement",
+    conditions: [
+      { source: "trait", key: "wings", op: ">=", value: 1 },
+      { source: "stat", key: "endurance", op: ">=", value: 4 },
+    ],
+  },
+  {
+    abilityKey: "BURST_SPRINT",
+    chance: 0.7,
+    priority: 40,
+    exclusiveGroup: "movement",
+    conditions: [
+      { source: "stat", key: "agility", op: ">=", value: 7 },
+      { source: "stat", key: "endurance", op: ">=", value: 3 },
+    ],
+  },
+  {
+    abilityKey: "SERPENTINE_MOVEMENT",
+    chance: 0.5,
+    priority: 35,
+    exclusiveGroup: "movement",
+    conditions: [
+      { source: "trait", key: "legs", op: "<=", value: 2 },
+      { source: "stat", key: "agility", op: ">=", value: 5 },
+    ],
+  },
+  {
+    abilityKey: "DIMENSION_BLINK",
+    chance: 0.2,
+    priority: 80,
+    exclusiveGroup: "movement",
+    conditions: [
+      { source: "stat", key: "psychic", op: ">=", value: 8 },
+      { source: "stat", key: "agility", op: ">=", value: 6 },
+    ],
+  },
+  {
+    abilityKey: "RENDING_CLAWS",
+    chance: 0.6,
+    priority: 50,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "trait", key: "hasClaws", op: "=", value: true },
+      { source: "stat", key: "strength", op: ">=", value: 6 },
+    ],
+  },
+  {
+    abilityKey: "VENOM_BITE",
+    chance: 0.4,
+    priority: 55,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "trait", key: "hasFangs", op: "=", value: true },
+      { source: "resistance", key: "poison", op: ">=", value: 50 },
+    ],
+  },
+  {
+    abilityKey: "ACID_SPIT",
+    chance: 0.3,
+    priority: 60,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "resistance", key: "acid", op: ">=", value: 60 },
+      { source: "stat", key: "intelligence", op: ">=", value: 4 },
+    ],
+  },
+  {
+    abilityKey: "CHARGE_ATTACK",
+    chance: 0.5,
+    priority: 50,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "stat", key: "strength", op: ">=", value: 7 },
+      { source: "trait", key: "size", op: "in", value: ["large", "massive"] },
+      { source: "stat", key: "endurance", op: ">=", value: 5 },
+    ],
+  },
+  {
+    abilityKey: "NATURAL_ARMOUR",
+    chance: 0.6,
+    priority: 50,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "trait", key: "skinType", op: "in", value: ["scales", "chitin"] },
+      { source: "stat", key: "endurance", op: ">=", value: 6 },
+    ],
+  },
+  {
+    abilityKey: "TOXIN_METABOLISM",
+    chance: 0.8,
+    priority: 40,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "resistance", key: "poison", op: ">=", value: 70 },
+    ],
+  },
+  {
+    abilityKey: "THERMAL_ADAPTATION",
+    chance: 0.5,
+    priority: 45,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "resistance", key: "fire", op: ">=", value: 60 },
+      { source: "stat", key: "endurance", op: ">=", value: 4 },
+    ],
+  },
+  {
+    abilityKey: "THERMAL_ADAPTATION",
+    chance: 0.5,
+    priority: 45,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "resistance", key: "cold", op: ">=", value: 60 },
+      { source: "stat", key: "endurance", op: ">=", value: 4 },
+    ],
+  },
+  {
+    abilityKey: "CAMOUFLAGE",
+    chance: 0.4,
+    priority: 50,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "stat", key: "agility", op: ">=", value: 5 },
+      { source: "stat", key: "perception", op: ">=", value: 4 },
+    ],
+  },
+  {
+    abilityKey: "NIGHT_VISION",
+    chance: 0.7,
+    priority: 40,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "trait", key: "eyes", op: ">=", value: 2 },
+      { source: "stat", key: "perception", op: ">=", value: 5 },
+    ],
+  },
+  {
+    abilityKey: "OMNIDIRECTIONAL_SIGHT",
+    chance: 0.6,
+    priority: 50,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "trait", key: "eyes", op: ">=", value: 4 },
+    ],
+  },
+  {
+    abilityKey: "VIBRATION_SENSE",
+    chance: 0.5,
+    priority: 45,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "trait", key: "legs", op: ">=", value: 4 },
+      { source: "stat", key: "perception", op: ">=", value: 6 },
+    ],
+  },
+  {
+    abilityKey: "EMOTIONAL_SENSE",
+    chance: 0.4,
+    priority: 55,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "stat", key: "psychic", op: ">=", value: 4 },
+      { source: "stat", key: "intelligence", op: ">=", value: 4 },
+    ],
+  },
+  {
+    abilityKey: "FIRE_IMMUNITY",
+    chance: 0.9,
+    priority: 70,
+    exclusiveGroup: "elemental",
+    conditions: [
+      { source: "resistance", key: "fire", op: ">=", value: 90 },
+    ],
+  },
+  {
+    abilityKey: "RADIATION_FEEDER",
+    chance: 0.5,
+    priority: 60,
+    exclusiveGroup: "elemental",
+    conditions: [
+      { source: "resistance", key: "radiation", op: ">=", value: 80 },
+      { source: "stat", key: "endurance", op: ">=", value: 5 },
+    ],
+  },
+  {
+    abilityKey: "STATIC_DISCHARGE",
+    chance: 0.3,
+    priority: 50,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "stat", key: "agility", op: ">=", value: 6 },
+      { source: "resistance", key: "cold", op: ">=", value: 40 },
+    ],
+  },
+  {
+    abilityKey: "ACID_BODY",
+    chance: 0.4,
+    priority: 65,
+    exclusiveGroup: "elemental",
+    conditions: [
+      { source: "resistance", key: "acid", op: ">=", value: 85 },
+      { source: "stat", key: "endurance", op: ">=", value: 4 },
+    ],
+  },
+  {
+    abilityKey: "PSYCHIC_SCREAM",
+    chance: 0.4,
+    priority: 60,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "stat", key: "psychic", op: ">=", value: 7 },
+      { source: "stat", key: "endurance", op: ">=", value: 5 },
+    ],
+  },
+  {
+    abilityKey: "TELEKINETIC_POUNCE",
+    chance: 0.3,
+    priority: 55,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "stat", key: "psychic", op: ">=", value: 6 },
+      { source: "stat", key: "agility", op: ">=", value: 5 },
+    ],
+  },
+  {
+    abilityKey: "MIND_SHIELD",
+    chance: 0.6,
+    priority: 50,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "stat", key: "psychic", op: ">=", value: 5 },
+      { source: "stat", key: "intelligence", op: ">=", value: 5 },
+    ],
+  },
+  {
+    abilityKey: "PSYCHIC_DETECTION",
+    chance: 0.5,
+    priority: 45,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "stat", key: "psychic", op: ">=", value: 6 },
+      { source: "stat", key: "perception", op: ">=", value: 4 },
+    ],
+  },
+  {
+    abilityKey: "UNPREDICTABLE",
+    chance: 0.8,
+    priority: 40,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "behavior", key: "chaos", op: ">=", value: 7 },
+    ],
+  },
+  {
+    abilityKey: "PACK_COORDINATION",
+    chance: 0.5,
+    priority: 45,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "behavior", key: "loyalty", op: ">=", value: 6 },
+      { source: "stat", key: "intelligence", op: ">=", value: 4 },
+    ],
+  },
+  {
+    abilityKey: "BERSERK",
+    chance: 0.6,
+    priority: 60,
+    exclusiveGroup: "mental",
+    conditions: [
+      { source: "behavior", key: "aggression", op: ">=", value: 8 },
+      { source: "stat", key: "endurance", op: ">=", value: 6 },
+    ],
+  },
+  {
+    abilityKey: "STOIC",
+    chance: 0.4,
+    priority: 55,
+    exclusiveGroup: "mental",
+    conditions: [
+      { source: "behavior", key: "aggression", op: "<=", value: 3 },
+      { source: "stat", key: "intelligence", op: ">=", value: 5 },
+    ],
+  },
+  {
+    abilityKey: "CRYSTALLINE_HIDE",
+    chance: 0.5,
+    priority: 55,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "trait", key: "skinType", op: "in", value: ["scales", "chitin"] },
+      { source: "resistance", key: "cold", op: ">=", value: 60 },
+      { source: "stat", key: "endurance", op: ">=", value: 7 },
+    ],
+  },
+  {
+    abilityKey: "PHASE_WHISKERS",
+    chance: 0.3,
+    priority: 65,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "stat", key: "psychic", op: ">=", value: 7 },
+      { source: "stat", key: "perception", op: ">=", value: 6 },
+      { source: "trait", key: "size", op: "in", value: ["tiny", "small", "medium"] },
+    ],
+  },
+  {
+    abilityKey: "SONIC_PURR",
+    chance: 0.4,
+    priority: 60,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "stat", key: "strength", op: ">=", value: 5 },
+      { source: "stat", key: "endurance", op: ">=", value: 6 },
+      { source: "behavior", key: "aggression", op: ">=", value: 5 },
+    ],
+  },
+  {
+    abilityKey: "GRAVITATIONAL_POUNCE",
+    chance: 0.2,
+    priority: 75,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "stat", key: "psychic", op: ">=", value: 8 },
+      { source: "stat", key: "strength", op: ">=", value: 6 },
+      { source: "stat", key: "intelligence", op: ">=", value: 5 },
+    ],
+  },
+  {
+    abilityKey: "BIOLUMINESCENT_LURE",
+    chance: 0.5,
+    priority: 50,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "stat", key: "intelligence", op: ">=", value: 6 },
+      { source: "behavior", key: "curiosity", op: ">=", value: 4 },
+      { source: "trait", key: "skinType", op: "=", value: "skin" },
+    ],
+  },
+  {
+    abilityKey: "TEMPORAL_REFLEXES",
+    chance: 0.3,
+    priority: 70,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "stat", key: "agility", op: ">=", value: 8 },
+      { source: "stat", key: "perception", op: ">=", value: 7 },
+      { source: "stat", key: "psychic", op: ">=", value: 6 },
+    ],
+  },
+  {
+    abilityKey: "MIRROR_FUR",
+    chance: 0.4,
+    priority: 60,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "trait", key: "skinType", op: "=", value: "scales" },
+      { source: "resistance", key: "fire", op: ">=", value: 50 },
+      { source: "stat", key: "endurance", op: ">=", value: 5 },
+    ],
+  },
+  {
+    abilityKey: "VOID_STEP",
+    chance: 0.15,
+    priority: 85,
+    exclusiveGroup: "movement",
+    conditions: [
+      { source: "stat", key: "psychic", op: ">=", value: 9 },
+      { source: "stat", key: "intelligence", op: ">=", value: 6 },
+      { source: "behavior", key: "chaos", op: ">=", value: 5 },
+    ],
+  },
+  {
+    abilityKey: "PHEROMONE_CLOUD",
+    chance: 0.5,
+    priority: 50,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "stat", key: "intelligence", op: ">=", value: 5 },
+      { source: "behavior", key: "loyalty", op: ">=", value: 4 },
+      { source: "trait", key: "skinType", op: "in", value: ["fur", "skin"] },
+    ],
+  },
+  {
+    abilityKey: "REGENERATIVE_PURR",
+    chance: 0.6,
+    priority: 55,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "stat", key: "endurance", op: ">=", value: 7 },
+      { source: "resistance", key: "poison", op: ">=", value: 40 },
+      { source: "behavior", key: "aggression", op: "<=", value: 5 },
+    ],
+  },
+  {
+    abilityKey: "MAGNETIC_PAWS",
+    chance: 0.4,
+    priority: 50,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "trait", key: "hasClaws", op: "=", value: true },
+      { source: "stat", key: "intelligence", op: ">=", value: 5 },
+      { source: "stat", key: "strength", op: ">=", value: 4 },
+    ],
+  },
+  {
+    abilityKey: "ECHOLOCATION_MEOW",
+    chance: 0.6,
+    priority: 45,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "stat", key: "perception", op: ">=", value: 7 },
+      { source: "trait", key: "eyes", op: "<=", value: 2 },
+    ],
+  },
+  {
+    abilityKey: "CHROMATIC_SHIFT",
+    chance: 0.5,
+    priority: 40,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "trait", key: "skinType", op: "in", value: ["skin", "scales"] },
+      { source: "stat", key: "intelligence", op: ">=", value: 4 },
+      { source: "behavior", key: "curiosity", op: ">=", value: 5 },
+    ],
+  },
+  {
+    abilityKey: "TAIL_WHIP_VORTEX",
+    chance: 0.5,
+    priority: 55,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "trait", key: "tails", op: ">=", value: 1 },
+      { source: "stat", key: "strength", op: ">=", value: 6 },
+      { source: "stat", key: "agility", op: ">=", value: 5 },
+    ],
+  },
+  {
+    abilityKey: "QUANTUM_UNCERTAINTY",
+    chance: 0.2,
+    priority: 80,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "stat", key: "psychic", op: ">=", value: 9 },
+      { source: "stat", key: "agility", op: ">=", value: 7 },
+      { source: "behavior", key: "chaos", op: ">=", value: 8 },
+    ],
+  },
+  {
+    abilityKey: "PLASMA_BREATH",
+    chance: 0.3,
+    priority: 70,
+    exclusiveGroup: "elemental",
+    conditions: [
+      { source: "resistance", key: "fire", op: ">=", value: 85 },
+      { source: "stat", key: "strength", op: ">=", value: 6 },
+      { source: "stat", key: "endurance", op: ">=", value: 7 },
+    ],
+  },
+  {
+    abilityKey: "NEURAL_LINK",
+    chance: 0.4,
+    priority: 60,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "stat", key: "psychic", op: ">=", value: 7 },
+      { source: "behavior", key: "loyalty", op: ">=", value: 7 },
+      { source: "stat", key: "intelligence", op: ">=", value: 6 },
+    ],
+  },
+  {
+    abilityKey: "SHADOW_MELD",
+    chance: 0.5,
+    priority: 55,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "stat", key: "agility", op: ">=", value: 6 },
+      { source: "stat", key: "perception", op: ">=", value: 5 },
+      { source: "trait", key: "colour", op: "in", value: ["black", "dark grey", "midnight blue"] },
+    ],
+  },
+  {
+    abilityKey: "OSMOTIC_CONSUMPTION",
+    chance: 0.4,
+    priority: 50,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "trait", key: "skinType", op: "=", value: "skin" },
+      { source: "stat", key: "endurance", op: ">=", value: 6 },
+      { source: "resistance", key: "acid", op: ">=", value: 50 },
+    ],
+  },
+  {
+    abilityKey: "ANTIMATTER_CLAWS",
+    chance: 0.1,
+    priority: 90,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "trait", key: "hasClaws", op: "=", value: true },
+      { source: "stat", key: "strength", op: ">=", value: 8 },
+      { source: "resistance", key: "radiation", op: ">=", value: 90 },
+      { source: "stat", key: "psychic", op: ">=", value: 7 },
+    ],
+  },
+  {
+    abilityKey: "REALITY_ANCHOR",
+    chance: 0.3,
+    priority: 65,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "stat", key: "intelligence", op: ">=", value: 7 },
+      { source: "stat", key: "psychic", op: ">=", value: 6 },
+      { source: "behavior", key: "chaos", op: "<=", value: 3 },
+    ],
+  },
+  {
+    abilityKey: "SWARM_CONSCIOUSNESS",
+    chance: 0.25,
+    priority: 75,
+    exclusiveGroup: "mental",
+    conditions: [
+      { source: "stat", key: "psychic", op: ">=", value: 8 },
+      { source: "stat", key: "intelligence", op: ">=", value: 7 },
+      { source: "behavior", key: "loyalty", op: ">=", value: 5 },
+    ],
+  },
+  {
+    abilityKey: "CRYOGENIC_EXHALE",
+    chance: 0.4,
+    priority: 60,
+    exclusiveGroup: "elemental",
+    conditions: [
+      { source: "resistance", key: "cold", op: ">=", value: 85 },
+      { source: "stat", key: "endurance", op: ">=", value: 6 },
+    ],
+  },
+  {
+    abilityKey: "PHOTOSYNTHETIC_FUR",
+    chance: 0.5,
+    priority: 45,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "trait", key: "skinType", op: "in", value: ["fur", "skin"] },
+      { source: "stat", key: "endurance", op: ">=", value: 5 },
+      { source: "behavior", key: "aggression", op: "<=", value: 4 },
+    ],
+  },
+  {
+    abilityKey: "BLOOD_SCENT_TRACKING",
+    chance: 0.7,
+    priority: 50,
+    exclusiveGroup: null,
+    conditions: [
+      { source: "stat", key: "perception", op: ">=", value: 8 },
+      { source: "behavior", key: "aggression", op: ">=", value: 6 },
+    ],
+  },
+];
 
 async function populateAbilities() {
   try {
