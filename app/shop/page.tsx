@@ -6,17 +6,21 @@ import FormWithHeading, {
   type TabWithContent,
 } from "@/lib/components/FormWithHeading";
 import CatGrid, { type Cat } from "@/lib/components/CatGrid";
-import Portal from "@/lib/components/PortalTEMP";
-import { generateRandomCatTraits } from "@/lib/utils/catGenerator";
-import { CatTraits } from "@/lib/types/cat-drawing";
+import Modal from "@/lib/components/Modal";
+import CatDetails from "@/lib/components/CatDetails";
+import { generateCat } from "@/lib/cat-generation/generateCat";
+import { ICat } from "@/models/Cats";
+import { IAbility } from "@/models/Ability";
+import { IAbilityRule } from "@/models/AbilityRules";
+import connectToDatabase from "@/lib/mongodb";
+import { generateCatAction } from "@/lib/services/catActions";
 
 export default function ShopPage() {
   const { isAdmin, isLoading } = useUser();
   const [activeTab, setActiveTab] = useState("admin");
-  const [isPortalOpen, setIsPortalOpen] = useState(false);
-  const [currentCatTraits, setCurrentCatTraits] = useState<CatTraits | null>(
-    null
-  );
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentCat, setCurrentCat] = useState<ICat | null>(null);
+  const [currentAbilities, setCurrentAbilities] = useState<IAbility[]>([]);
 
   const mockCats: Cat[] = [
     { id: "1", emoji: "🐱", name: "SPECIMEN_ALPHA" },
@@ -29,14 +33,19 @@ export default function ShopPage() {
 
   const [cats] = useState<Cat[]>(mockCats);
 
-  const handleGenerateCats = () => {
-    const traits = generateRandomCatTraits();
-    setCurrentCatTraits(traits);
-    setIsPortalOpen(true);
+  const handleGenerateCats = async () => {
+    try {
+      const { cat, abilities } = await generateCatAction();
+      setCurrentCat(cat);
+      setCurrentAbilities(abilities);
+      setIsModalOpen(true);
+    } catch (error) {
+      console.error("Failed to generate cat:", error);
+    }
   };
 
-  const handleClosePortal = () => {
-    setIsPortalOpen(false);
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   if (isLoading) {
@@ -100,12 +109,10 @@ export default function ShopPage() {
           <CatGrid cats={cats} showContainer={true} />
         )}
       </div>
-      {isPortalOpen && currentCatTraits && (
-        <Portal
-          isOpen={isPortalOpen}
-          onClose={handleClosePortal}
-          traits={currentCatTraits}
-        />
+      {isModalOpen && currentCat && (
+        <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+          <CatDetails cat={currentCat} abilities={currentAbilities} />
+        </Modal>
       )}
     </div>
   );

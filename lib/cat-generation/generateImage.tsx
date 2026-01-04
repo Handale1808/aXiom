@@ -1,10 +1,10 @@
-import { CatTraits } from "@/lib/types/cat-drawing";
+import { IPhysicalTraits } from "../../models/Cats";
 
-interface ProceduralCatProps {
-  traits: CatTraits;
+interface GenerateImageProps {
+  traits: IPhysicalTraits;
 }
 
-export default function ProceduralCat({ traits }: ProceduralCatProps) {
+export default function GenerateImage({ traits }: GenerateImageProps) {
   const seededRandom = (seed: number) => {
     const x = Math.sin(seed) * 10000;
     return x - Math.floor(x);
@@ -68,11 +68,6 @@ export default function ProceduralCat({ traits }: ProceduralCatProps) {
 
     return path + " Z";
   };
-
-  const blobSeed =
-    traits.eyes * 1000 + traits.legs * 100 + traits.tails * 10 + traits.wings;
-
-  const blobPoints = generateBlobPoints(100, 95, 50, blobSeed);
 
   const hexToHsl = (hex: string): [number, number, number] => {
     const r = parseInt(hex.slice(1, 3), 16) / 255;
@@ -224,8 +219,12 @@ export default function ProceduralCat({ traits }: ProceduralCatProps) {
     return bottomPoints[index];
   };
 
-  const analogousColors = getAnalogousColors(traits.color);
-  const triadicColors = getTriadicColors(traits.color);
+  const blobSeed =
+    traits.eyes * 1000 + traits.legs * 100 + traits.tails * 10 + traits.wings;
+
+  const blobPoints = generateBlobPoints(100, 95, 50, blobSeed);
+  const analogousColors = getAnalogousColors(traits.colour);
+  const triadicColors = getTriadicColors(traits.colour);
 
   return (
     <svg viewBox="0 0 200 200" className="w-full h-full">
@@ -260,7 +259,7 @@ export default function ProceduralCat({ traits }: ProceduralCatProps) {
           );
         })}
 
-      <path d={generateBlobPath(blobPoints, blobSeed)} fill={traits.color} />
+      <path d={generateBlobPath(blobPoints, blobSeed)} fill={traits.colour} />
 
       {traits.legs > 0 &&
         Array.from({ length: traits.legs }).map((_, i) => {
@@ -268,8 +267,6 @@ export default function ProceduralCat({ traits }: ProceduralCatProps) {
           const curvePoint = getBottomCurvePoint(t, blobPoints);
           const legColor = analogousColors[i % 3];
           const perpAngle = curvePoint.angle + Math.PI / 2;
-
-          console.log("Leg", i, "curvePoint:", curvePoint, "t:", t);
 
           return (
             <rect
@@ -292,7 +289,7 @@ export default function ProceduralCat({ traits }: ProceduralCatProps) {
           const t = traits.wings === 1 ? 0.5 : i / (traits.wings - 1);
           const curvePoint = getTopCurvePoint(t, blobPoints);
           const hueJitter = jitter(0, i * 400 + 10, 5);
-          const wingColor = getComplementaryColor(traits.color, hueJitter);
+          const wingColor = getComplementaryColor(traits.colour, hueJitter);
           const perpAngle = curvePoint.angle - Math.PI / 2;
 
           return (
