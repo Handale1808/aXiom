@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useUser } from "@/lib/context/UserContext";
+import { useToast } from "@/lib/context/ToastContext";
 import FormWithHeading, {
   type TabWithContent,
 } from "@/lib/components/FormWithHeading";
@@ -14,9 +15,11 @@ import { IAbility } from "@/models/Ability";
 import { IAbilityRule } from "@/models/AbilityRules";
 import connectToDatabase from "@/lib/mongodb";
 import { generateCatAction } from "@/lib/services/catActions";
+import { saveCatAction } from "@/lib/services/catActions";
 
 export default function ShopPage() {
   const { isAdmin, isLoading } = useUser();
+  const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState("admin");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentCat, setCurrentCat] = useState<ICat | null>(null);
@@ -44,8 +47,25 @@ export default function ShopPage() {
     }
   };
 
+  const handleSaveCat = async (svgString: string) => {
+    if (!currentCat) return;
+
+    const result = await saveCatAction(currentCat, currentAbilities, svgString);
+
+    if (result.success) {
+      showToast("[SPECIMEN_SAVED_TO_DATABASE]", "success");
+      setIsModalOpen(false);
+      setCurrentCat(null);
+      setCurrentAbilities([]);
+    } else {
+      showToast(`[SAVE_FAILED: ${result.error}]`, "error");
+    }
+  };
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    setCurrentCat(null);
+    setCurrentAbilities([]);
   };
 
   if (isLoading) {
@@ -110,8 +130,17 @@ export default function ShopPage() {
         )}
       </div>
       {isModalOpen && currentCat && (
-        <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
-          <CatDetails cat={currentCat} abilities={currentAbilities} />
+        <Modal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          showDefaultClose={false}
+        >
+          <CatDetails
+            cat={currentCat}
+            abilities={currentAbilities}
+            onSave={handleSaveCat}
+            onClose={handleCloseModal}
+          />
         </Modal>
       )}
     </div>

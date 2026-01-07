@@ -49,5 +49,6 @@ export interface ICat {
   stats: IStats;
   resistances: IResistances;
   behavior: IBehavior;
+  svgImage: string;
   createdAt: Date;
 }

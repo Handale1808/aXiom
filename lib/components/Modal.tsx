@@ -1,3 +1,5 @@
+// lib/components/Modal.tsx
+
 "use client";
 
 import { useEffect, useRef } from "react";
@@ -7,9 +9,15 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
+  showDefaultClose?: boolean;
 }
 
-export default function Modal({ isOpen, onClose, children }: ModalProps) {
+export default function Modal({
+  isOpen,
+  onClose,
+  children,
+  showDefaultClose = true,
+}: ModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
 
@@ -100,6 +108,15 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
         onClick={(e) => e.stopPropagation()}
         tabIndex={-1}
       >
+        {showDefaultClose && (
+          <button
+            onClick={onClose}
+            className="absolute right-4 top-4 text-2xl text-[#30D6D6] hover:text-[#30D6D6]/70 transition-colors z-10"
+            aria-label="Close modal"
+          >
+            ×
+          </button>
+        )}
         {children}
       </div>
     </div>,

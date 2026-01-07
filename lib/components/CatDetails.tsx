@@ -1,6 +1,8 @@
+// lib/components/CatDetails.tsx
+
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { ICat } from "@/models/Cats";
 import { IAbility } from "@/models/Ability";
 import FormWithHeading, {
@@ -19,10 +21,19 @@ import {
 interface CatDetailsProps {
   cat: ICat;
   abilities: IAbility[];
+  onSave: (svgString: string) => Promise<void>;
+  onClose: () => void;
 }
 
-export default function CatDetails({ cat, abilities }: CatDetailsProps) {
+export default function CatDetails({
+  cat,
+  abilities,
+  onSave,
+  onClose,
+}: CatDetailsProps) {
   const [activeTab, setActiveTab] = useState("physical");
+  const [isSaving, setIsSaving] = useState(false);
+  const svgRef = useRef<SVGSVGElement>(null);
 
   const passiveAbilities = abilities.filter((a) => a.isPassive);
   const activeAbilities = abilities.filter((a) => !a.isPassive);
@@ -39,6 +50,25 @@ export default function CatDetails({ cat, abilities }: CatDetailsProps) {
     (sum, val) => sum + val,
     0
   );
+
+  const captureSVG = (): string => {
+    if (svgRef.current) {
+      return svgRef.current.outerHTML;
+    }
+    return "";
+  };
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      const svgString = captureSVG();
+      await onSave(svgString);
+    } catch (error) {
+      console.error("Error saving cat:", error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const tabs: TabWithContent[] = [
     {
@@ -332,7 +362,7 @@ export default function CatDetails({ cat, abilities }: CatDetailsProps) {
       </div>
 
       <div className="w-full h-64 flex items-center justify-center border-2 border-[#30D6D6]/30 bg-black/30">
-        <GenerateImage traits={cat.physicalTraits} />
+        <GenerateImage ref={svgRef} traits={cat.physicalTraits} />
       </div>
 
       <FormWithHeading
@@ -340,6 +370,24 @@ export default function CatDetails({ cat, abilities }: CatDetailsProps) {
         activeTab={activeTab}
         onTabChange={setActiveTab}
       />
+
+      <div className="flex gap-4 mt-6 pt-6 border-t-2 border-[#30D6D6]/30">
+        <button
+          onClick={handleSave}
+          disabled={isSaving}
+          className="flex-1 border-2 border-[#30D6D6] bg-black py-4 font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_20px_rgba(48,214,214,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:text-[#30D6D6]"
+        >
+          {isSaving ? "[SAVING...]" : "[SAVE]"}
+        </button>
+
+        <button
+          onClick={onClose}
+          disabled={isSaving}
+          className="flex-1 border-2 border-[#30D6D6] bg-transparent py-4 font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6]/10 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          [CLOSE]
+        </button>
+      </div>
     </div>
   );
 }
