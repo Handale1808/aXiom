@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUser } from "@/lib/context/UserContext";
 import { useToast } from "@/lib/context/ToastContext";
 import FormWithHeading, {
@@ -9,13 +9,14 @@ import FormWithHeading, {
 import CatGrid, { type Cat } from "@/lib/components/CatGrid";
 import Modal from "@/lib/components/Modal";
 import CatDetails from "@/lib/components/CatDetails";
-import { generateCat } from "@/lib/cat-generation/generateCat";
 import { ICat } from "@/models/Cats";
 import { IAbility } from "@/models/Ability";
-import { IAbilityRule } from "@/models/AbilityRules";
-import connectToDatabase from "@/lib/mongodb";
-import { generateCatAction } from "@/lib/services/catActions";
-import { saveCatAction } from "@/lib/services/catActions";
+import {
+  generateCatAction,
+  saveCatAction,
+  fetchAllCatsAction,
+  fetchCatByIdAction,
+} from "@/lib/services/catActions";
 
 export default function ShopPage() {
   const { isAdmin, isLoading } = useUser();
@@ -24,17 +25,58 @@ export default function ShopPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentCat, setCurrentCat] = useState<ICat | null>(null);
   const [currentAbilities, setCurrentAbilities] = useState<IAbility[]>([]);
+  const [savedCats, setSavedCats] = useState<Cat[]>([]);
+  const [isLoadingInventory, setIsLoadingInventory] = useState(false);
+  const [selectedCatId, setSelectedCatId] = useState<string | null>(null);
 
-  const mockCats: Cat[] = [
-    { id: "1", emoji: "🐱", name: "SPECIMEN_ALPHA" },
-    { id: "2", emoji: "😺", name: "SUBJECT_BETA" },
-    { id: "3", emoji: "😸", name: "ENTITY_GAMMA" },
-    { id: "4", emoji: "😹", name: "MUTANT_DELTA" },
-    { id: "5", emoji: "😻", name: "HYBRID_EPSILON" },
-    { id: "6", emoji: "😼", name: "CLONE_ZETA" },
-  ];
+  const fetchInventoryCats = async () => {
+    setIsLoadingInventory(true);
+    try {
+      const fetchedCats = await fetchAllCatsAction();
+      const transformed = fetchedCats.map((cat) => ({
+        id: cat._id,
+        name: cat.name,
+        svgImage: cat.svgImage,
+      }));
+      setSavedCats(transformed);
+    } catch (error) {
+      console.error("Failed to fetch inventory:", error);
+      showToast("[FAILED_TO_LOAD_INVENTORY]", "error");
+    } finally {
+      setIsLoadingInventory(false);
+    }
+  };
 
-  const [cats] = useState<Cat[]>(mockCats);
+  const fetchCatDetails = async (catId: string) => {
+    console.log("fetchCatDetails called with ID:", catId);
+    try {
+      const { cat, abilities } = await fetchCatByIdAction(catId);
+      console.log("Fetched cat:", cat);
+      console.log("Fetched abilities:", abilities);
+
+      if (!cat) {
+        showToast("[SPECIMEN_NOT_FOUND]", "error");
+        return;
+      }
+
+      setCurrentCat(cat);
+      setCurrentAbilities(abilities);
+      setIsModalOpen(true);
+    } catch (error) {
+      console.error("Failed to fetch cat details:", error);
+      showToast("[FAILED_TO_LOAD_SPECIMEN]", "error");
+    }
+  };
+
+  const handleCatClick = async (catId: string) => {
+    console.log("Cat clicked with ID:", catId);
+    setSelectedCatId(catId);
+    await fetchCatDetails(catId);
+  };
+
+  useEffect(() => {
+    fetchInventoryCats();
+  }, []);
 
   const handleGenerateCats = async () => {
     try {
@@ -57,6 +99,7 @@ export default function ShopPage() {
       setIsModalOpen(false);
       setCurrentCat(null);
       setCurrentAbilities([]);
+      await fetchInventoryCats();
     } else {
       showToast(`[SAVE_FAILED: ${result.error}]`, "error");
     }
@@ -66,6 +109,7 @@ export default function ShopPage() {
     setIsModalOpen(false);
     setCurrentCat(null);
     setCurrentAbilities([]);
+    setSelectedCatId(null);
   };
 
   if (isLoading) {
@@ -102,7 +146,31 @@ export default function ShopPage() {
       id: "inventory",
       label: "INVENTORY",
       content: {
-        customContent: <CatGrid cats={cats} showContainer={false} />,
+        customContent: isLoadingInventory ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="flex items-center gap-3">
+              <div className="h-3 w-3 animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]" />
+              <div className="text-sm tracking-widest text-[#30D6D6]">
+                [LOADING_INVENTORY...]
+              </div>
+            </div>
+          </div>
+        ) : savedCats.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="text-[#006694] text-sm tracking-widest">
+              [NO_SPECIMENS_IN_DATABASE]
+            </div>
+            <div className="text-[#006694]/50 text-xs tracking-wider mt-2">
+              [GENERATE_AND_SAVE_CATS_TO_POPULATE_INVENTORY]
+            </div>
+          </div>
+        ) : (
+          <CatGrid
+            cats={savedCats}
+            showContainer={false}
+            onCatClick={handleCatClick}
+          />
+        ),
       },
     },
   ];
@@ -126,7 +194,11 @@ export default function ShopPage() {
             onTabChange={setActiveTab}
           />
         ) : (
-          <CatGrid cats={cats} showContainer={true} />
+          <CatGrid
+            cats={savedCats}
+            showContainer={true}
+            onCatClick={handleCatClick}
+          />
         )}
       </div>
       {isModalOpen && currentCat && (
@@ -138,7 +210,7 @@ export default function ShopPage() {
           <CatDetails
             cat={currentCat}
             abilities={currentAbilities}
-            onSave={handleSaveCat}
+            onSave={selectedCatId ? undefined : handleSaveCat}
             onClose={handleCloseModal}
           />
         </Modal>

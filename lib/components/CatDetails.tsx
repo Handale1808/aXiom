@@ -21,7 +21,7 @@ import {
 interface CatDetailsProps {
   cat: ICat;
   abilities: IAbility[];
-  onSave: (svgString: string) => Promise<void>;
+  onSave?: (svgString: string) => Promise<void>;
   onClose: () => void;
 }
 
@@ -372,18 +372,22 @@ export default function CatDetails({
       />
 
       <div className="flex gap-4 mt-6 pt-6 border-t-2 border-[#30D6D6]/30">
-        <button
-          onClick={handleSave}
-          disabled={isSaving}
-          className="flex-1 border-2 border-[#30D6D6] bg-black py-4 font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_20px_rgba(48,214,214,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:text-[#30D6D6]"
-        >
-          {isSaving ? "[SAVING...]" : "[SAVE]"}
-        </button>
+        {onSave && (
+          <button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="flex-1 border-2 border-[#30D6D6] bg-black py-4 font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_20px_rgba(48,214,214,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:text-[#30D6D6]"
+          >
+            {isSaving ? "[SAVING...]" : "[SAVE]"}
+          </button>
+        )}
 
         <button
           onClick={onClose}
           disabled={isSaving}
-          className="flex-1 border-2 border-[#30D6D6] bg-transparent py-4 font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6]/10 disabled:opacity-50 disabled:cursor-not-allowed"
+          className={`border-2 border-[#30D6D6] bg-transparent py-4 font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6]/10 disabled:opacity-50 disabled:cursor-not-allowed ${
+            onSave ? "flex-1" : "w-full"
+          }`}
         >
           [CLOSE]
         </button>
