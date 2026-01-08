@@ -48,11 +48,8 @@ export default function ShopPage() {
   };
 
   const fetchCatDetails = async (catId: string) => {
-    console.log("fetchCatDetails called with ID:", catId);
     try {
       const { cat, abilities } = await fetchCatByIdAction(catId);
-      console.log("Fetched cat:", cat);
-      console.log("Fetched abilities:", abilities);
 
       if (!cat) {
         showToast("[SPECIMEN_NOT_FOUND]", "error");
@@ -69,7 +66,6 @@ export default function ShopPage() {
   };
 
   const handleCatClick = async (catId: string) => {
-    console.log("Cat clicked with ID:", catId);
     setSelectedCatId(catId);
     await fetchCatDetails(catId);
   };

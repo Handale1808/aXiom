@@ -533,7 +533,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "VIBRATION_SENSE",
-    chance: 0.10,
+    chance: 0.1,
     priority: 45,
     exclusiveGroup: null,
     conditions: [
@@ -721,7 +721,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "BIOLUMINESCENT_LURE",
-    chance: 0.10,
+    chance: 0.1,
     priority: 50,
     exclusiveGroup: null,
     conditions: [
@@ -934,7 +934,7 @@ const ABILITY_RULES_DATA = [
   },
   {
     abilityKey: "PHOTOSYNTHETIC_FUR",
-    chance: 0.10,
+    chance: 0.1,
     priority: 45,
     exclusiveGroup: null,
     conditions: [
@@ -957,21 +957,14 @@ const ABILITY_RULES_DATA = [
 
 async function populateAbilities() {
   try {
-    console.log("\n==============================================");
-    console.log("   Alien Cat - Populate Abilities Script");
-    console.log("==============================================\n");
-
     const client = await clientPromise;
     const db = client.db("axiom");
     const abilitiesCollection = db.collection("abilities");
     const rulesCollection = db.collection("abilityRules");
 
-    console.log("Step 1: Clearing existing data...");
     await abilitiesCollection.deleteMany({});
     await rulesCollection.deleteMany({});
-    console.log("✓ Existing data cleared\n");
 
-    console.log("Step 2: Inserting abilities...");
     const abilitiesWithTimestamp = ABILITIES_DATA.map((ability) => ({
       ...ability,
       createdAt: new Date(),
@@ -980,17 +973,13 @@ async function populateAbilities() {
     const abilityResult = await abilitiesCollection.insertMany(
       abilitiesWithTimestamp
     );
-    console.log(`✓ Inserted ${abilityResult.insertedCount} abilities\n`);
 
-    console.log("Step 3: Mapping ability keys to ObjectIds...");
     const abilityMap = new Map<string, ObjectId>();
     const insertedAbilities = await abilitiesCollection.find({}).toArray();
     insertedAbilities.forEach((ability) => {
       abilityMap.set(ability.key, ability._id);
     });
-    console.log(`✓ Mapped ${abilityMap.size} abilities\n`);
 
-    console.log("Step 4: Inserting ability rules...");
     const rulesWithAbilityIds = ABILITY_RULES_DATA.map((rule) => {
       const abilityId = abilityMap.get(rule.abilityKey);
       if (!abilityId) {
@@ -1006,16 +995,6 @@ async function populateAbilities() {
         createdAt: new Date(),
       };
     });
-
-    const rulesResult = await rulesCollection.insertMany(rulesWithAbilityIds);
-    console.log(`✓ Inserted ${rulesResult.insertedCount} ability rules\n`);
-
-    console.log("==============================================");
-    console.log("Summary:");
-    console.log(`  Abilities: ${abilityResult.insertedCount}`);
-    console.log(`  Rules: ${rulesResult.insertedCount}`);
-    console.log("==============================================");
-    console.log("\n✅ Success! Ability data populated");
 
     process.exit(0);
   } catch (error) {

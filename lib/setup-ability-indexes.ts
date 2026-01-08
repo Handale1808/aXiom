@@ -6,26 +6,20 @@ export async function setupAbilityIndexes() {
     const db = client.db("axiom");
     const collection = db.collection("abilities");
 
-    console.log("Creating indexes for abilities collection...");
-
     // 1. Unique key index for preventing duplicates and fast lookups
     await collection.createIndex(
       { key: 1 },
-      { 
+      {
         name: "ability_key_unique_index",
-        unique: true 
+        unique: true,
       }
     );
-    console.log("✓ Key unique index created");
 
     // 2. CreatedAt index for sorting/querying abilities by creation date
     await collection.createIndex(
       { createdAt: -1 },
       { name: "ability_created_at_index" }
     );
-    console.log("✓ CreatedAt index created");
-
-    console.log("All ability indexes created successfully!");
   } catch (error) {
     console.error("Error creating ability indexes:", error);
     throw error;

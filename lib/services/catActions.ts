@@ -140,29 +140,18 @@ export async function fetchCatByIdAction(catId: string): Promise<{
     const db = client.db("axiom");
     const { ObjectId } = await import("mongodb");
 
-    console.log("[SERVER] Fetching cat with ID:", catId);
-
     const cat = await db
       .collection("cats")
       .findOne({ _id: new ObjectId(catId) });
-
-    console.log("[SERVER] Cat found:", cat ? "yes" : "no");
 
     if (!cat) {
       return { cat: null, abilities: [] };
     }
 
-    console.log("[SERVER] Querying catAbilities with catId:", catId);
     const catAbilities = await db
       .collection("catAbilities")
       .find({ catId: new ObjectId(catId) })
       .toArray();
-
-    console.log(
-      "[SERVER] CatAbilities raw result:",
-      JSON.stringify(catAbilities, null, 2)
-    );
-    console.log("[SERVER] CatAbilities count:", catAbilities.length);
 
     if (catAbilities.length === 0) {
       // Let's check if any records exist at all
@@ -171,24 +160,14 @@ export async function fetchCatByIdAction(catId: string): Promise<{
         .find({})
         .limit(5)
         .toArray();
-      console.log(
-        "[SERVER] Sample of ALL catAbilities in DB:",
-        JSON.stringify(allCatAbilities, null, 2)
-      );
     }
 
     const abilityIds = catAbilities.map((ca) => ca.abilityId);
-    console.log("[SERVER] Ability IDs extracted:", abilityIds);
-    console.log(
-      "[SERVER] Ability IDs types:",
-      abilityIds.map((id) => typeof id)
-    );
 
     // Convert abilityIds to ObjectIds if they're strings
     const abilityObjectIds = abilityIds.map((id) =>
       typeof id === "string" ? new ObjectId(id) : id
     );
-    console.log("[SERVER] Ability ObjectIds:", abilityObjectIds);
 
     const abilities =
       abilityObjectIds.length > 0
@@ -197,10 +176,6 @@ export async function fetchCatByIdAction(catId: string): Promise<{
             .find({ _id: { $in: abilityObjectIds } })
             .toArray()
         : [];
-
-    console.log("[SERVER] Abilities found:", abilities.length);
-
-    console.log("[SERVER] Abilities found:", abilities.length);
 
     return {
       cat: JSON.parse(JSON.stringify(cat)) as ICat,
