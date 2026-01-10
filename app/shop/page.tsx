@@ -16,6 +16,7 @@ import {
   saveCatAction,
   fetchAllCatsAction,
   fetchCatByIdAction,
+  getAllCatsInStockAction,
 } from "@/lib/services/catActions";
 
 export default function ShopPage() {
@@ -32,13 +33,33 @@ export default function ShopPage() {
   const fetchInventoryCats = async () => {
     setIsLoadingInventory(true);
     try {
-      const fetchedCats = await fetchAllCatsAction();
-      const transformed = fetchedCats.map((cat) => ({
-        id: cat._id,
-        name: cat.name,
-        svgImage: cat.svgImage,
-      }));
-      setSavedCats(transformed);
+      if (isAdmin) {
+        const fetchedCats = await fetchAllCatsAction();
+        const transformed = fetchedCats.map((cat) => ({
+          id: cat._id,
+          name: cat.name,
+          svgImage: cat.svgImage,
+        }));
+        setSavedCats(transformed);
+      } else {
+        const stockRecords = await getAllCatsInStockAction();
+
+        const catPromises = stockRecords.map(async (record) => {
+          const { cat } = await fetchCatByIdAction(record.catId);
+          return cat;
+        });
+
+        const cats = await Promise.all(catPromises);
+        const validCats = cats.filter((cat) => cat !== null);
+
+        const transformed = validCats.map((cat) => ({
+          id: cat!._id!.toString(),
+          name: cat!.name,
+          svgImage: cat!.svgImage,
+        }));
+
+        setSavedCats(transformed);
+      }
     } catch (error) {
       console.error("Failed to fetch inventory:", error);
       showToast("[FAILED_TO_LOAD_INVENTORY]", "error");

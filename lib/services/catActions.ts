@@ -7,6 +7,7 @@ import { IAbility } from "@/models/Ability";
 import { IAbilityRule } from "@/models/AbilityRules";
 import { ICat } from "@/models/Cats";
 import { generateCat } from "@/lib/cat-generation/generateCat";
+import { addCatToStock, getAllCatsInStock } from "./stockHelpers";
 
 export async function generateCatAction(): Promise<{
   cat: ICat;
@@ -71,6 +72,7 @@ export async function saveCatAction(
     };
 
     // Insert cat
+    // Insert cat
     const catResult = await db.collection("cats").insertOne(catDocument);
     const catId = catResult.insertedId;
 
@@ -85,6 +87,15 @@ export async function saveCatAction(
 
       // Insert catAbility records
       await db.collection("catAbilities").insertMany(catAbilityDocuments);
+    }
+
+    // Add cat to stock
+    const stockResult = await addCatToStock(catId);
+    if (!stockResult.success) {
+      console.error(
+        `Cat ${catId.toString()} saved but failed to add to stock:`,
+        stockResult.error
+      );
     }
 
     return {
@@ -184,5 +195,16 @@ export async function fetchCatByIdAction(catId: string): Promise<{
   } catch (error) {
     console.error("[SERVER] Failed to fetch cat by ID:", error);
     return { cat: null, abilities: [] };
+  }
+}
+
+export async function getAllCatsInStockAction(): Promise<
+  Array<{ catId: string; addedAt: string }>
+> {
+  try {
+    return await getAllCatsInStock();
+  } catch (error) {
+    console.error("Failed to get cats in stock:", error);
+    return [];
   }
 }
