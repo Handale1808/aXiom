@@ -40,7 +40,7 @@ export function usePopupPosition(
     if (!triggerRef.current) return;
 
     const buttonRect = triggerRef.current.getBoundingClientRect();
-    const viewportWidth = window.innerWidth - 25;
+    const viewportWidth = Math.min(window.innerWidth, document.documentElement.clientWidth) - 25;
 
     const borderWidth = 4;
     const totalSpacing = minSpacing * 2;
