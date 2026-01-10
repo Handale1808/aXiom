@@ -18,6 +18,11 @@ import {
   fetchCatByIdAction,
   getAllCatsInStockAction,
 } from "@/lib/services/catActions";
+import { useCart } from "@/lib/context/CartContext";
+import {
+  getCatPriceAction,
+  updateCatPriceAction,
+} from "@/lib/services/settingsActions";
 
 export default function ShopPage() {
   const { isAdmin, isLoading } = useUser();
@@ -29,6 +34,63 @@ export default function ShopPage() {
   const [savedCats, setSavedCats] = useState<Cat[]>([]);
   const [isLoadingInventory, setIsLoadingInventory] = useState(false);
   const [selectedCatId, setSelectedCatId] = useState<string | null>(null);
+  const [catPrice, setCatPrice] = useState(500);
+  const [priceInputValue, setPriceInputValue] = useState("500");
+  const [isSavingPrice, setIsSavingPrice] = useState(false);
+
+  const { user } = useUser();
+  let addToCart: ((catId: string) => Promise<void>) | undefined;
+
+  try {
+    if (!isAdmin) {
+      const cart = useCart();
+      addToCart = cart.addToCart;
+    }
+  } catch (error) {
+    // CartContext not available
+  }
+
+  useEffect(() => {
+    if (isAdmin && activeTab === "admin") {
+      getCatPriceAction().then((price) => {
+        setCatPrice(price);
+        setPriceInputValue(price.toString());
+      });
+    }
+  }, [activeTab, isAdmin]);
+
+  const handlePriceInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPriceInputValue(e.target.value);
+  };
+
+  const handleSavePrice = async () => {
+    if (!user?.id) return;
+
+    const newPrice = parseFloat(priceInputValue);
+    if (isNaN(newPrice) || newPrice <= 0) {
+      showToast("[INVALID_PRICE]", "error");
+      return;
+    }
+
+    setIsSavingPrice(true);
+    try {
+      const result = await updateCatPriceAction(newPrice, user.id);
+
+      if (result.success) {
+        showToast("[PRICE_UPDATED_SUCCESSFULLY]", "success");
+        setCatPrice(newPrice);
+      } else {
+        showToast(`[ERROR: ${result.error}]`, "error");
+        setPriceInputValue(catPrice.toString());
+      }
+    } catch (error) {
+      console.error("Failed to update price:", error);
+      showToast("[FAILED_TO_UPDATE_PRICE]", "error");
+      setPriceInputValue(catPrice.toString());
+    } finally {
+      setIsSavingPrice(false);
+    }
+  };
 
   const fetchInventoryCats = async () => {
     setIsLoadingInventory(true);
@@ -157,6 +219,45 @@ export default function ShopPage() {
             disabled: false,
           },
         ],
+        customContent: (
+          <div className="mt-6 relative border-2 border-[#30D6D6]/30 bg-black/50 p-6">
+            <div className="absolute -left-px -top-px h-4 w-4 border-l-2 border-t-2 border-[#30D6D6]" />
+            <div className="absolute -right-px -top-px h-4 w-4 border-r-2 border-t-2 border-[#30D6D6]" />
+            <div className="absolute -bottom-px -left-px h-4 w-4 border-b-2 border-l-2 border-[#30D6D6]" />
+            <div className="absolute -bottom-px -right-px h-4 w-4 border-b-2 border-r-2 border-[#30D6D6]" />
+
+            <h3 className="mb-4 text-sm font-bold tracking-widest text-[#30D6D6]">
+              [CAT_PRICE_SETTINGS]
+            </h3>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs tracking-wider text-[#30D6D6] mb-2">
+                  [PRICE_PER_CAT]
+                </label>
+                <div className="flex items-center gap-2">
+                  <span className="text-[#30D6D6] font-bold">R</span>
+                  <input
+                    type="number"
+                    value={priceInputValue}
+                    onChange={handlePriceInputChange}
+                    min="1"
+                    step="1"
+                    className="flex-1 border-2 border-[#30D6D6]/30 bg-black px-4 py-2 text-[#30D6D6] font-mono focus:border-[#30D6D6] focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <button
+                onClick={handleSavePrice}
+                disabled={isSavingPrice}
+                className="w-full border-2 border-[#30D6D6] bg-black py-3 font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_20px_rgba(48,214,214,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:text-[#30D6D6]"
+              >
+                {isSavingPrice ? "[SAVING...]" : "[SAVE_PRICE]"}
+              </button>
+            </div>
+          </div>
+        ),
       },
     },
     {
@@ -215,6 +316,8 @@ export default function ShopPage() {
             cats={savedCats}
             showContainer={true}
             onCatClick={handleCatClick}
+            showAddToCart={!isAdmin}
+            onAddToCart={addToCart}
           />
         )}
       </div>
@@ -228,6 +331,8 @@ export default function ShopPage() {
             cat={currentCat}
             abilities={currentAbilities}
             onSave={selectedCatId ? undefined : handleSaveCat}
+            showAddToCart={!isAdmin}
+            onAddToCart={!isAdmin ? addToCart : undefined}
             onClose={handleCloseModal}
           />
         </Modal>

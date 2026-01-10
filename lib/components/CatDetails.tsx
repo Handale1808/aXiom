@@ -23,6 +23,8 @@ interface CatDetailsProps {
   abilities: IAbility[];
   onSave?: (svgString: string) => Promise<void>;
   onClose: () => void;
+  showAddToCart?: boolean;
+  onAddToCart?: (catId: string) => Promise<void>;
 }
 
 export default function CatDetails({
@@ -30,10 +32,13 @@ export default function CatDetails({
   abilities,
   onSave,
   onClose,
+  showAddToCart,
+  onAddToCart,
 }: CatDetailsProps) {
   const [activeTab, setActiveTab] = useState("physical");
   const [isSaving, setIsSaving] = useState(false);
   const svgRef = useRef<SVGSVGElement>(null);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   const passiveAbilities = abilities.filter((a) => a.isPassive);
   const activeAbilities = abilities.filter((a) => !a.isPassive);
@@ -67,6 +72,19 @@ export default function CatDetails({
       console.error("Error saving cat:", error);
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleAddToCart = async () => {
+    if (!onAddToCart || !cat._id) return;
+
+    setIsAddingToCart(true);
+    try {
+      await onAddToCart(cat._id.toString());
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    } finally {
+      setIsAddingToCart(false);
     }
   };
 
@@ -372,10 +390,20 @@ export default function CatDetails({
       />
 
       <div className="flex gap-4 mt-6 pt-6 border-t-2 border-[#30D6D6]/30">
+        {showAddToCart && (
+          <button
+            onClick={handleAddToCart}
+            disabled={isAddingToCart || isSaving}
+            className="flex-1 border-2 border-[#30D6D6] bg-black py-4 font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_20px_rgba(48,214,214,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:text-[#30D6D6]"
+          >
+            {isAddingToCart ? "[ADDING...]" : "[ADD_TO_CART]"}
+          </button>
+        )}
+
         {onSave && (
           <button
             onClick={handleSave}
-            disabled={isSaving}
+            disabled={isSaving || isAddingToCart}
             className="flex-1 border-2 border-[#30D6D6] bg-black py-4 font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_20px_rgba(48,214,214,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:text-[#30D6D6]"
           >
             {isSaving ? "[SAVING...]" : "[SAVE]"}
@@ -384,9 +412,9 @@ export default function CatDetails({
 
         <button
           onClick={onClose}
-          disabled={isSaving}
+          disabled={isSaving || isAddingToCart}
           className={`border-2 border-[#30D6D6] bg-transparent py-4 font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6]/10 disabled:opacity-50 disabled:cursor-not-allowed ${
-            onSave ? "flex-1" : "w-full"
+            onSave || showAddToCart ? "flex-1" : "w-full"
           }`}
         >
           [CLOSE]

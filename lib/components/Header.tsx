@@ -6,12 +6,25 @@ import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { useState } from "react";
 import { useUser } from "../context/UserContext";
+import { useCart } from "../context/CartContext";
 
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const { isAuthenticated, isAdmin, isLoading } = useUser();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  // Always call useCart unconditionally
+  let cartCount = 0;
+  try {
+    const cart = useCart();
+    // Only use the cart count if user is authenticated and not admin
+    if (isAuthenticated && !isAdmin) {
+      cartCount = cart.cartCount;
+    }
+  } catch (error) {
+    // CartContext not available, keep cartCount as 0
+  }
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -130,7 +143,7 @@ export default function Header() {
             </button>
           </Link>
 
-           {isAuthenticated && !isAdmin && (
+          {isAuthenticated && !isAdmin && (
             <Link href="/cart">
               <button className="relative bg-black px-6 py-2 text-sm font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black group">
                 {pathname === "/cart" && (
@@ -142,6 +155,11 @@ export default function Header() {
                   </>
                 )}
                 CART
+                {cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 border border-[#30D6D6] text-[10px] font-bold text-white shadow-[0_0_8px_rgba(239,68,68,0.6)]">
+                    {cartCount}
+                  </span>
+                )}
               </button>
             </Link>
           )}

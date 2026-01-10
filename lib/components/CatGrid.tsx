@@ -10,12 +10,16 @@ interface CatGridProps {
   cats: Cat[];
   showContainer?: boolean;
   onCatClick?: (catId: string) => void;
+  showAddToCart?: boolean;
+  onAddToCart?: (catId: string) => void;
 }
 
 export default function CatGrid({
   cats,
   showContainer = false,
   onCatClick,
+  showAddToCart,
+  onAddToCart,
 }: CatGridProps) {
   const gridContent = (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -27,6 +31,8 @@ export default function CatGrid({
             name={cat.name}
             svgImage={cat.svgImage}
             onClick={onCatClick ? () => onCatClick(cat.id) : undefined}
+            showAddToCart={showAddToCart}
+            onAddToCart={onAddToCart}
           />
         ))
       ) : (

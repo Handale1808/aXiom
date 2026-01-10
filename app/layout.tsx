@@ -5,6 +5,7 @@ import Header from "@/lib/components/Header";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Providers } from "@/lib/components/Providers";
 import { ToastProvider } from "@/lib/context/ToastContext";
+import { CartProvider } from "@/lib/context/CartContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -49,13 +50,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ToastProvider>
-          <Providers>
-            <Header />
-            {children}
-            <SpeedInsights />
-          </Providers>
-        </ToastProvider>
+        <Providers>
+          <ToastProvider>
+            <CartProvider>
+              <Header />
+              {children}
+              <SpeedInsights />
+            </CartProvider>
+          </ToastProvider>
+        </Providers>
       </body>
     </html>
   );
