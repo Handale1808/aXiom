@@ -41,7 +41,7 @@ export default function FeedbackFilters({
 
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Node;
-      
+
       if (filterRef.current && !filterRef.current.contains(target)) {
         const toolbar = document.querySelector('[ref="toolbarRef"]');
         if (toolbar && !toolbar.contains(target)) {
@@ -55,7 +55,7 @@ export default function FeedbackFilters({
     setTimeout(() => {
       document.addEventListener("mousedown", handleClickOutside);
     }, 0);
-    
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -86,18 +86,15 @@ export default function FeedbackFilters({
           </span>
         )}
       </button>
-
       {isOpen && (
-        <div className="absolute left-0 md:left-auto md:right-0 top-full mt-2 z-10 w-screen max-w-[calc(100vw-16px)] md:w-[800px] border-2 border-[#30D6D6]/30 bg-black/95 p-4 md:p-6 backdrop-blur-sm">
+        <div className="absolute left-[calc(-10rem+2px)] md:left-auto md:right-0 top-full mt-2 z-10 w-[calc(100vw-1rem)] md:w-[800px] border-2 border-[#30D6D6]/30 bg-black/95 p-4 md:p-6 backdrop-blur-sm">
           <div className="absolute -left-px -top-px h-3 w-3 md:h-4 md:w-4 border-l-2 border-t-2 border-[#30D6D6]" />
           <div className="absolute -right-px -top-px h-3 w-3 md:h-4 md:w-4 border-r-2 border-t-2 border-[#30D6D6]" />
           <div className="absolute -bottom-px -left-px h-3 w-3 md:h-4 md:w-4 border-b-2 border-l-2 border-[#30D6D6]" />
           <div className="absolute -bottom-px -right-px h-3 w-3 md:h-4 md:w-4 border-b-2 border-r-2 border-[#30D6D6]" />
-
           <h3 className="mb-3 md:mb-4 text-xs sm:text-sm font-bold tracking-widest text-[#30D6D6]">
             [FILTER_OPTIONS]
           </h3>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-[auto_auto_auto_1fr] gap-4 md:gap-6 mb-4 md:mb-6">
             <div>
               <div className="mb-3 text-[10px] sm:text-xs font-bold tracking-wider text-[#006694]">
@@ -229,7 +226,6 @@ export default function FeedbackFilters({
               </div>
             </div>
           </div>
-
           <button
             onClick={onClearAll}
             disabled={activeFilterCount === 0}

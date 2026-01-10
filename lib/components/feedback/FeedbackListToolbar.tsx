@@ -78,14 +78,6 @@ export default function FeedbackListToolbar({
     };
   }, [isMobileMenuOpen]);
 
-  const handleMobileMenuToggle = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
-
-  const closeMobileMenu = () => {
-    setIsMobileMenuOpen(false);
-  };
-
   return (
     <div className="border border-[#30D6D6]/30 bg-black/50 p-4 backdrop-blur-sm mb-4">
       <div className="flex items-center justify-between">
@@ -111,65 +103,37 @@ export default function FeedbackListToolbar({
           </div>
         )}
 
-        <div className="flex gap-2 ml-auto relative" ref={mobileMenuRef}>
-          <div className="hidden md:flex md:gap-2">
-            <FeedbackSearch
-              isOpen={isSearchOpen}
-              onToggle={onSearchToggle}
-              searchQuery={searchQuery}
-              onSearchChange={onSearchChange}
-              onClearSearch={onClearSearch}
-            />
-            <FeedbackFilters
-              isOpen={isFilterOpen}
-              onToggle={onFilterToggle}
-              selectedSentiments={selectedSentiments}
-              selectedPriorities={selectedPriorities}
-              selectedTags={selectedTags}
-              availableTags={availableTags}
-              onSentimentChange={onSentimentChange}
-              onPriorityChange={onPriorityChange}
-              onTagChange={onTagChange}
-              onClearAll={onClearAllFilters}
-              activeFilterCount={activeFilterCount}
-              hasCatFilter={hasCatFilter}
-              onHasCatChange={onHasCatChange}
-            />
-            <button
-              onClick={onClearSort}
-              disabled={!sortColumn}
-              className="border border-[#30D6D6]/50 bg-black px-4 py-2 text-xs font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6]/10 hover:border-[#30D6D6] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:border-[#30D6D6]/50"
-            >
-              CLEAR_SORT
-            </button>
-          </div>
+        <div className="flex gap-2 ml-auto">
+          <FeedbackSearch
+            isOpen={isSearchOpen}
+            onToggle={onSearchToggle}
+            searchQuery={searchQuery}
+            onSearchChange={onSearchChange}
+            onClearSearch={onClearSearch}
+          />
+          <FeedbackFilters
+            isOpen={isFilterOpen}
+            onToggle={onFilterToggle}
+            selectedSentiments={selectedSentiments}
+            selectedPriorities={selectedPriorities}
+            selectedTags={selectedTags}
+            availableTags={availableTags}
+            onSentimentChange={onSentimentChange}
+            onPriorityChange={onPriorityChange}
+            onTagChange={onTagChange}
+            onClearAll={onClearAllFilters}
+            activeFilterCount={activeFilterCount}
+            hasCatFilter={hasCatFilter}
+            onHasCatChange={onHasCatChange}
+          />
+          <button
+            onClick={onClearSort}
+            disabled={!sortColumn}
+            className="border border-[#30D6D6]/50 bg-black px-3 py-2 sm:px-4 sm:py-2 text-xs font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6]/10 hover:border-[#30D6D6] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:border-[#30D6D6]/50 min-h-[44px]"
+          >
+            CLEAR_SORT
+          </button>
         </div>
-      </div>
-
-      {/* Render search and filter components for mobile - they position themselves absolutely */}
-      <div className="md:hidden">
-        <FeedbackSearch
-          isOpen={isSearchOpen}
-          onToggle={onSearchToggle}
-          searchQuery={searchQuery}
-          onSearchChange={onSearchChange}
-          onClearSearch={onClearSearch}
-        />
-        <FeedbackFilters
-          isOpen={isFilterOpen}
-          onToggle={onFilterToggle}
-          selectedSentiments={selectedSentiments}
-          selectedPriorities={selectedPriorities}
-          selectedTags={selectedTags}
-          availableTags={availableTags}
-          onSentimentChange={onSentimentChange}
-          onPriorityChange={onPriorityChange}
-          onTagChange={onTagChange}
-          onClearAll={onClearAllFilters}
-          activeFilterCount={activeFilterCount}
-          hasCatFilter={hasCatFilter}
-          onHasCatChange={onHasCatChange}
-        />
       </div>
     </div>
   );
