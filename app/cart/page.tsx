@@ -177,9 +177,6 @@ export default function CartPage() {
                       >
                         {item.name}
                       </div>
-                      <div className="text-xs text-cyan-100/50 mt-1">
-                        Added: {new Date(item.addedAt).toLocaleDateString()}
-                      </div>
                     </div>
 
                     <button

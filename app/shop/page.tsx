@@ -39,11 +39,14 @@ export default function ShopPage() {
   const [isSavingPrice, setIsSavingPrice] = useState(false);
 
   const { user } = useUser();
+
+  // Always call useCart unconditionally
   let addToCart: ((catId: string) => Promise<void>) | undefined;
 
   try {
+    const cart = useCart();
+    // Only assign if not admin
     if (!isAdmin) {
-      const cart = useCart();
       addToCart = cart.addToCart;
     }
   } catch (error) {
