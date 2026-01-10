@@ -37,7 +37,7 @@ export default function FeedbackListItem({
 
   return (
     <div
-      className={`group grid grid-cols-[40px_1fr_120px_120px_60px_60px] gap-4 px-4 py-3 transition-all hover:bg-[#30D6D6]/10 ${
+      className={`group grid grid-cols-[40px_30px_1fr_120px_120px_60px_60px] gap-4 px-4 py-3
         index % 2 === 0 ? "bg-black/40" : "bg-[#006694]/10"
       } ${isDeleting ? "opacity-50" : ""}`}
     >
@@ -50,6 +50,22 @@ export default function FeedbackListItem({
           aria-label={`Select feedback ${feedback._id}`}
         />
       </div>
+
+      <div className="flex items-center justify-center">
+        {feedback.catId && (
+          <div
+            className="flex items-center justify-center w-5 h-5 border border-[#30D6D6] bg-[#30D6D6]/10"
+            title={
+              feedback.catName
+                ? `Feedback about ${feedback.catName}`
+                : "Feedback about a cat"
+            }
+          >
+            <span className="text-[#30D6D6] text-xs font-bold">C</span>
+          </div>
+        )}
+      </div>
+
       <div
         className="cursor-pointer overflow-hidden"
         onClick={() => onClick(feedback._id)}

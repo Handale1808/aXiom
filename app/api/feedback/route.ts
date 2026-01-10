@@ -13,6 +13,8 @@ import {
 } from "@/lib/logger";
 import { withDatabaseLogging } from "@/lib/databaseLogger";
 import { ObjectId } from "mongodb";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 async function postHandler(
   request: NextRequest,
@@ -30,7 +32,48 @@ async function postHandler(
     const collection = db.collection<IFeedback>("feedbacks");
 
     const body = await request.json();
-    const { text, email } = body;
+    const { text, email, catId } = body;
+
+    // Get userId from session
+    const session = await getServerSession(authOptions);
+    const userId = session?.user?.id;
+
+    // Validate catId if provided
+    if (catId) {
+      debug("Validating catId", {
+        requestId,
+        catId,
+        userId,
+      });
+
+      if (!/^[0-9a-fA-F]{24}$/.test(catId)) {
+        warn("Invalid catId format", { requestId, catId });
+        throw new ValidationError(
+          "Invalid cat ID format",
+          { catId: "Invalid cat ID format" },
+          requestId
+        );
+      }
+
+      // Verify user owns this cat
+      if (userId) {
+        const purchase = await db.collection("purchases").findOne({
+          userId: new ObjectId(userId),
+          catId: new ObjectId(catId),
+        });
+
+        if (!purchase) {
+          warn("User does not own cat", { requestId, userId, catId });
+          throw new ValidationError(
+            "You do not own this cat",
+            { catId: "You do not own this cat" },
+            requestId
+          );
+        }
+
+        info("Cat ownership verified", { requestId, userId, catId });
+      }
+    }
 
     debug("Validating input", {
       requestId,
@@ -75,6 +118,8 @@ async function postHandler(
     const feedback: IFeedback = {
       text,
       email,
+      catId: catId ? new ObjectId(catId) : undefined,
+      userId: userId ? new ObjectId(userId) : undefined,
       createdAt: new Date(),
       analysis,
     };
@@ -163,6 +208,14 @@ async function getHandler(
         { "analysis.tags": { $regex: search, $options: "i" } },
       ];
     }
+
+    // Add hasCat filter
+    const hasCat = searchParams.get("hasCat");
+    if (hasCat === "true") {
+      filter.catId = { $exists: true, $ne: null };
+    } else if (hasCat === "false") {
+      filter.catId = { $exists: false };
+    }
     if (sentiment) {
       const sentiments = searchParams.getAll("sentiment");
       if (sentiments.length === 1) {
@@ -197,13 +250,30 @@ async function getHandler(
     const feedbacks = await withDatabaseLogging(
       () =>
         collection
-          .find(filter)
-          .sort({ createdAt: -1 })
-          .limit(limit)
-          .skip(skip)
+          .aggregate([
+            { $match: filter },
+            { $sort: { createdAt: -1 } },
+            { $skip: skip },
+            { $limit: limit },
+            {
+              $lookup: {
+                from: "cats",
+                localField: "catId",
+                foreignField: "_id",
+                as: "cat",
+              },
+            },
+            {
+              $addFields: {
+                catName: { $arrayElemAt: ["$cat.name", 0] },
+                catSvgImage: { $arrayElemAt: ["$cat.svgImage", 0] },
+              },
+            },
+            { $project: { cat: 0 } },
+          ])
           .toArray(),
       {
-        operation: "find",
+        operation: "aggregate",
         collection: "feedbacks",
         requestId,
         filter,

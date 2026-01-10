@@ -98,6 +98,22 @@ export default function Header() {
           )}
 
           {isAuthenticated && !isAdmin && (
+            <Link href="/mycats">
+              <button className="relative bg-black px-6 py-2 text-sm font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black group">
+                {pathname === "/mycats" && (
+                  <>
+                    <span className="absolute top-0 left-0 h-2 w-2 border-t-2 border-l-2 border-[#30D6D6]"></span>
+                    <span className="absolute top-0 right-0 h-2 w-2 border-t-2 border-r-2 border-[#30D6D6]"></span>
+                    <span className="absolute bottom-0 left-0 h-2 w-2 border-b-2 border-l-2 border-[#30D6D6]"></span>
+                    <span className="absolute bottom-0 right-0 h-2 w-2 border-b-2 border-r-2 border-[#30D6D6]"></span>
+                  </>
+                )}
+                MY_CATS
+              </button>
+            </Link>
+          )}
+
+          {isAuthenticated && !isAdmin && (
             <Link href="/submit">
               <button className="relative bg-black px-6 py-2 text-sm font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black group">
                 {pathname === "/submit" && (

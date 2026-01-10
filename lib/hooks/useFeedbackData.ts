@@ -9,6 +9,7 @@ interface UseFeedbackDataParams {
   selectedPriorities: string[];
   selectedTags: string[];
   searchQuery: string;
+  hasCatFilter: string | null;
 }
 
 interface UseFeedbackDataReturn {
@@ -29,6 +30,7 @@ export function useFeedbackData({
   selectedPriorities,
   selectedTags,
   searchQuery,
+  hasCatFilter,
 }: UseFeedbackDataParams): UseFeedbackDataReturn {
   const [feedbacks, setFeedbacks] = useState<FeedbackWithId[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -106,6 +108,10 @@ export function useFeedbackData({
         selectedTags.forEach((tag) => params.append("tag", tag));
       }
 
+      if (hasCatFilter) {
+        params.set("hasCat", hasCatFilter);
+      }
+
       const data = await apiFetch<{
         success: true;
         data: FeedbackWithId[];
@@ -132,6 +138,7 @@ export function useFeedbackData({
     selectedSentiments,
     selectedPriorities,
     selectedTags,
+    hasCatFilter,
   ]);
 
   useEffect(() => {

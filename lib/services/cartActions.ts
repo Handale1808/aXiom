@@ -88,9 +88,7 @@ export async function removeFromCartAction(
   }
 }
 
-export async function getUserCartAction(
-  userId: string
-): Promise<
+export async function getUserCartAction(userId: string): Promise<
   Array<{
     catId: string;
     name: string;
@@ -210,9 +208,7 @@ export async function clearCartAction(
   }
 }
 
-export async function checkoutCartAction(
-  userId: string
-): Promise<{
+export async function checkoutCartAction(userId: string): Promise<{
   success: boolean;
   error?: string;
   purchasedCount?: number;
@@ -304,5 +300,59 @@ export async function checkoutCartAction(
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",
     };
+  }
+}
+
+export async function getUserPurchasedCatsAction(userId: string): Promise<
+  Array<{
+    catId: string;
+    name: string;
+    svgImage: string;
+    purchasedAt: string;
+  }>
+> {
+  try {
+    if (!userId) {
+      return [];
+    }
+
+    const client = await clientPromise;
+    const db = client.db("axiom");
+    const { ObjectId } = await import("mongodb");
+
+    const purchases = await db
+      .collection("purchases")
+      .aggregate([
+        { $match: { userId: new ObjectId(userId) } },
+        {
+          $lookup: {
+            from: "cats",
+            localField: "catId",
+            foreignField: "_id",
+            as: "cat",
+          },
+        },
+        { $unwind: "$cat" },
+        {
+          $project: {
+            catId: "$catId",
+            name: "$cat.name",
+            svgImage: "$cat.svgImage",
+            purchasedAt: "$purchasedAt",
+          },
+        },
+        { $sort: { purchasedAt: -1 } },
+      ])
+      .toArray();
+
+    return purchases.map((purchase) => ({
+      catId: purchase.catId.toString(),
+      name: purchase.name,
+      svgImage: purchase.svgImage,
+      purchasedAt: purchase.purchasedAt.toISOString(),
+    }));
+  } catch (error) {
+    console.error("Failed to fetch user purchased cats:", error);
+    return [];
   }
 }

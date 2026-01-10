@@ -25,7 +25,7 @@ export default function FeedbackListHeader({
   };
 
   return (
-    <div className="grid grid-cols-[40px_1fr_120px_120px_60px_60px] gap-4 border-b-2 border-[#30D6D6]/50 bg-[#006694]/20 px-4 py-2 text-xs font-bold tracking-wider text-[#30D6D6]">
+    <div className="grid grid-cols-[40px_30px_1fr_120px_120px_60px_60px] gap-4 border-b-2 border-[#30D6D6]/50 bg-[#006694]/20 px-4 py-2 text-xs font-bold tracking-wider text-[#30D6D6]">
       <div className="flex items-center justify-center">
         <input
           type="checkbox"
@@ -35,6 +35,7 @@ export default function FeedbackListHeader({
           aria-label="Select all feedbacks"
         />
       </div>
+
       <div
         className="cursor-pointer hover:text-white transition-colors"
         onClick={() => onSort("text")}

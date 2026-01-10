@@ -4,6 +4,10 @@ import AnalysisResult from "./AnalysisResult";
 import { formatDate } from "@/lib/utils/formatDate";
 import type { IFeedback } from "@/models/Feedback";
 import { apiFetch } from "@/lib/apiClient";
+import { fetchCatByIdAction } from "@/lib/services/catActions";
+import { ICat } from "@/models/Cats";
+import { IAbility } from "@/models/Ability";
+import CatDetails from "./CatDetails";
 
 interface FeedbackDetailModalProps {
   feedbackId: string | null;
@@ -28,6 +32,27 @@ export default function FeedbackDetailModal({
   const [isEditingNextAction, setIsEditingNextAction] = useState(false);
   const [editedNextAction, setEditedNextAction] = useState("");
   const [nextActionError, setNextActionError] = useState<string | null>(null);
+  const [isCatModalOpen, setIsCatModalOpen] = useState(false);
+  const [catData, setCatData] = useState<{
+    cat: ICat | null;
+    abilities: IAbility[];
+  } | null>(null);
+  const [isLoadingCat, setIsLoadingCat] = useState(false);
+
+  const handleViewCat = async () => {
+    if (!feedback?.catId) return;
+
+    setIsLoadingCat(true);
+    try {
+      const data = await fetchCatByIdAction(feedback.catId);
+      setCatData(data);
+      setIsCatModalOpen(true);
+    } catch (error) {
+      console.error("Failed to load cat details:", error);
+    } finally {
+      setIsLoadingCat(false);
+    }
+  };
 
   const validateNextAction = (value: string): string | null => {
     const trimmed = value.trim();
@@ -108,7 +133,7 @@ export default function FeedbackDetailModal({
   }
 
   return (
-    <Modal isOpen={!!feedbackId} onClose={onClose}>
+    <Modal isOpen={!!feedbackId} onClose={onClose} showDefaultClose={false}>
       <div className="p-6">
         <div className="mb-6 flex items-center justify-between border-b-2 border-[#30D6D6]/30 pb-4">
           <div>
@@ -220,6 +245,34 @@ export default function FeedbackDetailModal({
               </div>
             </div>
 
+            {feedback.catId && feedback.catName && (
+              <div className="border-2 border-[#30D6D6]/30 bg-black/30 p-4">
+                <div className="text-xs font-bold tracking-wider text-[#006694] mb-3">
+                  [ASSOCIATED_SPECIMEN]
+                </div>
+                <div className="flex items-center gap-4">
+                  <div
+                    className="w-16 h-16 border border-[#30D6D6]/50 flex items-center justify-center"
+                    dangerouslySetInnerHTML={{
+                      __html: feedback.catSvgImage || "",
+                    }}
+                  />
+                  <div className="flex-1">
+                    <div className="text-[#30D6D6] font-bold tracking-wider">
+                      {feedback.catName}
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleViewCat}
+                    disabled={isLoadingCat}
+                    className="border-2 border-[#30D6D6] bg-black px-4 py-2 text-xs font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isLoadingCat ? "LOADING..." : "VIEW_DETAILS"}
+                  </button>
+                </div>
+              </div>
+            )}
+
             <div className="relative border-2 border-[#30D6D6]/30 bg-black/50 p-5 backdrop-blur-sm">
               <div className="absolute -left-px -top-px h-4 w-4 border-l-2 border-t-2 border-[#30D6D6]" />
               <div className="absolute -right-px -top-px h-4 w-4 border-r-2 border-t-2 border-[#30D6D6]" />
@@ -245,6 +298,16 @@ export default function FeedbackDetailModal({
           </div>
         )}
       </div>
+      {isCatModalOpen && catData?.cat && (
+        <Modal isOpen={isCatModalOpen} onClose={() => setIsCatModalOpen(false)}>
+          <CatDetails
+            cat={catData.cat}
+            abilities={catData.abilities}
+            onClose={() => setIsCatModalOpen(false)}
+            showAddToCart={false}
+          />
+        </Modal>
+      )}
     </Modal>
   );
 }

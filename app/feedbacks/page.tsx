@@ -35,16 +35,27 @@ export default function Feedbacks() {
     handleClearSearch,
     handleClearAllFilters,
     getActiveFilterCount,
+    hasCatFilter,
+    handleHasCatChange,
   } = useFeedbackFilters();
 
-const { feedbacks, isLoading, error, total, hasMore, refetch, setFeedbacks, allAvailableTags } =
-  useFeedbackData({
+  const {
+    feedbacks,
+    isLoading,
+    error,
+    total,
+    hasMore,
+    refetch,
+    setFeedbacks,
+    allAvailableTags,
+  } = useFeedbackData({
     page,
     pageSize,
     selectedSentiments,
     selectedPriorities,
     selectedTags,
     searchQuery,
+    hasCatFilter,
   });
 
   const {
@@ -213,6 +224,8 @@ const { feedbacks, isLoading, error, total, hasMore, refetch, setFeedbacks, allA
             onDeleteSingle={handleDeleteSingle}
             onDeleteMultiple={handleDeleteMultiple}
             isDeletingIds={isDeletingIds}
+            hasCatFilter={hasCatFilter}
+            onHasCatChange={handleHasCatChange}
           />
         </ErrorBoundary>
 

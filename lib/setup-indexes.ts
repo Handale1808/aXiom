@@ -44,6 +44,24 @@ export async function setupFeedbackIndexes() {
       { createdAt: -1 },
       { name: "created_at_index" }
     );
+
+    // 6. CatId filter index
+    await collection.createIndex({ catId: 1 }, { name: "cat_id_index" });
+
+    // 7. UserId filter index
+    await collection.createIndex({ userId: 1 }, { name: "user_id_index" });
+
+    // 8. Compound index for user-cat feedback queries
+    await collection.createIndex(
+      { userId: 1, catId: 1 },
+      { name: "user_cat_index" }
+    );
+
+    // 9. Compound index for cat feedback chronology
+    await collection.createIndex(
+      { catId: 1, createdAt: -1 },
+      { name: "cat_created_at_index" }
+    );
   } catch (error) {
     console.error("Error creating indexes:", error);
     throw error;

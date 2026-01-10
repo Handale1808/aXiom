@@ -32,6 +32,8 @@ interface FeedbackListProps {
   onDeleteSingle?: (id: string) => void;
   onDeleteMultiple?: (ids: string[]) => void;
   isDeletingIds?: string[];
+  hasCatFilter?: string | null;
+  onHasCatChange?: (value: string | null) => void;
 }
 
 export default function FeedbackList({
@@ -62,6 +64,8 @@ export default function FeedbackList({
   onDeleteSingle,
   onDeleteMultiple,
   isDeletingIds = [],
+  hasCatFilter = null,
+  onHasCatChange,
 }: FeedbackListProps) {
   const hasNoResults = feedbacks.length === 0;
 
@@ -149,6 +153,8 @@ export default function FeedbackList({
         selectedCount={selectedIds.length}
         onClearSelection={handleClearSelection}
         onDeleteSelected={handleDeleteSelected}
+        hasCatFilter={hasCatFilter}
+        onHasCatChange={onHasCatChange || (() => {})}
       />
       <FeedbackListHeader
         sortColumn={sortColumn}

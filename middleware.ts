@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 // Page access restrictions
 const ADMIN_ONLY_PAGES = ["/feedbacks"];
-const NON_ADMIN_ONLY_PAGES = ["/submit", "/cart"];
+const NON_ADMIN_ONLY_PAGES = ["/submit", "/cart", "/mycats"];
 
 export default withAuth(
   function middleware(req) {
@@ -45,7 +45,11 @@ export default withAuth(
         }
 
         // For protected routes, require authentication
-        if (path.startsWith("/feedbacks") || path.startsWith("/submit")) {
+        if (
+          path.startsWith("/feedbacks") ||
+          path.startsWith("/submit") ||
+          path.startsWith("/mycats")
+        ) {
           return !!token;
         }
 
@@ -60,5 +64,11 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/feedbacks/:path*", "/submit/:path*", "/cart/:path*", "/auth"],
+  matcher: [
+    "/feedbacks/:path*",
+    "/submit/:path*",
+    "/cart/:path*",
+    "/mycats/:path*",
+    "/auth",
+  ],
 };

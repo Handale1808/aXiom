@@ -27,6 +27,8 @@ interface FeedbackListToolbarProps {
   selectedCount: number;
   onClearSelection: () => void;
   onDeleteSelected: () => void;
+  hasCatFilter: string | null;
+  onHasCatChange: (value: string | null) => void;
 }
 
 export default function FeedbackListToolbar({
@@ -51,6 +53,8 @@ export default function FeedbackListToolbar({
   selectedCount,
   onClearSelection,
   onDeleteSelected,
+  hasCatFilter,
+  onHasCatChange,
 }: FeedbackListToolbarProps) {
   return (
     <div className="border border-[#30D6D6]/30 bg-black/50 p-4 backdrop-blur-sm mb-4">
@@ -96,6 +100,8 @@ export default function FeedbackListToolbar({
             onTagChange={onTagChange}
             onClearAll={onClearAllFilters}
             activeFilterCount={activeFilterCount}
+            hasCatFilter={hasCatFilter}
+            onHasCatChange={onHasCatChange}
           />
           <button
             onClick={onClearSort}

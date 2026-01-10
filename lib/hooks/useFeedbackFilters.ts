@@ -21,6 +21,8 @@ interface UseFeedbackFiltersReturn {
   handleClearSearch: () => void;
   handleClearAllFilters: () => void;
   getActiveFilterCount: () => number;
+  hasCatFilter: string | null;
+  handleHasCatChange: (value: string | null) => void;
 }
 
 export function useFeedbackFilters(): UseFeedbackFiltersReturn {
@@ -30,15 +32,17 @@ export function useFeedbackFilters(): UseFeedbackFiltersReturn {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [hasCatFilter, setHasCatFilter] = useState<string | null>(null);
 
   const loadFiltersFromStorage = useCallback(() => {
     try {
       const saved = localStorage.getItem("feedbackFilters");
       if (saved) {
-        const { sentiments, priorities, tags } = JSON.parse(saved);
+        const { sentiments, priorities, tags, hasCat } = JSON.parse(saved);
         setSelectedSentiments(sentiments || []);
         setSelectedPriorities(priorities || []);
         setSelectedTags(tags || []);
+        setHasCatFilter(hasCat || null);
       }
     } catch (error) {
       console.error("Failed to load filters from storage:", error);
@@ -46,11 +50,16 @@ export function useFeedbackFilters(): UseFeedbackFiltersReturn {
   }, []);
 
   const saveFiltersToStorage = useCallback(
-    (sentiments: string[], priorities: string[], tags: string[]) => {
+    (
+      sentiments: string[],
+      priorities: string[],
+      tags: string[],
+      hasCat: string | null
+    ) => {
       try {
         localStorage.setItem(
           "feedbackFilters",
-          JSON.stringify({ sentiments, priorities, tags })
+          JSON.stringify({ sentiments, priorities, tags, hasCat })
         );
       } catch (error) {
         console.error("Failed to save filters to storage:", error);
@@ -62,25 +71,53 @@ export function useFeedbackFilters(): UseFeedbackFiltersReturn {
   const handleSentimentChange = useCallback(
     (sentiments: string[]) => {
       setSelectedSentiments(sentiments);
-      saveFiltersToStorage(sentiments, selectedPriorities, selectedTags);
+      saveFiltersToStorage(
+        sentiments,
+        selectedPriorities,
+        selectedTags,
+        hasCatFilter
+      );
     },
-    [selectedPriorities, selectedTags, saveFiltersToStorage]
+    [selectedPriorities, selectedTags, saveFiltersToStorage, hasCatFilter] // ADD hasCatFilter
   );
 
   const handlePriorityChange = useCallback(
     (priorities: string[]) => {
       setSelectedPriorities(priorities);
-      saveFiltersToStorage(selectedSentiments, priorities, selectedTags);
+      saveFiltersToStorage(
+        selectedSentiments,
+        priorities,
+        selectedTags,
+        hasCatFilter
+      );
     },
-    [selectedSentiments, selectedTags, saveFiltersToStorage]
+    [selectedSentiments, selectedTags, saveFiltersToStorage, hasCatFilter] // ADD hasCatFilter
   );
 
   const handleTagChange = useCallback(
     (tags: string[]) => {
       setSelectedTags(tags);
-      saveFiltersToStorage(selectedSentiments, selectedPriorities, tags);
+      saveFiltersToStorage(
+        selectedSentiments,
+        selectedPriorities,
+        tags,
+        hasCatFilter
+      );
     },
-    [selectedSentiments, selectedPriorities, saveFiltersToStorage]
+    [selectedSentiments, selectedPriorities, saveFiltersToStorage, hasCatFilter] // ADD hasCatFilter
+  );
+
+  const handleHasCatChange = useCallback(
+    (value: string | null) => {
+      setHasCatFilter(value);
+      saveFiltersToStorage(
+        selectedSentiments,
+        selectedPriorities,
+        selectedTags,
+        value
+      );
+    },
+    [selectedSentiments, selectedPriorities, selectedTags, saveFiltersToStorage]
   );
 
   const handleSearchChange = useCallback((query: string) => {
@@ -99,6 +136,7 @@ export function useFeedbackFilters(): UseFeedbackFiltersReturn {
     setSearchQuery("");
     setIsFilterOpen(false);
     setIsSearchOpen(false);
+    setHasCatFilter(null);
     try {
       localStorage.removeItem("feedbackFilters");
     } catch (error) {
@@ -107,13 +145,19 @@ export function useFeedbackFilters(): UseFeedbackFiltersReturn {
   }, []);
 
   const getActiveFilterCount = useCallback((): number => {
+    const hasCatCount = hasCatFilter ? 1 : 0;
     return (
       selectedSentiments.length +
       selectedPriorities.length +
-      selectedTags.length
+      selectedTags.length +
+      hasCatCount
     );
-  }, [selectedSentiments.length, selectedPriorities.length, selectedTags.length]);
-
+  }, [
+    selectedSentiments.length,
+    selectedPriorities.length,
+    selectedTags.length,
+    hasCatFilter,
+  ]);
 
   useEffect(() => {
     loadFiltersFromStorage();
@@ -139,5 +183,7 @@ export function useFeedbackFilters(): UseFeedbackFiltersReturn {
     handleClearSearch,
     handleClearAllFilters,
     getActiveFilterCount,
+    hasCatFilter,
+    handleHasCatChange,
   };
 }

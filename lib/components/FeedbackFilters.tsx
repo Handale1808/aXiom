@@ -12,6 +12,8 @@ interface FeedbackFiltersProps {
   onTagChange: (tags: string[]) => void;
   onClearAll: () => void;
   activeFilterCount: number;
+  hasCatFilter: string | null;
+  onHasCatChange: (value: string | null) => void;
 }
 
 export default function FeedbackFilters({
@@ -26,6 +28,8 @@ export default function FeedbackFilters({
   onTagChange,
   onClearAll,
   activeFilterCount,
+  hasCatFilter,
+  onHasCatChange,
 }: FeedbackFiltersProps) {
   const sentimentOptions = ["Positive", "Neutral", "Negative"];
   const priorityOptions = ["P0", "P1", "P2", "P3"];
@@ -87,7 +91,7 @@ export default function FeedbackFilters({
             [FILTER_OPTIONS]
           </h3>
 
-          <div className="grid grid-cols-[auto_auto_1fr] gap-6 mb-6">
+          <div className="grid grid-cols-[auto_auto_auto_1fr] gap-6 mb-6">
             <div>
               <div className="mb-3 text-xs font-bold tracking-wider text-[#006694]">
                 SENTIMENT
@@ -141,6 +145,36 @@ export default function FeedbackFilters({
                     {priority}
                   </label>
                 ))}
+              </div>
+            </div>
+
+            <div>
+              <div className="mb-3 text-xs font-bold tracking-wider text-[#006694]">
+                CAT_ASSOCIATION
+              </div>
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 cursor-pointer text-sm text-cyan-100/70 hover:text-[#30D6D6] transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={hasCatFilter === "true"}
+                    onChange={() =>
+                      onHasCatChange(hasCatFilter === "true" ? null : "true")
+                    }
+                    className="h-4 w-4 cursor-pointer appearance-none border border-[#30D6D6]/50 bg-black checked:bg-black checked:border-[#30D6D6] checked:before:content-['✓'] checked:before:text-[#30D6D6] checked:before:text-xs checked:before:flex checked:before:items-center checked:before:justify-center"
+                  />
+                  Has Cat
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer text-sm text-cyan-100/70 hover:text-[#30D6D6] transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={hasCatFilter === "false"}
+                    onChange={() =>
+                      onHasCatChange(hasCatFilter === "false" ? null : "false")
+                    }
+                    className="h-4 w-4 cursor-pointer appearance-none border border-[#30D6D6]/50 bg-black checked:bg-black checked:border-[#30D6D6] checked:before:content-['✓'] checked:before:text-[#30D6D6] checked:before:text-xs checked:before:flex checked:before:items-center checked:before:justify-center"
+                  />
+                  General Feedback
+                </label>
               </div>
             </div>
 
