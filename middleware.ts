@@ -1,16 +1,29 @@
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
+// Page access restrictions
+const ADMIN_ONLY_PAGES = ["/feedbacks"];
+const NON_ADMIN_ONLY_PAGES = ["/submit", "/cart"];
+
 export default withAuth(
   function middleware(req) {
     const token = req.nextauth.token;
     const path = req.nextUrl.pathname;
 
-    // If accessing /feedbacks, must be admin
-    if (path.startsWith("/feedbacks")) {
-      if (!token?.isAdmin) {
-        return NextResponse.redirect(new URL("/submit", req.url));
-      }
+    // Check if admin is accessing non-admin only pages
+    if (
+      token?.isAdmin &&
+      NON_ADMIN_ONLY_PAGES.some((page) => path.startsWith(page))
+    ) {
+      return NextResponse.redirect(new URL("/feedbacks", req.url));
+    }
+
+    // Check if non-admin is accessing admin only pages
+    if (
+      !token?.isAdmin &&
+      ADMIN_ONLY_PAGES.some((page) => path.startsWith(page))
+    ) {
+      return NextResponse.redirect(new URL("/submit", req.url));
     }
 
     // If accessing /auth while logged in, redirect based on role
@@ -47,5 +60,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/feedbacks/:path*", "/submit/:path*", "/auth"],
+  matcher: ["/feedbacks/:path*", "/submit/:path*", "/cart/:path*", "/auth"],
 };
