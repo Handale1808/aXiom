@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
+import { usePopupPosition } from "../../hooks/usePopupPosition";
 
 interface FeedbackFiltersProps {
   isOpen: boolean;
@@ -34,7 +35,11 @@ export default function FeedbackFilters({
   const sentimentOptions = ["Positive", "Neutral", "Negative"];
   const priorityOptions = ["P0", "P1", "P2", "P3"];
 
-  const filterRef = useRef<HTMLDivElement>(null);
+  const { triggerRef, popupRef, popupStyle } = usePopupPosition({
+    isOpen,
+    minSpacing: 2,
+    popupWidth: 800,
+  });
 
   useEffect(() => {
     if (!isOpen) return;
@@ -42,13 +47,13 @@ export default function FeedbackFilters({
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Node;
 
-      if (filterRef.current && !filterRef.current.contains(target)) {
-        const toolbar = document.querySelector('[ref="toolbarRef"]');
-        if (toolbar && !toolbar.contains(target)) {
-          onToggle();
-        } else if (!toolbar) {
-          onToggle();
-        }
+      const isOutsideTrigger =
+        triggerRef.current && !triggerRef.current.contains(target);
+      const isOutsidePopup =
+        popupRef.current && !popupRef.current.contains(target);
+
+      if (isOutsideTrigger && isOutsidePopup) {
+        onToggle();
       }
     };
 
@@ -74,7 +79,7 @@ export default function FeedbackFilters({
   };
 
   return (
-    <div ref={filterRef} className="relative">
+    <div ref={triggerRef} className="relative">
       <button
         onClick={onToggle}
         className="relative border border-[#30D6D6]/50 bg-black px-3 py-2 sm:px-4 sm:py-2 text-xs font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6]/10 hover:border-[#30D6D6] min-h-[44px]"
@@ -87,7 +92,12 @@ export default function FeedbackFilters({
         )}
       </button>
       {isOpen && (
-        <div className="absolute left-[calc(-10rem+2px)] md:left-auto md:right-0 top-full mt-2 z-10 w-[calc(100vw-1rem)] md:w-[800px] border-2 border-[#30D6D6]/30 bg-black/95 p-4 md:p-6 backdrop-blur-sm">
+        <div
+          ref={popupRef}
+          style={popupStyle}
+          className="fixed z-10 border-2 border-[#30D6D6]/30 bg-black/95 p-4 md:p-6 backdrop-blur-sm"
+        >
+          {" "}
           <div className="absolute -left-px -top-px h-3 w-3 md:h-4 md:w-4 border-l-2 border-t-2 border-[#30D6D6]" />
           <div className="absolute -right-px -top-px h-3 w-3 md:h-4 md:w-4 border-r-2 border-t-2 border-[#30D6D6]" />
           <div className="absolute -bottom-px -left-px h-3 w-3 md:h-4 md:w-4 border-b-2 border-l-2 border-[#30D6D6]" />
