@@ -7,7 +7,7 @@ import { ICat } from "@/models/Cats";
 import { IAbility } from "@/models/Ability";
 import FormWithHeading, {
   type TabWithContent,
-} from "@/lib/components/FormWithHeading";
+} from "@/lib/components/ui/FormWithHeading";
 import ProgressBar from "@/lib/components/ui/ProgressBar";
 import Tooltip from "@/lib/components/ui/Tooltip";
 import GenerateImage from "@/lib/cat-generation/generateImage";
@@ -213,12 +213,6 @@ export default function CatDetails({
               value={cat.stats.psychic}
               max={STAT_RANGES.PSYCHIC.max}
             />
-
-            <div className="pt-4 border-t border-[#30D6D6]/30">
-              <div className="text-xs font-bold tracking-widest text-[#30D6D6]">
-                [TOTAL: {statsTotal}/{GENERATION_LIMITS.STATS_MAX_TOTAL}]
-              </div>
-            </div>
           </div>
         ),
       },
@@ -259,13 +253,6 @@ export default function CatDetails({
               value={cat.resistances.radiation}
               max={RESISTANCE_RANGES.RADIATION.max}
             />
-
-            <div className="pt-4 border-t border-[#30D6D6]/30">
-              <div className="text-xs font-bold tracking-widest text-[#30D6D6]">
-                [TOTAL: {resistancesTotal}/
-                {GENERATION_LIMITS.RESISTANCES_MAX_TOTAL}]
-              </div>
-            </div>
           </div>
         ),
       },
@@ -296,12 +283,6 @@ export default function CatDetails({
               value={cat.behavior.chaos}
               max={BEHAVIOR_RANGES.CHAOS.max}
             />
-
-            <div className="pt-4 border-t border-[#30D6D6]/30">
-              <div className="text-xs font-bold tracking-widest text-[#30D6D6]">
-                [TOTAL: {behaviorTotal}/{GENERATION_LIMITS.BEHAVIOR_MAX_TOTAL}]
-              </div>
-            </div>
           </div>
         ),
       },

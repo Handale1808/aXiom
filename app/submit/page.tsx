@@ -7,7 +7,7 @@ import TextSubmit from "@/lib/components/TextSubmit";
 import AnalysisResult from "@/lib/components/AnalysisResult";
 import { apiFetch } from "@/lib/apiClient";
 import type { FeedbackWithId, ApiSuccessResponse } from "@/lib/types/api";
-import CatSelector from "@/lib/components/CatSelector";
+import CatSelector from "@/lib/components/cat-display/CatSelector";
 
 export default function Submit() {
   const router = useRouter();

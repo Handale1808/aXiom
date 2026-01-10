@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { usePurchasedCats } from "@/lib/hooks/usePurchasedCats";
-import CatGrid from "@/lib/components/CatGrid";
-import Modal from "@/lib/components/Modal";
-import CatDetails from "@/lib/components/CatDetails";
+import CatGrid from "@/lib/components/cat-display/CatGrid";
+import Modal from "@/lib/components/ui/Modal";
+import CatDetails from "@/lib/components/cat-display/CatDetails";
 import { fetchCatByIdAction } from "@/lib/services/catActions";
 import { ICat } from "@/models/Cats";
 import { IAbility } from "@/models/Ability";

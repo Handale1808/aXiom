@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import FeedbackList from "@/lib/components/FeedbackList";
-import FeedbackDetailModal from "@/lib/components/FeedbackDetailModal";
-import ConfirmationDialog from "@/lib/components/ConfirmationDialog";
+import FeedbackList from "@/lib/components/feedback/FeedbackList";
+import FeedbackDetailModal from "@/lib/components/feedback/FeedbackDetailModal";
+import ConfirmationDialog from "@/lib/components/ui/ConfirmationDialog";
 import { useFeedbackData } from "@/lib/hooks/useFeedbackData";
 import { useFeedbackFilters } from "@/lib/hooks/useFeedbackFilters";
 import { useFeedbackActions } from "@/lib/hooks/useFeedbackActions";
-import ErrorBoundary from "@/lib/components/ErrorBoundary";
+import ErrorBoundary from "@/lib/components/ui/ErrorBoundary";
 import { getLastRequestId } from "@/lib/apiClient";
 
 export default function Feedbacks() {

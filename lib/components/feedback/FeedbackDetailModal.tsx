@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
-import Modal from "./Modal";
-import AnalysisResult from "./AnalysisResult";
+import Modal from "../ui/Modal";
+import AnalysisResult from "../AnalysisResult";
 import { formatDate } from "@/lib/utils/formatDate";
 import type { IFeedback } from "@/models/Feedback";
 import { apiFetch } from "@/lib/apiClient";
 import { fetchCatByIdAction } from "@/lib/services/catActions";
 import { ICat } from "@/models/Cats";
 import { IAbility } from "@/models/Ability";
-import CatDetails from "./CatDetails";
+import CatDetails from "../cat-display/CatDetails";
 
 interface FeedbackDetailModalProps {
   feedbackId: string | null;

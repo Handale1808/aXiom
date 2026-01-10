@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import ConfirmationDialog from "../../lib/components/ConfirmationDialog";
+import ConfirmationDialog from "../../lib/components/ui/ConfirmationDialog";
 
 jest.mock("../../lib/components/Modal", () => {
   return function MockModal({

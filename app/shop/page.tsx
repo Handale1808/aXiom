@@ -5,10 +5,10 @@ import { useUser } from "@/lib/context/UserContext";
 import { useToast } from "@/lib/context/ToastContext";
 import FormWithHeading, {
   type TabWithContent,
-} from "@/lib/components/FormWithHeading";
-import CatGrid, { type Cat } from "@/lib/components/CatGrid";
-import Modal from "@/lib/components/Modal";
-import CatDetails from "@/lib/components/CatDetails";
+} from "@/lib/components/ui/FormWithHeading";
+import CatGrid, { type Cat } from "@/lib/components/cat-display/CatGrid";
+import Modal from "@/lib/components/ui/Modal";
+import CatDetails from "@/lib/components/cat-display/CatDetails";
 import { ICat } from "@/models/Cats";
 import { IAbility } from "@/models/Ability";
 import {

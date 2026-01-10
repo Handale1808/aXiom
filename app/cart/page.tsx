@@ -6,8 +6,8 @@ import { useCart } from "@/lib/context/CartContext";
 import { fetchCatByIdAction } from "@/lib/services/catActions";
 import { ICat } from "@/models/Cats";
 import { IAbility } from "@/models/Ability";
-import Modal from "@/lib/components/Modal";
-import CatDetails from "@/lib/components/CatDetails";
+import Modal from "@/lib/components/ui/Modal";
+import CatDetails from "@/lib/components/cat-display/CatDetails";
 import Link from "next/link";
 
 export default function CartPage() {
