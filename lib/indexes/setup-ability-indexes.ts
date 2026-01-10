@@ -1,4 +1,4 @@
-import clientPromise from "./mongodb.ts";
+import clientPromise from "../mongodb.ts";
 
 export async function setupAbilityIndexes() {
   try {
@@ -25,3 +25,4 @@ export async function setupAbilityIndexes() {
     throw error;
   }
 }
+ 

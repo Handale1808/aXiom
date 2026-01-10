@@ -1,4 +1,4 @@
-import clientPromise from "./mongodb.ts";
+import clientPromise from "../mongodb.ts";
 
 export async function setupStockIndexes() {
   try {

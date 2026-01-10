@@ -1,13 +1,13 @@
-import { setupFeedbackIndexes } from "../lib/setup-indexes.ts";
-import { setupUserIndexes } from "../lib/setup-user-indexes.ts";
-import { setupCatIndexes } from "../lib/setup-cat-indexes.ts";
-import { setupAbilityIndexes } from "../lib/setup-ability-indexes.ts";
-import { setupAbilityRuleIndexes } from "../lib/setup-ability-rule-indexes.ts";
-import { setupCatAbilityIndexes } from "../lib/setup-cat-ability-indexes.ts";
-import { setupStockIndexes } from "../lib/setup-stock-indexes.ts";
-import { setupSettingsIndexes } from "../lib/setup-settings-indexes.ts";
-import { setupCartIndexes } from "../lib/setup-cart-indexes.ts";
-import { setupPurchaseIndexes } from "../lib/setup-purchase-indexes.ts";
+import { setupFeedbackIndexes } from "../lib/indexes/setup-indexes.ts";
+import { setupUserIndexes } from "../lib/indexes/setup-user-indexes.ts";
+import { setupCatIndexes } from "../lib/indexes/setup-cat-indexes.ts";
+import { setupAbilityIndexes } from "../lib/indexes/setup-ability-indexes.ts";
+import { setupAbilityRuleIndexes } from "../lib/indexes/setup-ability-rule-indexes.ts";
+import { setupCatAbilityIndexes } from "../lib/indexes/setup-cat-ability-indexes.ts";
+import { setupStockIndexes } from "../lib/indexes/setup-stock-indexes.ts";
+import { setupSettingsIndexes } from "../lib/indexes/setup-settings-indexes.ts";
+import { setupCartIndexes } from "../lib/indexes/setup-cart-indexes.ts";
+import { setupPurchaseIndexes } from "../lib/indexes/setup-purchase-indexes.ts";
 import clientPromise from "../lib/mongodb.ts";
 
 async function main() {
