@@ -164,9 +164,11 @@ export default function FeedbackList({
         onSelectAll={handleSelectAll}
       />
       {hasNoResults ? (
-        <div className="border border-[#30D6D6]/20 p-8 text-center">
-          <div className="text-sm text-[#30D6D6]/70">No results found</div>
-          <div className="text-xs text-[#006694] mt-2">
+        <div className="border border-[#30D6D6]/20 p-6 sm:p-8 text-center">
+          <div className="text-xs sm:text-sm text-[#30D6D6]/70">
+            No results found
+          </div>
+          <div className="text-[10px] sm:text-xs text-[#006694] mt-2">
             Try adjusting your search or filters
           </div>
         </div>

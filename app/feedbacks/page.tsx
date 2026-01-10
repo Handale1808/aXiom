@@ -112,15 +112,15 @@ export default function Feedbacks() {
   };
 
   return (
-    <div className="relative min-h-screen bg-black p-4 font-mono">
-      <div className="relative mx-auto max-w-5xl">
-        <div className="mb-8 border-b-2 border-[#30D6D6] pb-6">
-          <div className="flex items-center justify-between">
+    <div className="relative min-h-screen bg-black p-2 sm:p-3 md:p-4 font-mono">
+      <div className="relative mx-auto max-w-full md:max-w-5xl">
+        <div className="mb-6 sm:mb-8 border-b-2 border-[#30D6D6] pb-4 sm:pb-6">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-0">
             <div>
-              <h1 className="text-4xl font-bold tracking-wider text-[#30D6D6] drop-shadow-[0_0_10px_rgba(48,214,214,0.5)]">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-wider text-[#30D6D6] drop-shadow-[0_0_10px_rgba(48,214,214,0.5)]">
                 FEEDBACK_ARCHIVE
               </h1>
-              <p className="mt-2 text-sm tracking-widest text-[#006694] font-bold">
+              <p className="mt-2 text-xs sm:text-sm tracking-widest text-[#006694] font-bold">
                 [DATA_RETRIEVAL_SYSTEM]
               </p>
             </div>
@@ -128,23 +128,23 @@ export default function Feedbacks() {
             <button
               onClick={refetch}
               disabled={isLoading}
-              className="relative border-2 border-[#30D6D6] bg-black px-8 py-3 font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_20px_rgba(48,214,214,0.5)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-black disabled:hover:text-[#30D6D6] disabled:hover:shadow-none"
+              className="w-full md:w-auto relative border-2 border-[#30D6D6] bg-black px-4 py-2 md:px-8 md:py-3 text-sm md:text-base font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_20px_rgba(48,214,214,0.5)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-black disabled:hover:text-[#30D6D6] disabled:hover:shadow-none min-h-[44px]"
             >
               {isLoading ? "SYNCING..." : "REFRESH_DATA"}
             </button>
           </div>
         </div>
 
-        <div className="mb-6 relative border-2 border-[#30D6D6]/30 bg-black/50 p-5 backdrop-blur-sm">
-          <div className="absolute -left-px -top-px h-4 w-4 border-l-2 border-t-2 border-[#30D6D6]" />
-          <div className="absolute -right-px -top-px h-4 w-4 border-r-2 border-t-2 border-[#30D6D6]" />
-          <div className="absolute -bottom-px -left-px h-4 w-4 border-b-2 border-l-2 border-[#30D6D6]" />
-          <div className="absolute -bottom-px -right-px h-4 w-4 border-b-2 border-r-2 border-[#30D6D6]" />
+        <div className="mb-4 sm:mb-6 relative border-2 border-[#30D6D6]/30 bg-black/50 p-3 sm:p-4 md:p-5 backdrop-blur-sm">
+          <div className="absolute -left-px -top-px h-3 w-3 sm:h-4 sm:w-4 border-l-2 border-t-2 border-[#30D6D6]" />
+          <div className="absolute -right-px -top-px h-3 w-3 sm:h-4 sm:w-4 border-r-2 border-t-2 border-[#30D6D6]" />
+          <div className="absolute -bottom-px -left-px h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-l-2 border-[#30D6D6]" />
+          <div className="absolute -bottom-px -right-px h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-r-2 border-[#30D6D6]" />
 
-          <h3 className="mb-3 text-sm font-bold tracking-widest text-[#30D6D6]">
+          <h3 className="mb-2 sm:mb-3 text-xs sm:text-sm font-bold tracking-widest text-[#30D6D6]">
             [ARCHIVE_INFO]
           </h3>
-          <p className="text-cyan-100/70 leading-relaxed">
+          <p className="text-xs sm:text-sm text-cyan-100/70 leading-relaxed">
             Browse all feline feedback transmissions processed through our
             xenomorphic analysis system.
           </p>
@@ -158,16 +158,16 @@ export default function Feedbacks() {
         </div>
 
         {error && (
-          <div className="relative border-2 border-red-500/50 bg-red-950/20 p-6 text-center backdrop-blur-sm mb-8">
-            <div className="absolute -left-px -top-px h-4 w-4 border-l-2 border-t-2 border-red-500" />
-            <div className="absolute -right-px -top-px h-4 w-4 border-r-2 border-t-2 border-red-500" />
-            <div className="absolute -bottom-px -left-px h-4 w-4 border-b-2 border-l-2 border-red-500" />
-            <div className="absolute -bottom-px -right-px h-4 w-4 border-b-2 border-r-2 border-red-500" />
+          <div className="relative border-2 border-red-500/50 bg-red-950/20 p-4 sm:p-5 md:p-6 text-center backdrop-blur-sm mb-6 sm:mb-8">
+            <div className="absolute -left-px -top-px h-3 w-3 sm:h-4 sm:w-4 border-l-2 border-t-2 border-red-500" />
+            <div className="absolute -right-px -top-px h-3 w-3 sm:h-4 sm:w-4 border-r-2 border-t-2 border-red-500" />
+            <div className="absolute -bottom-px -left-px h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-l-2 border-red-500" />
+            <div className="absolute -bottom-px -right-px h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-r-2 border-red-500" />
 
             <div className="mb-2 text-xs tracking-[0.3em] text-red-400">
               [SYSTEM_ERROR]
             </div>
-            <p className="text-red-200">{error}</p>
+            <p className="text-sm sm:text-base text-red-200">{error}</p>
             {getLastRequestId() && (
               <p className="text-xs text-red-400/50 mt-3 font-mono">
                 Error ID: {getLastRequestId()}
@@ -177,11 +177,11 @@ export default function Feedbacks() {
         )}
 
         {isLoading && feedbacks.length === 0 && (
-          <div className="relative border-2 border-[#30D6D6]/30 bg-black/50 p-12 text-center backdrop-blur-sm">
-            <div className="absolute -left-px -top-px h-4 w-4 border-l-2 border-t-2 border-[#30D6D6]" />
-            <div className="absolute -right-px -top-px h-4 w-4 border-r-2 border-t-2 border-[#30D6D6]" />
-            <div className="absolute -bottom-px -left-px h-4 w-4 border-b-2 border-l-2 border-[#30D6D6]" />
-            <div className="absolute -bottom-px -right-px h-4 w-4 border-b-2 border-r-2 border-[#30D6D6]" />
+          <div className="relative border-2 border-[#30D6D6]/30 bg-black/50 p-6 sm:p-8 md:p-12 text-center backdrop-blur-sm">
+            <div className="absolute -left-px -top-px h-3 w-3 sm:h-4 sm:w-4 border-l-2 border-t-2 border-[#30D6D6]" />
+            <div className="absolute -right-px -top-px h-3 w-3 sm:h-4 sm:w-4 border-r-2 border-t-2 border-[#30D6D6]" />
+            <div className="absolute -bottom-px -left-px h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-l-2 border-[#30D6D6]" />
+            <div className="absolute -bottom-px -right-px h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-r-2 border-[#30D6D6]" />
 
             <div className="mb-4 flex items-center justify-center gap-3">
               <div className="h-3 w-3 animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]" />
@@ -189,7 +189,7 @@ export default function Feedbacks() {
                 [SCANNING_DATABASE]
               </div>
             </div>
-            <p className="text-cyan-100/70">
+            <p className="text-xs sm:text-sm text-cyan-100/70">
               Retrieving feedback records from xenomorphic archive...
             </p>
           </div>
@@ -230,11 +230,11 @@ export default function Feedbacks() {
         </ErrorBoundary>
 
         {feedbacks.length > 0 && (
-          <div className="mt-6 flex items-center justify-between border-t border-[#30D6D6]/20 pt-4">
-            <div className="text-xs text-[#30D6D6]/70">
+          <div className="mt-4 sm:mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-t border-[#30D6D6]/20 pt-3 sm:pt-4">
+            <div className="text-[10px] sm:text-xs text-[#30D6D6]/70">
               Page {page} • Page Size
               <select
-                className="ml-2 bg-black border border-[#30D6D6]/50 text-[#30D6D6] px-2 py-1 text-xs"
+                className="ml-2 bg-black border border-[#30D6D6]/50 text-[#30D6D6] px-2 py-1 text-xs min-h-[44px]"
                 value={pageSize}
                 onChange={(e) => handlePageSizeChange(parseInt(e.target.value))}
               >
@@ -245,18 +245,18 @@ export default function Feedbacks() {
               </select>
               <span className="ml-3">Total {total}</span>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 w-full sm:w-auto">
               <button
                 onClick={handlePrevPage}
                 disabled={page === 1 || isLoading}
-                className="border border-[#30D6D6]/50 bg-black px-4 py-2 text-xs font-bold tracking-wider text-[#30D6D6] disabled:opacity-40"
+                className="flex-1 sm:flex-none border border-[#30D6D6]/50 bg-black px-3 py-2 sm:px-4 sm:py-2 text-xs font-bold tracking-wider text-[#30D6D6] disabled:opacity-40 min-h-[44px]"
               >
                 PREV
               </button>
               <button
                 onClick={handleNextPage}
                 disabled={!hasMore || isLoading}
-                className="border border-[#30D6D6]/50 bg-black px-4 py-2 text-xs font-bold tracking-wider text-[#30D6D6] disabled:opacity-40"
+                className="flex-1 sm:flex-none border border-[#30D6D6]/50 bg-black px-3 py-2 sm:px-4 sm:py-2 text-xs font-bold tracking-wider text-[#30D6D6] disabled:opacity-40 min-h-[44px]"
               >
                 NEXT
               </button>
@@ -264,7 +264,7 @@ export default function Feedbacks() {
           </div>
         )}
 
-        <div className="mt-8 border-t border-[#30D6D6]/20 pt-4 text-center text-xs text-[#30D6D6]/40 tracking-wider">
+        <div className="mt-6 sm:mt-8 border-t border-[#30D6D6]/20 pt-3 sm:pt-4 text-center text-[10px] sm:text-xs text-[#30D6D6]/40 tracking-wider">
           AXIOM_ARCHIVE_v2.847 | {feedbacks.length} RECORDS_INDEXED |
           DATABASE_ACTIVE
         </div>

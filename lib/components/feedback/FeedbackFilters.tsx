@@ -40,15 +40,22 @@ export default function FeedbackFilters({
     if (!isOpen) return;
 
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        filterRef.current &&
-        !filterRef.current.contains(event.target as Node)
-      ) {
-        onToggle();
+      const target = event.target as Node;
+      
+      if (filterRef.current && !filterRef.current.contains(target)) {
+        const toolbar = document.querySelector('[ref="toolbarRef"]');
+        if (toolbar && !toolbar.contains(target)) {
+          onToggle();
+        } else if (!toolbar) {
+          onToggle();
+        }
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    setTimeout(() => {
+      document.addEventListener("mousedown", handleClickOutside);
+    }, 0);
+    
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -70,7 +77,7 @@ export default function FeedbackFilters({
     <div ref={filterRef} className="relative">
       <button
         onClick={onToggle}
-        className="relative border border-[#30D6D6]/50 bg-black px-4 py-2 text-xs font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6]/10 hover:border-[#30D6D6]"
+        className="relative border border-[#30D6D6]/50 bg-black px-3 py-2 sm:px-4 sm:py-2 text-xs font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6]/10 hover:border-[#30D6D6] min-h-[44px]"
       >
         FILTER
         {activeFilterCount > 0 && (
@@ -81,26 +88,26 @@ export default function FeedbackFilters({
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 z-10 w-[800px] border-2 border-[#30D6D6]/30 bg-black/95 p-6 backdrop-blur-sm">
-          <div className="absolute -left-px -top-px h-4 w-4 border-l-2 border-t-2 border-[#30D6D6]" />
-          <div className="absolute -right-px -top-px h-4 w-4 border-r-2 border-t-2 border-[#30D6D6]" />
-          <div className="absolute -bottom-px -left-px h-4 w-4 border-b-2 border-l-2 border-[#30D6D6]" />
-          <div className="absolute -bottom-px -right-px h-4 w-4 border-b-2 border-r-2 border-[#30D6D6]" />
+        <div className="absolute left-0 md:left-auto md:right-0 top-full mt-2 z-10 w-screen max-w-[calc(100vw-16px)] md:w-[800px] border-2 border-[#30D6D6]/30 bg-black/95 p-4 md:p-6 backdrop-blur-sm">
+          <div className="absolute -left-px -top-px h-3 w-3 md:h-4 md:w-4 border-l-2 border-t-2 border-[#30D6D6]" />
+          <div className="absolute -right-px -top-px h-3 w-3 md:h-4 md:w-4 border-r-2 border-t-2 border-[#30D6D6]" />
+          <div className="absolute -bottom-px -left-px h-3 w-3 md:h-4 md:w-4 border-b-2 border-l-2 border-[#30D6D6]" />
+          <div className="absolute -bottom-px -right-px h-3 w-3 md:h-4 md:w-4 border-b-2 border-r-2 border-[#30D6D6]" />
 
-          <h3 className="mb-4 text-sm font-bold tracking-widest text-[#30D6D6]">
+          <h3 className="mb-3 md:mb-4 text-xs sm:text-sm font-bold tracking-widest text-[#30D6D6]">
             [FILTER_OPTIONS]
           </h3>
 
-          <div className="grid grid-cols-[auto_auto_auto_1fr] gap-6 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-[auto_auto_auto_1fr] gap-4 md:gap-6 mb-4 md:mb-6">
             <div>
-              <div className="mb-3 text-xs font-bold tracking-wider text-[#006694]">
+              <div className="mb-3 text-[10px] sm:text-xs font-bold tracking-wider text-[#006694]">
                 SENTIMENT
               </div>
-              <div className="space-y-2">
+              <div className="space-y-3 sm:space-y-2">
                 {sentimentOptions.map((sentiment) => (
                   <label
                     key={sentiment}
-                    className="flex items-center gap-2 cursor-pointer text-sm text-cyan-100/70 hover:text-[#30D6D6] transition-colors"
+                    className="flex items-center gap-3 sm:gap-2 cursor-pointer text-xs sm:text-sm text-cyan-100/70 hover:text-[#30D6D6] transition-colors"
                   >
                     <input
                       type="checkbox"
@@ -121,14 +128,14 @@ export default function FeedbackFilters({
             </div>
 
             <div>
-              <div className="mb-3 text-xs font-bold tracking-wider text-[#006694]">
+              <div className="mb-3 text-[10px] sm:text-xs font-bold tracking-wider text-[#006694]">
                 PRIORITY
               </div>
-              <div className="space-y-2">
+              <div className="space-y-3 sm:space-y-2">
                 {priorityOptions.map((priority) => (
                   <label
                     key={priority}
-                    className="flex items-center gap-2 cursor-pointer text-sm text-cyan-100/70 hover:text-[#30D6D6] transition-colors"
+                    className="flex items-center gap-3 sm:gap-2 cursor-pointer text-xs sm:text-sm text-cyan-100/70 hover:text-[#30D6D6] transition-colors"
                   >
                     <input
                       type="checkbox"
@@ -149,11 +156,11 @@ export default function FeedbackFilters({
             </div>
 
             <div>
-              <div className="mb-3 text-xs font-bold tracking-wider text-[#006694]">
+              <div className="mb-3 text-[10px] sm:text-xs font-bold tracking-wider text-[#006694]">
                 CAT_ASSOCIATION
               </div>
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 cursor-pointer text-sm text-cyan-100/70 hover:text-[#30D6D6] transition-colors">
+              <div className="space-y-3 sm:space-y-2">
+                <label className="flex items-center gap-3 sm:gap-2 cursor-pointer text-xs sm:text-sm text-cyan-100/70 hover:text-[#30D6D6] transition-colors">
                   <input
                     type="checkbox"
                     checked={hasCatFilter === "true"}
@@ -164,7 +171,7 @@ export default function FeedbackFilters({
                   />
                   Has Cat
                 </label>
-                <label className="flex items-center gap-2 cursor-pointer text-sm text-cyan-100/70 hover:text-[#30D6D6] transition-colors">
+                <label className="flex items-center gap-3 sm:gap-2 cursor-pointer text-xs sm:text-sm text-cyan-100/70 hover:text-[#30D6D6] transition-colors">
                   <input
                     type="checkbox"
                     checked={hasCatFilter === "false"}
@@ -179,16 +186,16 @@ export default function FeedbackFilters({
             </div>
 
             <div>
-              <div className="mb-3 text-xs font-bold tracking-wider text-[#006694]">
+              <div className="mb-3 text-[10px] sm:text-xs font-bold tracking-wider text-[#006694]">
                 TAGS
               </div>
-              <div className="max-h-32 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-black [&::-webkit-scrollbar-thumb]:bg-[#30D6D6]/50 [&::-webkit-scrollbar-thumb]:border [&::-webkit-scrollbar-thumb]:border-[#30D6D6] [&::-webkit-scrollbar-thumb]:hover:bg-[#30D6D6] [&::-webkit-scrollbar-thumb]:hover:shadow-[0_0_10px_rgba(48,214,214,0.8)]">
+              <div className="max-h-40 sm:max-h-32 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-black [&::-webkit-scrollbar-thumb]:bg-[#30D6D6]/50 [&::-webkit-scrollbar-thumb]:border [&::-webkit-scrollbar-thumb]:border-[#30D6D6] [&::-webkit-scrollbar-thumb]:hover:bg-[#30D6D6] [&::-webkit-scrollbar-thumb]:hover:shadow-[0_0_10px_rgba(48,214,214,0.8)]">
                 {availableTags.length === 0 ? (
-                  <div className="text-xs text-[#006694]">
+                  <div className="text-[10px] sm:text-xs text-[#006694]">
                     No tags available
                   </div>
                 ) : (
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                     {[...availableTags]
                       .sort((a, b) => {
                         const aSelected = selectedTags.includes(a);
@@ -200,7 +207,7 @@ export default function FeedbackFilters({
                       .map((tag) => (
                         <label
                           key={tag}
-                          className="flex items-center gap-2 cursor-pointer text-sm text-cyan-100/70 hover:text-[#30D6D6] transition-colors"
+                          className="flex items-center gap-3 sm:gap-2 cursor-pointer text-xs sm:text-sm text-cyan-100/70 hover:text-[#30D6D6] transition-colors"
                         >
                           <input
                             type="checkbox"
@@ -226,7 +233,7 @@ export default function FeedbackFilters({
           <button
             onClick={onClearAll}
             disabled={activeFilterCount === 0}
-            className="w-full border border-[#30D6D6]/50 bg-black px-4 py-2 text-xs font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6]/10 hover:border-[#30D6D6] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:border-[#30D6D6]/50"
+            className="w-full border border-[#30D6D6]/50 bg-black px-4 py-2.5 sm:py-2 text-xs font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6]/10 hover:border-[#30D6D6] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:border-[#30D6D6]/50 min-h-[44px]"
           >
             CLEAR_ALL_FILTERS
           </button>

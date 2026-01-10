@@ -94,37 +94,45 @@ export default function CatDetails({
       label: "PHYSICAL_TRAITS",
       content: {
         customContent: (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
-              <div className="text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
+              <div className="text-[10px] sm:text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
                 [EYES]
               </div>
-              <div className="text-cyan-100">{cat.physicalTraits.eyes}</div>
+              <div className="text-xs sm:text-sm text-cyan-100">
+                {cat.physicalTraits.eyes}
+              </div>
             </div>
 
             <div>
-              <div className="text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
+              <div className="text-[10px] sm:text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
                 [LEGS]
               </div>
-              <div className="text-cyan-100">{cat.physicalTraits.legs}</div>
+              <div className="text-xs sm:text-sm text-cyan-100">
+                {cat.physicalTraits.legs}
+              </div>
             </div>
 
             <div>
-              <div className="text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
+              <div className="text-[10px] sm:text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
                 [WINGS]
               </div>
-              <div className="text-cyan-100">{cat.physicalTraits.wings}</div>
+              <div className="text-xs sm:text-sm text-cyan-100">
+                {cat.physicalTraits.wings}
+              </div>
             </div>
 
             <div>
-              <div className="text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
+              <div className="text-[10px] sm:text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
                 [TAILS]
               </div>
-              <div className="text-cyan-100">{cat.physicalTraits.tails}</div>
+              <div className="text-xs sm:text-sm text-cyan-100">
+                {cat.physicalTraits.tails}
+              </div>
             </div>
 
             <div>
-              <div className="text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
+              <div className="text-[10px] sm:text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
                 [SKIN_TYPE]
               </div>
               <div className="text-cyan-100 uppercase">
@@ -133,7 +141,7 @@ export default function CatDetails({
             </div>
 
             <div>
-              <div className="text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
+              <div className="text-[10px] sm:text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
                 [SIZE]
               </div>
               <div className="text-cyan-100 uppercase">
@@ -142,12 +150,12 @@ export default function CatDetails({
             </div>
 
             <div>
-              <div className="text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
+              <div className="text-[10px] sm:text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
                 [COLOUR]
               </div>
               <div className="flex items-center gap-2">
                 <div
-                  className="w-6 h-6 border border-[#30D6D6]"
+                  className="w-5 h-5 sm:w-6 sm:h-6 border border-[#30D6D6]"
                   style={{ backgroundColor: cat.physicalTraits.colour }}
                 />
                 <span className="text-cyan-100 uppercase">
@@ -157,7 +165,7 @@ export default function CatDetails({
             </div>
 
             <div>
-              <div className="text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
+              <div className="text-[10px] sm:text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
                 [HAS_CLAWS]
               </div>
               <div className="text-cyan-100">
@@ -166,7 +174,7 @@ export default function CatDetails({
             </div>
 
             <div>
-              <div className="text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
+              <div className="text-[10px] sm:text-xs font-bold tracking-widest text-[#30D6D6] mb-1">
                 [HAS_FANGS]
               </div>
               <div className="text-cyan-100">
@@ -295,7 +303,7 @@ export default function CatDetails({
           <div className="space-y-6">
             {passiveAbilities.length > 0 && (
               <div>
-                <div className="text-sm font-bold tracking-widest text-[#30D6D6] mb-3">
+                <div className="text-xs sm:text-sm font-bold tracking-widest text-[#30D6D6] mb-3">
                   [PASSIVE_ABILITIES]
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -304,7 +312,7 @@ export default function CatDetails({
                       key={ability._id?.toString()}
                       content={ability.description}
                     >
-                      <div className="inline-flex px-3 py-2 border-2 border-[#30D6D6] bg-black text-[#30D6D6] text-xs font-bold tracking-wider hover:bg-[#30D6D6] hover:text-black transition-all cursor-help">
+                      <div className="inline-flex px-2 py-1.5 sm:px-3 sm:py-2 border-2 border-[#30D6D6] bg-black text-[#30D6D6] text-[10px] sm:text-xs font-bold tracking-wider hover:bg-[#30D6D6] hover:text-black transition-all cursor-help">
                         {ability.name}
                       </div>
                     </Tooltip>
@@ -334,13 +342,13 @@ export default function CatDetails({
             )}
 
             {abilities.length === 0 && (
-              <div className="text-center py-8 text-[#006694]">
+              <div className="text-center py-6 sm:py-8 text-xs sm:text-sm text-[#006694]">
                 [NO_ABILITIES_GRANTED]
               </div>
             )}
 
             <div className="pt-4 border-t border-[#30D6D6]/30">
-              <div className="text-xs font-bold tracking-widest text-[#30D6D6]">
+              <div className="text-[10px] sm:text-xs font-bold tracking-widest text-[#30D6D6]">
                 [PASSIVE: {passiveAbilities.length} | ACTIVE:{" "}
                 {activeAbilities.length}]
               </div>
@@ -352,15 +360,17 @@ export default function CatDetails({
   ];
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="border-b-2 border-[#30D6D6]/30 pb-4">
-        <h2 className="text-2xl font-bold tracking-wider text-[#30D6D6]">
+    <div className="p-4 sm:p-5 md:p-6 space-y-4 sm:space-y-5 md:space-y-6">
+      <div className="border-b-2 border-[#30D6D6]/30 pb-3 sm:pb-4">
+        <h2 className="text-xl sm:text-2xl font-bold tracking-wider text-[#30D6D6]">
           {cat.name}
         </h2>
-        <p className="text-sm text-cyan-100/70 mt-2">{cat.description}</p>
+        <p className="text-xs sm:text-sm text-cyan-100/70 mt-2">
+          {cat.description}
+        </p>
       </div>
 
-      <div className="w-full h-64 flex items-center justify-center border-2 border-[#30D6D6]/30 bg-black/30">
+      <div className="w-full h-48 sm:h-56 md:h-64 flex items-center justify-center border-2 border-[#30D6D6]/30 bg-black/30">
         <GenerateImage ref={svgRef} traits={cat.physicalTraits} />
       </div>
 
@@ -370,12 +380,12 @@ export default function CatDetails({
         onTabChange={setActiveTab}
       />
 
-      <div className="flex gap-4 mt-6 pt-6 border-t-2 border-[#30D6D6]/30">
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-4 sm:mt-6 pt-4 sm:pt-6 border-t-2 border-[#30D6D6]/30">
         {showAddToCart && (
           <button
             onClick={handleAddToCart}
             disabled={isAddingToCart || isSaving}
-            className="flex-1 border-2 border-[#30D6D6] bg-black py-4 font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_20px_rgba(48,214,214,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:text-[#30D6D6]"
+            className="w-full sm:flex-1 border-2 border-[#30D6D6] bg-black py-3 sm:py-4 text-xs sm:text-sm md:text-base font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_20px_rgba(48,214,214,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:text-[#30D6D6] min-h-[44px]"
           >
             {isAddingToCart ? "[ADDING...]" : "[ADD_TO_CART]"}
           </button>
@@ -385,7 +395,7 @@ export default function CatDetails({
           <button
             onClick={handleSave}
             disabled={isSaving || isAddingToCart}
-            className="flex-1 border-2 border-[#30D6D6] bg-black py-4 font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_20px_rgba(48,214,214,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:text-[#30D6D6]"
+            className="w-full sm:flex-1 border-2 border-[#30D6D6] bg-black py-3 sm:py-4 text-xs sm:text-sm md:text-base font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_20px_rgba(48,214,214,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:text-[#30D6D6] min-h-[44px]"
           >
             {isSaving ? "[SAVING...]" : "[SAVE]"}
           </button>
@@ -394,8 +404,8 @@ export default function CatDetails({
         <button
           onClick={onClose}
           disabled={isSaving || isAddingToCart}
-          className={`border-2 border-[#30D6D6] bg-transparent py-4 font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6]/10 disabled:opacity-50 disabled:cursor-not-allowed ${
-            onSave || showAddToCart ? "flex-1" : "w-full"
+          className={`w-full border-2 border-[#30D6D6] bg-transparent py-3 sm:py-4 text-xs sm:text-sm md:text-base font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6]/10 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] ${
+            onSave || showAddToCart ? "sm:flex-1" : ""
           }`}
         >
           [CLOSE]

@@ -134,21 +134,21 @@ export default function FeedbackDetailModal({
 
   return (
     <Modal isOpen={!!feedbackId} onClose={onClose} showDefaultClose={false}>
-      <div className="p-6">
-        <div className="mb-6 flex items-center justify-between border-b-2 border-[#30D6D6]/30 pb-4">
+      <div className="p-4 sm:p-5 md:p-6">
+        <div className="mb-4 sm:mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b-2 border-[#30D6D6]/30 pb-3 sm:pb-4">
           <div>
-            <h2 className="text-xl font-bold tracking-wider text-[#30D6D6] drop-shadow-[0_0_10px_rgba(48,214,214,0.5)]">
+            <h2 className="text-lg sm:text-xl font-bold tracking-wider text-[#30D6D6] drop-shadow-[0_0_10px_rgba(48,214,214,0.5)]">
               FEEDBACK_DETAILS
             </h2>
-            <p className="mt-1 text-xs tracking-widest text-[#006694] font-bold">
+            <p className="mt-1 text-[10px] sm:text-xs tracking-widest text-[#006694] font-bold">
               [RECORD_VIEWER]
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row w-full sm:w-auto">
             <button
               onClick={() => feedbackId && onDelete(feedbackId)}
               disabled={isDeleting}
-              className="border-2 border-red-500 bg-black px-6 py-2 text-sm font-bold tracking-wider text-red-400 transition-all hover:bg-red-500 hover:text-black hover:shadow-[0_0_15px_rgba(239,68,68,0.5)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="border-2 border-red-500 bg-black px-4 py-2 sm:px-6 sm:py-2 text-xs sm:text-sm font-bold tracking-wider text-red-400 transition-all hover:bg-red-500 hover:text-black hover:shadow-[0_0_15px_rgba(239,68,68,0.5)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 min-h-[44px]"
             >
               {isDeleting && (
                 <div className="h-2 w-2 animate-pulse bg-red-400" />
@@ -157,7 +157,7 @@ export default function FeedbackDetailModal({
             </button>
             <button
               onClick={onClose}
-              className="border-2 border-[#30D6D6] bg-black px-6 py-2 text-sm font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_15px_rgba(48,214,214,0.5)]"
+              className="border-2 border-[#30D6D6] bg-black px-4 py-2 sm:px-6 sm:py-2 text-xs sm:text-sm font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_15px_rgba(48,214,214,0.5)] min-h-[44px]"
             >
               CLOSE
             </button>
@@ -165,8 +165,8 @@ export default function FeedbackDetailModal({
         </div>
 
         {loading && (
-          <div className="relative border-2 border-[#30D6D6]/50 bg-[#30D6D6]/10 p-12 text-center">
-            <div className="absolute right-4 top-4 h-3 w-3 animate-pulse bg-[#30D6D6] shadow-[0_0_15px_rgba(48,214,214,0.9)]" />
+          <div className="relative border-2 border-[#30D6D6]/50 bg-[#30D6D6]/10 p-6 sm:p-8 md:p-12 text-center">
+            <div className="absolute right-2 top-2 sm:right-4 sm:top-4 h-2 w-2 sm:h-3 sm:w-3 animate-pulse bg-[#30D6D6] shadow-[0_0_15px_rgba(48,214,214,0.9)]" />
             <div className="mb-3 text-xs tracking-[0.3em] text-[#30D6D6]/70">
               LOADING_RECORD
             </div>
@@ -191,11 +191,11 @@ export default function FeedbackDetailModal({
         )}
 
         {error && (
-          <div className="relative border-2 border-red-500/50 bg-red-950/30 p-6">
-            <div className="absolute -left-px -top-px h-4 w-4 border-l-2 border-t-2 border-red-500" />
-            <div className="absolute -right-px -top-px h-4 w-4 border-r-2 border-t-2 border-red-500" />
-            <div className="absolute -bottom-px -left-px h-4 w-4 border-b-2 border-l-2 border-red-500" />
-            <div className="absolute -bottom-px -right-px h-4 w-4 border-b-2 border-r-2 border-red-500" />
+          <div className="relative border-2 border-red-500/50 bg-red-950/30 p-4 sm:p-5 md:p-6">
+            <div className="absolute -left-px -top-px h-3 w-3 sm:h-4 sm:w-4 border-l-2 border-t-2 border-red-500" />
+            <div className="absolute -right-px -top-px h-3 w-3 sm:h-4 sm:w-4 border-r-2 border-t-2 border-red-500" />
+            <div className="absolute -bottom-px -left-px h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-l-2 border-red-500" />
+            <div className="absolute -bottom-px -right-px h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-r-2 border-red-500" />
 
             <div className="flex items-center gap-3 mb-3">
               <div className="h-3 w-3 animate-pulse bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)]" />
@@ -221,7 +221,7 @@ export default function FeedbackDetailModal({
                     setLoading(false);
                   });
               }}
-              className="border border-red-500 bg-black px-4 py-2 text-xs font-bold tracking-wider text-red-400 transition-all hover:bg-red-500 hover:text-black"
+              className="w-full sm:w-auto border border-red-500 bg-black px-4 py-2 text-xs font-bold tracking-wider text-red-400 transition-all hover:bg-red-500 hover:text-black min-h-[44px]"
             >
               RETRY_LOAD
             </button>
@@ -230,8 +230,8 @@ export default function FeedbackDetailModal({
 
         {feedback && !loading && !error && (
           <div className="space-y-6">
-            <div className="border-2 border-[#006694]/30 bg-black/30 p-4">
-              <div className="space-y-1 text-sm text-cyan-100/70">
+            <div className="border-2 border-[#006694]/30 bg-black/30 p-3 sm:p-4">
+              <div className="space-y-1 text-xs sm:text-sm text-cyan-100/70">
                 <p>
                   <span className="text-[#006694]">TIMESTAMP:</span>{" "}
                   {formatDate(feedback.createdAt)}
@@ -246,13 +246,13 @@ export default function FeedbackDetailModal({
             </div>
 
             {feedback.catId && feedback.catName && (
-              <div className="border-2 border-[#30D6D6]/30 bg-black/30 p-4">
+              <div className="border-2 border-[#30D6D6]/30 bg-black/30 p-3 sm:p-4">
                 <div className="text-xs font-bold tracking-wider text-[#006694] mb-3">
                   [ASSOCIATED_SPECIMEN]
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                   <div
-                    className="w-16 h-16 border border-[#30D6D6]/50 flex items-center justify-center"
+                    className="w-12 h-12 sm:w-16 sm:h-16 border border-[#30D6D6]/50 flex items-center justify-center flex-shrink-0"
                     dangerouslySetInnerHTML={{
                       __html: feedback.catSvgImage || "",
                     }}
@@ -265,7 +265,7 @@ export default function FeedbackDetailModal({
                   <button
                     onClick={handleViewCat}
                     disabled={isLoadingCat}
-                    className="border-2 border-[#30D6D6] bg-black px-4 py-2 text-xs font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full sm:w-auto border-2 border-[#30D6D6] bg-black px-3 py-2 sm:px-4 sm:py-2 text-[10px] sm:text-xs font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
                   >
                     {isLoadingCat ? "LOADING..." : "VIEW_DETAILS"}
                   </button>
@@ -273,13 +273,13 @@ export default function FeedbackDetailModal({
               </div>
             )}
 
-            <div className="relative border-2 border-[#30D6D6]/30 bg-black/50 p-5 backdrop-blur-sm">
-              <div className="absolute -left-px -top-px h-4 w-4 border-l-2 border-t-2 border-[#30D6D6]" />
-              <div className="absolute -right-px -top-px h-4 w-4 border-r-2 border-t-2 border-[#30D6D6]" />
-              <div className="absolute -bottom-px -left-px h-4 w-4 border-b-2 border-l-2 border-[#30D6D6]" />
-              <div className="absolute -bottom-px -right-px h-4 w-4 border-b-2 border-r-2 border-[#30D6D6]" />
+            <div className="relative border-2 border-[#30D6D6]/30 bg-black/50 p-4 sm:p-5 backdrop-blur-sm">
+              <div className="absolute -left-px -top-px h-3 w-3 sm:h-4 sm:w-4 border-l-2 border-t-2 border-[#30D6D6]" />
+              <div className="absolute -right-px -top-px h-3 w-3 sm:h-4 sm:w-4 border-r-2 border-t-2 border-[#30D6D6]" />
+              <div className="absolute -bottom-px -left-px h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-l-2 border-[#30D6D6]" />
+              <div className="absolute -bottom-px -right-px h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-r-2 border-[#30D6D6]" />
 
-              <p className="whitespace-pre-wrap text-cyan-100/90 leading-relaxed">
+              <p className="whitespace-pre-wrap text-sm sm:text-base text-cyan-100/90 leading-relaxed">
                 {feedback.text}
               </p>
             </div>

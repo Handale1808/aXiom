@@ -104,14 +104,14 @@ export default function Modal({
     >
       <div
         ref={modalRef}
-        className="relative mx-4 max-h-[90vh] w-full max-w-3xl overflow-y-auto overflow-x-auto border-2 border-[#30D6D6] bg-black font-mono shadow-[0_0_30px_rgba(48,214,214,0.3)] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-black [&::-webkit-scrollbar-thumb]:bg-[#30D6D6]/50 [&::-webkit-scrollbar-thumb]:border [&::-webkit-scrollbar-thumb]:border-[#30D6D6] [&::-webkit-scrollbar-thumb]:hover:bg-[#30D6D6] [&::-webkit-scrollbar-thumb]:hover:shadow-[0_0_10px_rgba(48,214,214,0.8)]"
+        className="fixed inset-0 w-screen h-screen overflow-y-auto overflow-x-hidden md:relative md:inset-auto md:mx-4 md:max-h-[90vh] md:w-full md:max-w-3xl md:rounded-lg border-2 border-[#30D6D6] bg-black font-mono shadow-[0_0_30px_rgba(48,214,214,0.3)] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-black [&::-webkit-scrollbar-thumb]:bg-[#30D6D6]/50 [&::-webkit-scrollbar-thumb]:border [&::-webkit-scrollbar-thumb]:border-[#30D6D6] [&::-webkit-scrollbar-thumb]:hover:bg-[#30D6D6] [&::-webkit-scrollbar-thumb]:hover:shadow-[0_0_10px_rgba(48,214,214,0.8)]"
         onClick={(e) => e.stopPropagation()}
         tabIndex={-1}
       >
         {showDefaultClose && (
           <button
             onClick={onClose}
-            className="absolute right-4 top-4 text-2xl text-[#30D6D6] hover:text-[#30D6D6]/70 transition-colors z-10"
+            className="fixed md:absolute right-4 top-4 h-11 w-11 flex items-center justify-center text-2xl text-[#30D6D6] hover:text-[#30D6D6]/70 transition-colors z-10 bg-black md:bg-transparent border md:border-0 border-[#30D6D6]"
             aria-label="Close modal"
           >
             ×
