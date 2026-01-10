@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateRequestId, info, debug, error as logError } from "./logger";
-import { formatErrorResponse, ApiError } from "./errors";
+import { generateRequestId, info, debug, error as logError } from "../logger";
+import { formatErrorResponse, ApiError } from "../errors";
 
 type RouteHandler = (
   request: NextRequest,

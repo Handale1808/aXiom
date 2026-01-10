@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 import clientPromise from "@/lib/mongodb";
 import type { IFeedback } from "@/models/Feedback";
-import { withMiddleware } from "@/lib/middleware";
+import { withMiddleware } from "@/lib/utils/middleware";
 import { ValidationError, DatabaseError, ApiError } from "@/lib/errors";
 import { debug, info } from "@/lib/logger";
 import { withDatabaseLogging } from "@/lib/databaseLogger";

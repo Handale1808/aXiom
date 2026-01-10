@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../[...nextauth]/route";
-import { withMiddleware } from "@/lib/middleware";
+import { withMiddleware } from "@/lib/utils/middleware";
 
 async function handler(
   request: NextRequest,

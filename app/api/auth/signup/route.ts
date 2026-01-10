@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { createUser, findUserByEmail } from "@/lib/db/users";
 import { ValidationError, DatabaseError } from "@/lib/errors";
-import { withMiddleware } from "@/lib/middleware";
+import { withMiddleware } from "@/lib/utils/middleware";
 
 interface SignupRequestBody {
   email: string;
