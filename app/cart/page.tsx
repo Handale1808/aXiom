@@ -9,11 +9,13 @@ import { IAbility } from "@/models/Ability";
 import Modal from "@/lib/components/ui/Modal";
 import CatDetails from "@/lib/components/cat-display/CatDetails";
 import Link from "next/link";
+import { useResponsiveScaling } from "@/lib/hooks/useResponsiveScaling";
 
 export default function CartPage() {
   const { isAdmin, isLoading: userLoading } = useUser();
   const { cartItems, cartCount, price, isLoading, removeFromCart, checkout } =
     useCart();
+  const scaled = useResponsiveScaling();
   const [selectedCatId, setSelectedCatId] = useState<string | null>(null);
   const [selectedCat, setSelectedCat] = useState<ICat | null>(null);
   const [selectedAbilities, setSelectedAbilities] = useState<IAbility[]>([]);
@@ -57,10 +59,28 @@ export default function CartPage() {
   if (userLoading) {
     return (
       <div className="min-h-screen bg-black font-mono flex items-center justify-center">
-        <div className="border-2 border-[#30D6D6]/30 bg-black/50 p-8">
-          <div className="flex items-center gap-3">
-            <div className="h-3 w-3 animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]" />
-            <div className="text-sm tracking-[0.3em] text-[#30D6D6]">
+        <div
+          className="border-2 border-[#30D6D6]/30 bg-black/50"
+          style={{ padding: `${scaled.padding.large}px` }}
+        >
+          <div
+            className="flex items-center"
+            style={{ gap: `${scaled.spacing.gapSmall}px` }}
+          >
+            <div
+              style={{
+                height: `${scaled.interactive.loadingIndicator}px`,
+                width: `${scaled.interactive.loadingIndicator}px`,
+              }}
+              className="animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]"
+            />
+            <div
+              style={{
+                fontSize: `${scaled.text.small}px`,
+                letterSpacing: "0.3em",
+              }}
+              className="tracking-[0.3em] text-[#30D6D6]"
+            >
               [LOADING...]
             </div>
           </div>
@@ -72,28 +92,85 @@ export default function CartPage() {
   if (isAdmin) {
     return (
       <div className="min-h-screen bg-black font-mono">
-        <div className="relative mx-auto max-w-4xl p-8">
-          <div className="mb-8 border-b-2 border-[#30D6D6] pb-6">
-            <h1 className="text-4xl font-bold tracking-wider text-[#30D6D6] drop-shadow-[0_0_10px_rgba(48,214,214,0.5)]">
+        <div
+          className="relative mx-auto max-w-4xl"
+          style={{ padding: `${scaled.padding.large}px` }}
+        >
+          <div
+            className="border-b-2 border-[#30D6D6]"
+            style={{
+              marginBottom: `${scaled.spacing.marginLarge}px`,
+              paddingBottom: `${scaled.spacing.gapLarge}px`,
+            }}
+          >
+            <h1
+              style={{ fontSize: `${scaled.text.large}px` }}
+              className="font-bold tracking-wider text-[#30D6D6] drop-shadow-[0_0_10px_rgba(48,214,214,0.5)]"
+            >
               SHOPPING_CART
             </h1>
-            <p className="mt-2 text-sm tracking-widest text-[#006694] font-bold">
+            <p
+              style={{
+                marginTop: `${scaled.spacing.marginTopSmall}px`,
+                fontSize: `${scaled.text.small}px`,
+              }}
+              className="tracking-widest text-[#006694] font-bold"
+            >
               [ACCESS_DENIED]
             </p>
           </div>
 
-          <div className="relative border-2 border-[#30D6D6]/30 bg-black/50 p-6">
-            <div className="absolute -left-px -top-px h-4 w-4 border-l-2 border-t-2 border-[#30D6D6]" />
-            <div className="absolute -right-px -top-px h-4 w-4 border-r-2 border-t-2 border-[#30D6D6]" />
-            <div className="absolute -bottom-px -left-px h-4 w-4 border-b-2 border-l-2 border-[#30D6D6]" />
-            <div className="absolute -bottom-px -right-px h-4 w-4 border-b-2 border-r-2 border-[#30D6D6]" />
+          <div
+            className="relative border-2 border-[#30D6D6]/30 bg-black/50"
+            style={{ padding: `${scaled.padding.containerMedium}px` }}
+          >
+            <div
+              style={{
+                height: `${scaled.decorations.cornerSize}px`,
+                width: `${scaled.decorations.cornerSize}px`,
+              }}
+              className="absolute -left-px -top-px border-l-2 border-t-2 border-[#30D6D6]"
+            />
+            <div
+              style={{
+                height: `${scaled.decorations.cornerSize}px`,
+                width: `${scaled.decorations.cornerSize}px`,
+              }}
+              className="absolute -right-px -top-px border-r-2 border-t-2 border-[#30D6D6]"
+            />
+            <div
+              style={{
+                height: `${scaled.decorations.cornerSize}px`,
+                width: `${scaled.decorations.cornerSize}px`,
+              }}
+              className="absolute -bottom-px -left-px border-b-2 border-l-2 border-[#30D6D6]"
+            />
+            <div
+              style={{
+                height: `${scaled.decorations.cornerSize}px`,
+                width: `${scaled.decorations.cornerSize}px`,
+              }}
+              className="absolute -bottom-px -right-px border-b-2 border-r-2 border-[#30D6D6]"
+            />
 
             <p className="text-cyan-100/70 leading-relaxed text-center">
               [ADMIN_USERS_CANNOT_PURCHASE_SPECIMENS]
             </p>
-            <div className="mt-6 text-center">
+            <div
+              className="text-center"
+              style={{ marginTop: `${scaled.spacing.gapLarge}px` }}
+            >
               <Link href="/shop">
-                <button className="border-2 border-[#30D6D6] bg-black px-6 py-3 font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black">
+                <button
+                  style={{
+                    paddingLeft: `${scaled.padding.buttonX}px`,
+                    paddingRight: `${scaled.padding.buttonX}px`,
+                    paddingTop: `${scaled.padding.small}px`,
+                    paddingBottom: `${scaled.padding.small}px`,
+                    fontSize: `${scaled.text.small}px`,
+                  }}
+                  className="border-2 border-[#30D6D6] bg-black font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black"
+                >
                   RETURN_TO_SHOP
                 </button>
               </Link>
@@ -106,73 +183,208 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen bg-black font-mono">
-      <div className="relative mx-auto max-w-4xl p-8">
-        <div className="mb-8 border-b-2 border-[#30D6D6] pb-6">
-          <h1 className="text-4xl font-bold tracking-wider text-[#30D6D6] drop-shadow-[0_0_10px_rgba(48,214,214,0.5)]">
+      <div
+        className="relative mx-auto max-w-4xl"
+        style={{ padding: `${scaled.padding.large}px` }}
+      >
+        <div
+          className="border-b-2 border-[#30D6D6]"
+          style={{
+            marginBottom: `${scaled.spacing.marginLarge}px`,
+            paddingBottom: `${scaled.spacing.gapLarge}px`,
+          }}
+        >
+          <h1
+            style={{ fontSize: `${scaled.text.large}px` }}
+            className="font-bold tracking-wider text-[#30D6D6] drop-shadow-[0_0_10px_rgba(48,214,214,0.5)]"
+          >
             SHOPPING_CART
           </h1>
-          <p className="mt-2 text-sm tracking-widest text-[#006694] font-bold">
+          <p
+            style={{
+              marginTop: `${scaled.spacing.marginTopSmall}px`,
+              fontSize: `${scaled.text.small}px`,
+            }}
+            className="tracking-widest text-[#006694] font-bold"
+          >
             [REVIEW_YOUR_SELECTIONS]
           </p>
         </div>
 
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="flex items-center gap-3">
-              <div className="h-3 w-3 animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]" />
-              <div className="text-sm tracking-widest text-[#30D6D6]">
+          <div
+            className="flex items-center justify-center"
+            style={{
+              paddingTop: `${scaled.padding.extraLarge}px`,
+              paddingBottom: `${scaled.padding.extraLarge}px`,
+            }}
+          >
+            <div
+              className="flex items-center"
+              style={{ gap: `${scaled.spacing.gapSmall}px` }}
+            >
+              <div
+                style={{
+                  height: `${scaled.interactive.loadingIndicator}px`,
+                  width: `${scaled.interactive.loadingIndicator}px`,
+                }}
+                className="animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]"
+              />
+              <div
+                style={{
+                  fontSize: `${scaled.text.small}px`,
+                  letterSpacing: "0.3em",
+                }}
+                className="text-[#30D6D6]"
+              >
                 [LOADING_CART...]
               </div>
             </div>
           </div>
         ) : cartItems.length === 0 ? (
-          <div className="relative border-2 border-[#30D6D6]/30 bg-black/50 p-12">
-            <div className="absolute -left-px -top-px h-4 w-4 border-l-2 border-t-2 border-[#30D6D6]" />
-            <div className="absolute -right-px -top-px h-4 w-4 border-r-2 border-t-2 border-[#30D6D6]" />
-            <div className="absolute -bottom-px -left-px h-4 w-4 border-b-2 border-l-2 border-[#30D6D6]" />
-            <div className="absolute -bottom-px -right-px h-4 w-4 border-b-2 border-r-2 border-[#30D6D6]" />
+          <div
+            className="relative border-2 border-[#30D6D6]/30 bg-black/50"
+            style={{ padding: `${scaled.padding.emptyStateY}px` }}
+          >
+            <div
+              style={{
+                height: `${scaled.decorations.cornerSize}px`,
+                width: `${scaled.decorations.cornerSize}px`,
+              }}
+              className="absolute -left-px -top-px border-l-2 border-t-2 border-[#30D6D6]"
+            />
+            <div
+              style={{
+                height: `${scaled.decorations.cornerSize}px`,
+                width: `${scaled.decorations.cornerSize}px`,
+              }}
+              className="absolute -right-px -top-px border-r-2 border-t-2 border-[#30D6D6]"
+            />
+            <div
+              style={{
+                height: `${scaled.decorations.cornerSize}px`,
+                width: `${scaled.decorations.cornerSize}px`,
+              }}
+              className="absolute -bottom-px -left-px border-b-2 border-l-2 border-[#30D6D6]"
+            />
+            <div
+              style={{
+                height: `${scaled.decorations.cornerSize}px`,
+                width: `${scaled.decorations.cornerSize}px`,
+              }}
+              className="absolute -bottom-px -right-px border-b-2 border-r-2 border-[#30D6D6]"
+            />
 
             <div className="text-center">
-              <p className="text-[#006694] text-sm tracking-widest mb-4">
+              <p
+                style={{
+                  fontSize: `${scaled.text.small}px`,
+                  marginBottom: `${scaled.spacing.gapMedium}px`,
+                }}
+                className="text-[#006694] tracking-widest"
+              >
                 [YOUR_CART_IS_EMPTY]
               </p>
-              <p className="text-[#006694]/50 text-xs tracking-wider mb-6">
+              <p
+                style={{
+                  fontSize: `${scaled.text.tiny}px`,
+                  marginBottom: `${scaled.spacing.gapLarge}px`,
+                }}
+                className="text-[#006694]/50 tracking-wider"
+              >
                 [VISIT_THE_SHOP_TO_ADD_CATS]
               </p>
               <Link href="/shop">
-                <button className="border-2 border-[#30D6D6] bg-black px-6 py-3 font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black">
+                <button
+                  style={{
+                    paddingLeft: `${scaled.padding.buttonX}px`,
+                    paddingRight: `${scaled.padding.buttonX}px`,
+                    paddingTop: `${scaled.padding.small}px`,
+                    paddingBottom: `${scaled.padding.small}px`,
+                    fontSize: `${scaled.text.small}px`,
+                  }}
+                  className="border-2 border-[#30D6D6] bg-black font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black"
+                >
                   BROWSE_SPECIMENS
                 </button>
               </Link>
             </div>
           </div>
         ) : (
-          <div className="space-y-6">
-            <div className="relative border-2 border-[#30D6D6]/30 bg-black/50 p-6">
-              <div className="absolute -left-px -top-px h-4 w-4 border-l-2 border-t-2 border-[#30D6D6]" />
-              <div className="absolute -right-px -top-px h-4 w-4 border-r-2 border-t-2 border-[#30D6D6]" />
-              <div className="absolute -bottom-px -left-px h-4 w-4 border-b-2 border-l-2 border-[#30D6D6]" />
-              <div className="absolute -bottom-px -right-px h-4 w-4 border-b-2 border-r-2 border-[#30D6D6]" />
+          <div
+            className="flex flex-col"
+            style={{ gap: `${scaled.spacing.gapLarge}px` }}
+          >
+            <div
+              className="relative border-2 border-[#30D6D6]/30 bg-black/50"
+              style={{ padding: `${scaled.padding.containerMedium}px` }}
+            >
+              <div
+                style={{
+                  height: `${scaled.decorations.cornerSize}px`,
+                  width: `${scaled.decorations.cornerSize}px`,
+                }}
+                className="absolute -left-px -top-px border-l-2 border-t-2 border-[#30D6D6]"
+              />
+              <div
+                style={{
+                  height: `${scaled.decorations.cornerSize}px`,
+                  width: `${scaled.decorations.cornerSize}px`,
+                }}
+                className="absolute -right-px -top-px border-r-2 border-t-2 border-[#30D6D6]"
+              />
+              <div
+                style={{
+                  height: `${scaled.decorations.cornerSize}px`,
+                  width: `${scaled.decorations.cornerSize}px`,
+                }}
+                className="absolute -bottom-px -left-px border-b-2 border-l-2 border-[#30D6D6]"
+              />
+              <div
+                style={{
+                  height: `${scaled.decorations.cornerSize}px`,
+                  width: `${scaled.decorations.cornerSize}px`,
+                }}
+                className="absolute -bottom-px -right-px border-b-2 border-r-2 border-[#30D6D6]"
+              />
 
-              <h2 className="mb-6 text-sm font-bold tracking-widest text-[#30D6D6]">
+              <h2
+                style={{
+                  marginBottom: `${scaled.spacing.gapLarge}px`,
+                  fontSize: `${scaled.text.small}px`,
+                }}
+                className="font-bold tracking-widest text-[#30D6D6]"
+              >
                 [CART_ITEMS]
               </h2>
 
-              <div className="space-y-4">
+              <div
+                className="flex flex-col"
+                style={{ gap: `${scaled.spacing.gapMedium}px` }}
+              >
                 {cartItems.map((item) => (
                   <div
                     key={item.catId}
-                    className="border border-[#006694]/50 bg-[#30D6D6]/5 p-4 grid grid-cols-[120px_1fr_auto] gap-4 items-center"
+                    style={{
+                      padding: `${scaled.padding.medium}px`,
+                      gap: `${scaled.spacing.gapMedium}px`,
+                      gridTemplateColumns: `${scaled.interactive.catAvatarSize * 2}px 1fr auto`,
+                    }}
+                    className="border border-[#006694]/50 bg-[#30D6D6]/5 grid items-center"
                   >
                     <div
-                      className="h-24 flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"
+                      style={{
+                        height: `${scaled.interactive.catAvatarSize * 1.5}px`,
+                      }}
+                      className="flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"
                       onClick={() => handleCatClick(item.catId)}
                       dangerouslySetInnerHTML={{ __html: item.svgImage }}
                     />
 
                     <div>
                       <div
-                        className="text-sm font-bold tracking-wider text-[#30D6D6] cursor-pointer hover:text-[#30D6D6]/80 transition-colors"
+                        style={{ fontSize: `${scaled.text.small}px` }}
+                        className="font-bold tracking-wider text-[#30D6D6] cursor-pointer hover:text-[#30D6D6]/80 transition-colors"
                         onClick={() => handleCatClick(item.catId)}
                       >
                         {item.name}
@@ -182,7 +394,14 @@ export default function CartPage() {
                     <button
                       onClick={() => handleRemoveFromCart(item.catId)}
                       disabled={isLoading}
-                      className="border-2 border-[#30D6D6] bg-black px-4 py-2 text-xs font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-red-600/20 hover:border-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                      style={{
+                        paddingLeft: `${scaled.padding.medium}px`,
+                        paddingRight: `${scaled.padding.medium}px`,
+                        paddingTop: `${scaled.padding.small}px`,
+                        paddingBottom: `${scaled.padding.small}px`,
+                        fontSize: `${scaled.text.tiny}px`,
+                      }}
+                      className="border-2 border-[#30D6D6] bg-black font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-red-600/20 hover:border-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       REMOVE
                     </button>
@@ -191,24 +410,54 @@ export default function CartPage() {
               </div>
             </div>
 
-            <div className="relative border-2 border-[#30D6D6]/50 bg-[#30D6D6]/10 p-6">
-              <h2 className="mb-4 text-sm font-bold tracking-widest text-[#30D6D6]">
+            <div
+              className="relative border-2 border-[#30D6D6]/50 bg-[#30D6D6]/10"
+              style={{ padding: `${scaled.padding.containerMedium}px` }}
+            >
+              <h2
+                style={{
+                  marginBottom: `${scaled.spacing.gapMedium}px`,
+                  fontSize: `${scaled.text.small}px`,
+                }}
+                className="font-bold tracking-widest text-[#30D6D6]"
+              >
                 [ORDER_SUMMARY]
               </h2>
 
-              <div className="space-y-2 mb-4">
-                <div className="flex justify-between text-sm text-cyan-100/70">
+              <div
+                className="flex flex-col"
+                style={{
+                  gap: `${scaled.spacing.marginSmall}px`,
+                  marginBottom: `${scaled.spacing.gapMedium}px`,
+                }}
+              >
+                <div
+                  style={{ fontSize: `${scaled.text.small}px` }}
+                  className="flex justify-between text-cyan-100/70"
+                >
                   <span>Items in cart:</span>
                   <span>{cartCount}</span>
                 </div>
-                <div className="flex justify-between text-sm text-cyan-100/70">
+                <div
+                  style={{ fontSize: `${scaled.text.small}px` }}
+                  className="flex justify-between text-cyan-100/70"
+                >
                   <span>Price per cat:</span>
                   <span>R{price.toFixed(2)}</span>
                 </div>
               </div>
 
-              <div className="border-t border-[#30D6D6]/30 pt-4 mb-6">
-                <div className="flex justify-between text-lg font-bold text-[#30D6D6]">
+              <div
+                className="border-t border-[#30D6D6]/30"
+                style={{
+                  paddingTop: `${scaled.spacing.gapMedium}px`,
+                  marginBottom: `${scaled.spacing.gapLarge}px`,
+                }}
+              >
+                <div
+                  style={{ fontSize: `${scaled.text.mediumHeading}px` }}
+                  className="flex justify-between font-bold text-[#30D6D6]"
+                >
                   <span>TOTAL:</span>
                   <span>R{(cartCount * price).toFixed(2)}</span>
                 </div>
@@ -217,7 +466,12 @@ export default function CartPage() {
               <button
                 onClick={handleCheckout}
                 disabled={isCheckingOut || cartCount === 0}
-                className="w-full border-2 border-[#30D6D6] bg-black py-4 font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_20px_rgba(48,214,214,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:text-[#30D6D6]"
+                style={{
+                  paddingTop: `${scaled.button.paddingY}px`,
+                  paddingBottom: `${scaled.button.paddingY}px`,
+                  fontSize: `${scaled.button.fontSize}px`,
+                }}
+                className="w-full border-2 border-[#30D6D6] bg-black font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_20px_rgba(48,214,214,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:text-[#30D6D6]"
               >
                 {isCheckingOut ? "[PROCESSING...]" : "[CHECKOUT]"}
               </button>
