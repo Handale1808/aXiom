@@ -1,3 +1,5 @@
+import { useResponsiveScaling } from "@/lib/hooks/useResponsiveScaling";
+
 interface Tab {
   id: string;
   label: string;
@@ -59,25 +61,62 @@ export default function FormWithHeading({
     !isLegacyMode && tabs
       ? (tabs as TabWithContent[]).find((tab) => tab.id === activeTab)?.content
       : undefined;
-
+  const scaled = useResponsiveScaling();
   return (
-    <div className="relative border-2 border-[#30D6D6]/30 bg-black/50 p-4 sm:p-5 md:p-6">
-      <div className="absolute -left-px -top-px h-3 w-3 sm:h-4 sm:w-4 border-l-2 border-t-2 border-[#30D6D6]" />
-      <div className="absolute -right-px -top-px h-3 w-3 sm:h-4 sm:w-4 border-r-2 border-t-2 border-[#30D6D6]" />
-      <div className="absolute -bottom-px -left-px h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-l-2 border-[#30D6D6]" />
-      <div className="absolute -bottom-px -right-px h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-r-2 border-[#30D6D6]" />
+    <div
+      className="relative border-2 border-[#30D6D6]/30 bg-black/50"
+      style={{ padding: `${scaled.padding.containerMedium}px` }}
+    >
+      <div
+        className="absolute -left-px -top-px border-l-2 border-t-2 border-[#30D6D6]"
+        style={{
+          height: `${scaled.decorations.cornerSize}px`,
+          width: `${scaled.decorations.cornerSize}px`,
+        }}
+      />
+      <div
+        className="absolute -right-px -top-px border-r-2 border-t-2 border-[#30D6D6]"
+        style={{
+          height: `${scaled.decorations.cornerSize}px`,
+          width: `${scaled.decorations.cornerSize}px`,
+        }}
+      />
+      <div
+        className="absolute -bottom-px -left-px border-b-2 border-l-2 border-[#30D6D6]"
+        style={{
+          height: `${scaled.decorations.cornerSize}px`,
+          width: `${scaled.decorations.cornerSize}px`,
+        }}
+      />
+      <div
+        className="absolute -bottom-px -right-px border-b-2 border-r-2 border-[#30D6D6]"
+        style={{
+          height: `${scaled.decorations.cornerSize}px`,
+          width: `${scaled.decorations.cornerSize}px`,
+        }}
+      />
 
       {tabs && tabs.length > 0 && (
-        <div className="mb-4 sm:mb-6 flex overflow-x-auto border-b-2 border-[#30D6D6]/30 [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-track]:bg-black [&::-webkit-scrollbar-thumb]:bg-[#30D6D6]/50">
+        <div
+          className="flex overflow-x-auto border-b-2 border-[#30D6D6]/30 [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-track]:bg-black [&::-webkit-scrollbar-thumb]:bg-[#30D6D6]/50"
+          style={{ marginBottom: `${scaled.spacing.marginMedium}px` }}
+        >
+          {" "}
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => onTabChange?.(tab.id)}
-              className={`flex-shrink-0 px-3 sm:px-4 pb-2 sm:pb-3 text-[10px] sm:text-xs md:text-sm font-bold tracking-widest transition-all ${
+              className={`flex-shrink-0 font-bold tracking-widest transition-all ${
                 activeTab === tab.id
                   ? "border-b-2 border-[#30D6D6] text-[#30D6D6]"
                   : "text-[#006694] hover:text-[#30D6D6]/70"
               }`}
+              style={{
+                paddingLeft: `${scaled.padding.small}px`,
+                paddingRight: `${scaled.padding.small}px`,
+                paddingBottom: `${scaled.padding.small}px`,
+                fontSize: `${scaled.text.tab}px`,
+              }}
             >
               {tab.label}
             </button>
@@ -90,7 +129,10 @@ export default function FormWithHeading({
           <>
             {fields!.map((field) => (
               <div key={field.name}>
-                <label className="mb-2 block text-[10px] sm:text-xs font-bold tracking-widest text-[#30D6D6]">
+                <label
+                  className="mb-2 block font-bold tracking-widest text-[#30D6D6]"
+                  style={{ fontSize: `${scaled.text.extraSmall}px` }}
+                >
                   [{field.label}]
                 </label>
                 <input
@@ -98,10 +140,18 @@ export default function FormWithHeading({
                   value={field.value}
                   onChange={(e) => field.onChange(e.target.value)}
                   placeholder={field.placeholder}
-                  className="w-full border-2 border-[#006694]/50 bg-black/80 p-2.5 sm:p-3 text-sm sm:text-base text-cyan-100 placeholder-[#006694]/50 focus:border-[#30D6D6] focus:outline-none focus:ring-1 focus:ring-[#30D6D6] min-h-[44px]"
+                  className="w-full border-2 border-[#006694]/50 bg-black/80 text-cyan-100 placeholder-[#006694]/50 focus:border-[#30D6D6] focus:outline-none focus:ring-1 focus:ring-[#30D6D6]"
+                  style={{
+                    padding: `${scaled.padding.inputSmall}px`,
+                    fontSize: `${scaled.text.base}px`,
+                    minHeight: `${scaled.interactive.minTouchTarget}px`,
+                  }}
                 />
                 {field.error && (
-                  <div className="mt-2 text-[10px] sm:text-xs text-red-400 tracking-wider">
+                  <div
+                    className="mt-2 text-red-400 tracking-wider"
+                    style={{ fontSize: `${scaled.text.extraSmall}px` }}
+                  >
                     [{field.error}]
                   </div>
                 )}
@@ -111,14 +161,29 @@ export default function FormWithHeading({
             <button
               onClick={submitButton!.onClick}
               disabled={submitButton!.disabled}
-              className="group relative w-full overflow-hidden border-2 border-[#30D6D6] bg-black py-3 sm:py-4 text-sm sm:text-base font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_20px_rgba(48,214,214,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:text-[#30D6D6] min-h-[44px]"
+              className="group relative w-full overflow-hidden border-2 border-[#30D6D6] bg-black font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_20px_rgba(48,214,214,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:text-[#30D6D6]"
+              style={{
+                paddingTop: `${scaled.button.paddingY}px`,
+                paddingBottom: `${scaled.button.paddingY}px`,
+                fontSize: `${scaled.text.base}px`,
+                minHeight: `${scaled.interactive.minTouchTarget}px`,
+              }}
             >
               <span className="relative z-10">{submitButton!.text}</span>
             </button>
 
             {disclaimer && (
-              <div className="relative border border-[#006694]/30 bg-black/30 p-2.5 sm:p-3 mt-3 sm:mt-4">
-                <p className="text-[10px] sm:text-xs text-cyan-100/50 leading-relaxed">
+              <div
+                className="relative border border-[#006694]/30 bg-black/30"
+                style={{
+                  padding: `${scaled.padding.inputSmall}px`,
+                  marginTop: `${scaled.spacing.marginTopSmall}px`,
+                }}
+              >
+                <p
+                  className="text-cyan-100/50 leading-relaxed"
+                  style={{ fontSize: `${scaled.text.extraSmall}px` }}
+                >
                   {disclaimer}
                 </p>
               </div>
@@ -141,7 +206,10 @@ export default function FormWithHeading({
                   className="w-full border-2 border-[#006694]/50 bg-black/80 p-2.5 sm:p-3 text-sm sm:text-base text-cyan-100 placeholder-[#006694]/50 focus:border-[#30D6D6] focus:outline-none focus:ring-1 focus:ring-[#30D6D6] min-h-[44px]"
                 />
                 {field.error && (
-                  <div className="mt-2 text-[10px] sm:text-xs text-red-400 tracking-wider">
+                  <div
+                    className="mt-2 text-red-400 tracking-wider"
+                    style={{ fontSize: `${scaled.text.extraSmall}px` }}
+                  >
                     [{field.error}]
                   </div>
                 )}
@@ -150,13 +218,25 @@ export default function FormWithHeading({
 
             {activeTabContent.buttons &&
               activeTabContent.buttons.length > 0 && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mt-3 sm:mt-4">
+                <div
+                  className="grid grid-cols-1 sm:grid-cols-2"
+                  style={{
+                    gap: `${scaled.spacing.gapMedium}px`,
+                    marginTop: `${scaled.spacing.marginTopSmall}px`,
+                  }}
+                >
                   {activeTabContent.buttons.map((button) => (
                     <button
                       key={button.id}
                       onClick={button.onClick}
                       disabled={button.disabled}
-                      className="group relative w-full overflow-hidden border-2 border-[#30D6D6] bg-black py-3 sm:py-4 text-sm sm:text-base font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_20px_rgba(48,214,214,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:text-[#30D6D6] min-h-[44px]"
+                      className="group relative w-full overflow-hidden border-2 border-[#30D6D6] bg-black font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_20px_rgba(48,214,214,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:text-[#30D6D6]"
+                      style={{
+                        paddingTop: `${scaled.button.paddingY}px`,
+                        paddingBottom: `${scaled.button.paddingY}px`,
+                        fontSize: `${scaled.text.base}px`,
+                        minHeight: `${scaled.interactive.minTouchTarget}px`,
+                      }}
                     >
                       <span className="relative z-10">{button.text}</span>
                     </button>

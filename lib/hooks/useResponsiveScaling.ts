@@ -29,8 +29,11 @@ export interface ScaledValues {
   text: {
     large: number;
     mediumHeading: number;
+    base: number;
+    small: number;
     tiny: number;
     extraSmall: number;
+    tab: number;
   };
   spacing: {
     gapSmall: number;
@@ -40,6 +43,12 @@ export interface ScaledValues {
     marginMedium: number;
     marginLarge: number;
     marginExtraLarge: number;
+    spaceYSmall: number;
+    spaceYMedium: number;
+    marginTopSmall: number;
+    marginTopMedium: number;
+    paddingTopSmall: number;
+    paddingBottomSmall: number;
   };
   padding: {
     small: number;
@@ -47,6 +56,10 @@ export interface ScaledValues {
     large: number;
     extraLarge: number;
     buttonX: number;
+    inputSmall: number;
+    containerSmall: number;
+    containerMedium: number;
+    emptyStateY: number;
   };
   interactive: {
     checkboxSmall: number;
@@ -56,9 +69,17 @@ export interface ScaledValues {
     loadingIndicator: number;
     tagPaddingX: number;
     tagPaddingY: number;
+    minTouchTarget: number;
+    badgePaddingXSmall: number;
+    badgePaddingYSmall: number;
+    badgePaddingX: number;
+    badgePaddingY: number;
   };
   layout: {
     maxHeightScrollable: number;
+    showMobileLayout: boolean;
+    showTabletLayout: boolean;
+    showDesktopLayout: boolean;
     gridCols: {
       checkbox: number;
       catIndicator: number;
@@ -67,6 +88,19 @@ export interface ScaledValues {
       view: number;
       delete: number;
     };
+  };
+  modal: {
+    closeButtonSize: number;
+    maxWidth: number;
+    margin: number;
+    borderRadius: number;
+    scrollbarWidth: number;
+  };
+  imageContainer: {
+    catDisplay: number;
+  };
+  decorations: {
+    cornerSize: number;
   };
 }
 
@@ -102,8 +136,11 @@ const SCALING_CONFIG = {
   text: {
     large: { min: 24, max: 36 },
     mediumHeading: { min: 18, max: 20 },
+    base: { min: 14, max: 16 },
+    small: { min: 12, max: 14 },
     tiny: { min: 9, max: 10 },
     extraSmall: { min: 10, max: 12 },
+    tab: { min: 10, max: 14 },
   },
   spacing: {
     gapSmall: { min: 8, max: 12 },
@@ -113,6 +150,12 @@ const SCALING_CONFIG = {
     marginMedium: { min: 16, max: 24 },
     marginLarge: { min: 24, max: 32 },
     marginExtraLarge: { min: 24, max: 32 },
+    spaceYSmall: { min: 16, max: 20 },
+    spaceYMedium: { min: 16, max: 24 },
+    marginTopSmall: { min: 12, max: 16 },
+    marginTopMedium: { min: 16, max: 24 },
+    paddingTopSmall: { min: 16, max: 24 },
+    paddingBottomSmall: { min: 12, max: 16 },
   },
   padding: {
     small: { min: 8, max: 12 },
@@ -120,6 +163,10 @@ const SCALING_CONFIG = {
     large: { min: 16, max: 20 },
     extraLarge: { min: 24, max: 48 },
     buttonX: { min: 12, max: 32 },
+    inputSmall: { min: 10, max: 12 },
+    containerSmall: { min: 16, max: 20 },
+    containerMedium: { min: 16, max: 24 },
+    emptyStateY: { min: 24, max: 32 },
   },
   interactive: {
     checkboxSmall: { min: 16, max: 16 },
@@ -129,6 +176,11 @@ const SCALING_CONFIG = {
     loadingIndicator: { min: 8, max: 12 },
     tagPaddingX: { min: 6, max: 8 },
     tagPaddingY: { min: 2, max: 2 },
+    minTouchTarget: { min: 44, max: 44 },
+    badgePaddingXSmall: { min: 8, max: 12 },
+    badgePaddingYSmall: { min: 6, max: 8 },
+    badgePaddingX: { min: 12, max: 12 },
+    badgePaddingY: { min: 8, max: 8 },
   },
   layout: {
     maxHeightScrollable: { min: 160, max: 128 },
@@ -140,6 +192,19 @@ const SCALING_CONFIG = {
       view: { min: 0, max: 60 },
       delete: { min: 0, max: 60 },
     },
+  },
+  modal: {
+    closeButtonSize: { min: 44, max: 44 },
+    maxWidth: { min: 320, max: 768 },
+    margin: { min: 0, max: 16 },
+    borderRadius: { min: 0, max: 8 },
+    scrollbarWidth: { min: 2, max: 2 },
+  },
+  imageContainer: {
+    catDisplay: { min: 192, max: 256 },
+  },
+  decorations: {
+    cornerSize: { min: 12, max: 16 },
   },
 };
 
@@ -159,7 +224,6 @@ function linearInterpolate(
 
 function calculateScaledValues(width: number): ScaledValues {
   return {
-    // Existing values
     heading: {
       fontSize: linearInterpolate(
         width,
@@ -258,7 +322,6 @@ function calculateScaledValues(width: number): ScaledValues {
       ),
     },
 
-    // New values for feedback components
     text: {
       large: linearInterpolate(
         width,
@@ -274,6 +337,20 @@ function calculateScaledValues(width: number): ScaledValues {
         SCALING_CONFIG.text.mediumHeading.min,
         SCALING_CONFIG.text.mediumHeading.max
       ),
+      base: linearInterpolate(
+        width,
+        MIN_WIDTH,
+        MAX_WIDTH,
+        SCALING_CONFIG.text.base.min,
+        SCALING_CONFIG.text.base.max
+      ),
+      small: linearInterpolate(
+        width,
+        MIN_WIDTH,
+        MAX_WIDTH,
+        SCALING_CONFIG.text.small.min,
+        SCALING_CONFIG.text.small.max
+      ),
       tiny: linearInterpolate(
         width,
         MIN_WIDTH,
@@ -287,6 +364,13 @@ function calculateScaledValues(width: number): ScaledValues {
         MAX_WIDTH,
         SCALING_CONFIG.text.extraSmall.min,
         SCALING_CONFIG.text.extraSmall.max
+      ),
+      tab: linearInterpolate(
+        width,
+        MIN_WIDTH,
+        MAX_WIDTH,
+        SCALING_CONFIG.text.tab.min,
+        SCALING_CONFIG.text.tab.max
       ),
     },
     spacing: {
@@ -339,6 +423,48 @@ function calculateScaledValues(width: number): ScaledValues {
         SCALING_CONFIG.spacing.marginExtraLarge.min,
         SCALING_CONFIG.spacing.marginExtraLarge.max
       ),
+      spaceYSmall: linearInterpolate(
+        width,
+        MIN_WIDTH,
+        MAX_WIDTH,
+        SCALING_CONFIG.spacing.spaceYSmall.min,
+        SCALING_CONFIG.spacing.spaceYSmall.max
+      ),
+      spaceYMedium: linearInterpolate(
+        width,
+        MIN_WIDTH,
+        MAX_WIDTH,
+        SCALING_CONFIG.spacing.spaceYMedium.min,
+        SCALING_CONFIG.spacing.spaceYMedium.max
+      ),
+      marginTopSmall: linearInterpolate(
+        width,
+        MIN_WIDTH,
+        MAX_WIDTH,
+        SCALING_CONFIG.spacing.marginTopSmall.min,
+        SCALING_CONFIG.spacing.marginTopSmall.max
+      ),
+      marginTopMedium: linearInterpolate(
+        width,
+        MIN_WIDTH,
+        MAX_WIDTH,
+        SCALING_CONFIG.spacing.marginTopMedium.min,
+        SCALING_CONFIG.spacing.marginTopMedium.max
+      ),
+      paddingTopSmall: linearInterpolate(
+        width,
+        MIN_WIDTH,
+        MAX_WIDTH,
+        SCALING_CONFIG.spacing.paddingTopSmall.min,
+        SCALING_CONFIG.spacing.paddingTopSmall.max
+      ),
+      paddingBottomSmall: linearInterpolate(
+        width,
+        MIN_WIDTH,
+        MAX_WIDTH,
+        SCALING_CONFIG.spacing.paddingBottomSmall.min,
+        SCALING_CONFIG.spacing.paddingBottomSmall.max
+      ),
     },
     padding: {
       small: linearInterpolate(
@@ -375,6 +501,34 @@ function calculateScaledValues(width: number): ScaledValues {
         MAX_WIDTH,
         SCALING_CONFIG.padding.buttonX.min,
         SCALING_CONFIG.padding.buttonX.max
+      ),
+      inputSmall: linearInterpolate(
+        width,
+        MIN_WIDTH,
+        MAX_WIDTH,
+        SCALING_CONFIG.padding.inputSmall.min,
+        SCALING_CONFIG.padding.inputSmall.max
+      ),
+      containerSmall: linearInterpolate(
+        width,
+        MIN_WIDTH,
+        MAX_WIDTH,
+        SCALING_CONFIG.padding.containerSmall.min,
+        SCALING_CONFIG.padding.containerSmall.max
+      ),
+      containerMedium: linearInterpolate(
+        width,
+        MIN_WIDTH,
+        MAX_WIDTH,
+        SCALING_CONFIG.padding.containerMedium.min,
+        SCALING_CONFIG.padding.containerMedium.max
+      ),
+      emptyStateY: linearInterpolate(
+        width,
+        MIN_WIDTH,
+        MAX_WIDTH,
+        SCALING_CONFIG.padding.emptyStateY.min,
+        SCALING_CONFIG.padding.emptyStateY.max
       ),
     },
     interactive: {
@@ -427,6 +581,41 @@ function calculateScaledValues(width: number): ScaledValues {
         SCALING_CONFIG.interactive.tagPaddingY.min,
         SCALING_CONFIG.interactive.tagPaddingY.max
       ),
+      minTouchTarget: linearInterpolate(
+        width,
+        MIN_WIDTH,
+        MAX_WIDTH,
+        SCALING_CONFIG.interactive.minTouchTarget.min,
+        SCALING_CONFIG.interactive.minTouchTarget.max
+      ),
+      badgePaddingXSmall: linearInterpolate(
+        width,
+        MIN_WIDTH,
+        MAX_WIDTH,
+        SCALING_CONFIG.interactive.badgePaddingXSmall.min,
+        SCALING_CONFIG.interactive.badgePaddingXSmall.max
+      ),
+      badgePaddingYSmall: linearInterpolate(
+        width,
+        MIN_WIDTH,
+        MAX_WIDTH,
+        SCALING_CONFIG.interactive.badgePaddingYSmall.min,
+        SCALING_CONFIG.interactive.badgePaddingYSmall.max
+      ),
+      badgePaddingX: linearInterpolate(
+        width,
+        MIN_WIDTH,
+        MAX_WIDTH,
+        SCALING_CONFIG.interactive.badgePaddingX.min,
+        SCALING_CONFIG.interactive.badgePaddingX.max
+      ),
+      badgePaddingY: linearInterpolate(
+        width,
+        MIN_WIDTH,
+        MAX_WIDTH,
+        SCALING_CONFIG.interactive.badgePaddingY.min,
+        SCALING_CONFIG.interactive.badgePaddingY.max
+      ),
     },
     layout: {
       maxHeightScrollable: linearInterpolate(
@@ -436,6 +625,9 @@ function calculateScaledValues(width: number): ScaledValues {
         SCALING_CONFIG.layout.maxHeightScrollable.min,
         SCALING_CONFIG.layout.maxHeightScrollable.max
       ),
+      showMobileLayout: width < 640,
+      showTabletLayout: width >= 640 && width < 768,
+      showDesktopLayout: width >= 768,
       gridCols: {
         checkbox: linearInterpolate(
           width,
@@ -480,6 +672,61 @@ function calculateScaledValues(width: number): ScaledValues {
           SCALING_CONFIG.layout.gridCols.delete.max
         ),
       },
+    },
+    modal: {
+      closeButtonSize: linearInterpolate(
+        width,
+        MIN_WIDTH,
+        MAX_WIDTH,
+        SCALING_CONFIG.modal.closeButtonSize.min,
+        SCALING_CONFIG.modal.closeButtonSize.max
+      ),
+      maxWidth: linearInterpolate(
+        width,
+        MIN_WIDTH,
+        MAX_WIDTH,
+        SCALING_CONFIG.modal.maxWidth.min,
+        SCALING_CONFIG.modal.maxWidth.max
+      ),
+      margin: linearInterpolate(
+        width,
+        MIN_WIDTH,
+        MAX_WIDTH,
+        SCALING_CONFIG.modal.margin.min,
+        SCALING_CONFIG.modal.margin.max
+      ),
+      borderRadius: linearInterpolate(
+        width,
+        MIN_WIDTH,
+        MAX_WIDTH,
+        SCALING_CONFIG.modal.borderRadius.min,
+        SCALING_CONFIG.modal.borderRadius.max
+      ),
+      scrollbarWidth: linearInterpolate(
+        width,
+        MIN_WIDTH,
+        MAX_WIDTH,
+        SCALING_CONFIG.modal.scrollbarWidth.min,
+        SCALING_CONFIG.modal.scrollbarWidth.max
+      ),
+    },
+    imageContainer: {
+      catDisplay: linearInterpolate(
+        width,
+        MIN_WIDTH,
+        MAX_WIDTH,
+        SCALING_CONFIG.imageContainer.catDisplay.min,
+        SCALING_CONFIG.imageContainer.catDisplay.max
+      ),
+    },
+    decorations: {
+      cornerSize: linearInterpolate(
+        width,
+        MIN_WIDTH,
+        MAX_WIDTH,
+        SCALING_CONFIG.decorations.cornerSize.min,
+        SCALING_CONFIG.decorations.cornerSize.max
+      ),
     },
   };
 }
