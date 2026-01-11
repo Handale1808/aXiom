@@ -23,10 +23,12 @@ import {
   getCatPriceAction,
   updateCatPriceAction,
 } from "@/lib/services/settingsActions";
+import { useResponsiveScaling } from "@/lib/hooks/useResponsiveScaling";
 
 export default function ShopPage() {
   const { isAdmin, isLoading } = useUser();
   const { showToast } = useToast();
+  const scaledValues = useResponsiveScaling();
   const [activeTab, setActiveTab] = useState("admin");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentCat, setCurrentCat] = useState<ICat | null>(null);
@@ -40,12 +42,10 @@ export default function ShopPage() {
 
   const { user } = useUser();
 
-  // Always call useCart unconditionally
   let addToCart: ((catId: string) => Promise<void>) | undefined;
 
   try {
     const cart = useCart();
-    // Only assign if not admin
     if (!isAdmin) {
       addToCart = cart.addToCart;
     }
@@ -223,30 +223,84 @@ export default function ShopPage() {
           },
         ],
         customContent: (
-          <div className="mt-6 relative border-2 border-[#30D6D6]/30 bg-black/50 p-6">
-            <div className="absolute -left-px -top-px h-4 w-4 border-l-2 border-t-2 border-[#30D6D6]" />
-            <div className="absolute -right-px -top-px h-4 w-4 border-r-2 border-t-2 border-[#30D6D6]" />
-            <div className="absolute -bottom-px -left-px h-4 w-4 border-b-2 border-l-2 border-[#30D6D6]" />
-            <div className="absolute -bottom-px -right-px h-4 w-4 border-b-2 border-r-2 border-[#30D6D6]" />
+          <div
+            className="mt-6 relative border-2 border-[#30D6D6]/30 bg-black/50"
+            style={{ padding: `${scaledValues.container.padding}px` }}
+          >
+            <div
+              className="absolute -left-px -top-px border-l-2 border-t-2 border-[#30D6D6]"
+              style={{
+                height: `${scaledValues.container.cornerSize}px`,
+                width: `${scaledValues.container.cornerSize}px`,
+              }}
+            />
+            <div
+              className="absolute -right-px -top-px border-r-2 border-t-2 border-[#30D6D6]"
+              style={{
+                height: `${scaledValues.container.cornerSize}px`,
+                width: `${scaledValues.container.cornerSize}px`,
+              }}
+            />
+            <div
+              className="absolute -bottom-px -left-px border-b-2 border-l-2 border-[#30D6D6]"
+              style={{
+                height: `${scaledValues.container.cornerSize}px`,
+                width: `${scaledValues.container.cornerSize}px`,
+              }}
+            />
+            <div
+              className="absolute -bottom-px -right-px border-b-2 border-r-2 border-[#30D6D6]"
+              style={{
+                height: `${scaledValues.container.cornerSize}px`,
+                width: `${scaledValues.container.cornerSize}px`,
+              }}
+            />
 
-            <h3 className="mb-4 text-sm font-bold tracking-widest text-[#30D6D6]">
+            <h3
+              className="mb-4 font-bold tracking-widest text-[#30D6D6]"
+              style={{
+                fontSize: `${scaledValues.heading.fontSize}px`,
+                letterSpacing: `${scaledValues.heading.letterSpacing}em`,
+              }}
+            >
               [CAT_PRICE_SETTINGS]
             </h3>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-xs tracking-wider text-[#30D6D6] mb-2">
+                <label
+                  className="block text-[#30D6D6] mb-2"
+                  style={{
+                    fontSize: `${scaledValues.label.fontSize}px`,
+                    letterSpacing: `${scaledValues.label.letterSpacing}em`,
+                  }}
+                >
                   [PRICE_PER_CAT]
                 </label>
                 <div className="flex items-center gap-2">
-                  <span className="text-[#30D6D6] font-bold">R</span>
+                  <span
+                    className="text-[#30D6D6] font-bold"
+                    style={{
+                      fontSize: `${scaledValues.currencySymbol.fontSize}px`,
+                    }}
+                  >
+                    R
+                  </span>
                   <input
                     type="number"
                     value={priceInputValue}
                     onChange={handlePriceInputChange}
                     min="1"
                     step="1"
-                    className="flex-1 border-2 border-[#30D6D6]/30 bg-black px-4 py-2 text-[#30D6D6] font-mono focus:border-[#30D6D6] focus:outline-none"
+                    className="flex-1 border-[#30D6D6]/30 bg-black text-[#30D6D6] font-mono focus:border-[#30D6D6] focus:outline-none"
+                    style={{
+                      fontSize: `${scaledValues.input.fontSize}px`,
+                      paddingLeft: `${scaledValues.input.paddingX}px`,
+                      paddingRight: `${scaledValues.input.paddingX}px`,
+                      paddingTop: `${scaledValues.input.paddingY}px`,
+                      paddingBottom: `${scaledValues.input.paddingY}px`,
+                      borderWidth: `${scaledValues.input.borderWidth}px`,
+                    }}
                   />
                 </div>
               </div>
@@ -254,7 +308,12 @@ export default function ShopPage() {
               <button
                 onClick={handleSavePrice}
                 disabled={isSavingPrice}
-                className="w-full border-2 border-[#30D6D6] bg-black py-3 font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_20px_rgba(48,214,214,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:text-[#30D6D6]"
+                className="w-full border-2 border-[#30D6D6] bg-black font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_20px_rgba(48,214,214,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:text-[#30D6D6]"
+                style={{
+                  fontSize: `${scaledValues.button.fontSize}px`,
+                  paddingTop: `${scaledValues.button.paddingY}px`,
+                  paddingBottom: `${scaledValues.button.paddingY}px`,
+                }}
               >
                 {isSavingPrice ? "[SAVING...]" : "[SAVE_PRICE]"}
               </button>
