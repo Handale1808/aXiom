@@ -1,6 +1,7 @@
 import FeedbackFilters from "./FeedbackFilters";
 import FeedbackSearch from "./FeedbackSearch";
 import { useState, useEffect, useRef } from "react";
+import type { ScaledValues } from "@/lib/hooks/useResponsiveScaling";
 
 interface FeedbackListToolbarProps {
   // Filter props
@@ -30,6 +31,7 @@ interface FeedbackListToolbarProps {
   onDeleteSelected: () => void;
   hasCatFilter: string | null;
   onHasCatChange: (value: string | null) => void;
+  scaledValues: ScaledValues;
 }
 
 export default function FeedbackListToolbar({
@@ -56,6 +58,7 @@ export default function FeedbackListToolbar({
   onDeleteSelected,
   hasCatFilter,
   onHasCatChange,
+  scaledValues,
 }: FeedbackListToolbarProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
@@ -79,23 +82,52 @@ export default function FeedbackListToolbar({
   }, [isMobileMenuOpen]);
 
   return (
-    <div className="border border-[#30D6D6]/30 bg-black/50 p-4 backdrop-blur-sm mb-4">
+    <div
+      className="border border-[#30D6D6]/30 bg-black/50 backdrop-blur-sm"
+      style={{
+        padding: `${scaledValues.container.padding}px`,
+        marginBottom: `${scaledValues.spacing.marginMedium}px`,
+      }}
+    >
       <div className="flex items-center justify-between">
         {selectedCount > 0 && (
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 flex-1">
-            <div className="text-xs text-[#30D6D6]">
+          <div
+            className="flex flex-col sm:flex-row items-start sm:items-center flex-1"
+            style={{ gap: `${scaledValues.spacing.gapMedium}px` }}
+          >
+            <div
+              className="text-[#30D6D6]"
+              style={{ fontSize: `${scaledValues.text.extraSmall}px` }}
+            >
               {selectedCount} selected
             </div>
-            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <div
+              className="flex flex-col sm:flex-row w-full sm:w-auto"
+              style={{ gap: `${scaledValues.spacing.gapSmall}px` }}
+            >
               <button
                 onClick={onClearSelection}
-                className="w-full sm:w-auto border border-yellow-500/50 bg-black px-3 py-2 sm:px-4 sm:py-2 text-xs font-bold tracking-wider text-yellow-500 transition-all hover:bg-yellow-500/10 hover:border-yellow-500 min-h-[44px]"
+                className="w-full sm:w-auto border border-yellow-500/50 bg-black font-bold tracking-wider text-yellow-500 transition-all hover:bg-yellow-500/10 hover:border-yellow-500 min-h-[44px]"
+                style={{
+                  paddingLeft: `${scaledValues.input.paddingX}px`,
+                  paddingRight: `${scaledValues.input.paddingX}px`,
+                  paddingTop: `${scaledValues.input.paddingY}px`,
+                  paddingBottom: `${scaledValues.input.paddingY}px`,
+                  fontSize: `${scaledValues.text.extraSmall}px`,
+                }}
               >
                 CLEAR_SELECTION
               </button>
               <button
                 onClick={onDeleteSelected}
-                className="w-full sm:w-auto border border-red-500 bg-black px-3 py-2 sm:px-4 sm:py-2 text-xs font-bold tracking-wider text-red-400 transition-all hover:bg-red-500 hover:text-black min-h-[44px]"
+                className="w-full sm:w-auto border border-red-500 bg-black font-bold tracking-wider text-red-400 transition-all hover:bg-red-500 hover:text-black min-h-[44px]"
+                style={{
+                  paddingLeft: `${scaledValues.input.paddingX}px`,
+                  paddingRight: `${scaledValues.input.paddingX}px`,
+                  paddingTop: `${scaledValues.input.paddingY}px`,
+                  paddingBottom: `${scaledValues.input.paddingY}px`,
+                  fontSize: `${scaledValues.text.extraSmall}px`,
+                }}
               >
                 DELETE_SELECTED
               </button>
@@ -103,13 +135,17 @@ export default function FeedbackListToolbar({
           </div>
         )}
 
-        <div className="flex gap-2 ml-auto">
+        <div
+          className="flex ml-auto"
+          style={{ gap: `${scaledValues.spacing.gapSmall}px` }}
+        >
           <FeedbackSearch
             isOpen={isSearchOpen}
             onToggle={onSearchToggle}
             searchQuery={searchQuery}
             onSearchChange={onSearchChange}
             onClearSearch={onClearSearch}
+            scaledValues={scaledValues}
           />
           <FeedbackFilters
             isOpen={isFilterOpen}
@@ -125,11 +161,19 @@ export default function FeedbackListToolbar({
             activeFilterCount={activeFilterCount}
             hasCatFilter={hasCatFilter}
             onHasCatChange={onHasCatChange}
+            scaledValues={scaledValues}
           />
           <button
             onClick={onClearSort}
             disabled={!sortColumn}
-            className="border border-[#30D6D6]/50 bg-black px-3 py-2 sm:px-4 sm:py-2 text-xs font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6]/10 hover:border-[#30D6D6] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:border-[#30D6D6]/50 min-h-[44px]"
+            className="border border-[#30D6D6]/50 bg-black font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6]/10 hover:border-[#30D6D6] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:border-[#30D6D6]/50 min-h-[44px]"
+            style={{
+              paddingLeft: `${scaledValues.input.paddingX}px`,
+              paddingRight: `${scaledValues.input.paddingX}px`,
+              paddingTop: `${scaledValues.input.paddingY}px`,
+              paddingBottom: `${scaledValues.input.paddingY}px`,
+              fontSize: `${scaledValues.text.extraSmall}px`,
+            }}
           >
             CLEAR_SORT
           </button>

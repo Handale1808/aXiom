@@ -1,4 +1,5 @@
 import type { FeedbackWithId } from "@/lib/types/api";
+import type { ScaledValues } from "@/lib/hooks/useResponsiveScaling";
 
 interface FeedbackListItemProps {
   feedback: FeedbackWithId;
@@ -8,6 +9,7 @@ interface FeedbackListItemProps {
   onClick: (id: string) => void;
   onDelete: (id: string) => void;
   index: number;
+  scaledValues: ScaledValues;
 }
 
 export default function FeedbackListItem({
@@ -18,6 +20,7 @@ export default function FeedbackListItem({
   onClick,
   onDelete,
   index,
+  scaledValues,
 }: FeedbackListItemProps) {
   const getSentimentColor = (sentiment: string) => {
     const s = sentiment.toLowerCase();
@@ -37,16 +40,28 @@ export default function FeedbackListItem({
 
   return (
     <div
-      className={`group grid grid-cols-[44px_30px_1fr_50px_50px] md:grid-cols-[40px_30px_1fr_120px_120px_60px_60px] gap-2 md:gap-4 px-2 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 ${
+      className={`group grid ${
         index % 2 === 0 ? "bg-black/40" : "bg-[#006694]/10"
       } ${isDeleting ? "opacity-50" : ""}`}
+      style={{
+        gridTemplateColumns: `${scaledValues.layout.gridCols.checkbox}px ${scaledValues.layout.gridCols.catIndicator}px 1fr ${scaledValues.layout.gridCols.sentiment}px ${scaledValues.layout.gridCols.priority}px ${scaledValues.layout.gridCols.view}px ${scaledValues.layout.gridCols.delete}px`,
+        gap: `${scaledValues.spacing.gapSmall}px`,
+        paddingLeft: `${scaledValues.spacing.gapSmall}px`,
+        paddingRight: `${scaledValues.spacing.gapSmall}px`,
+        paddingTop: `${scaledValues.input.paddingY}px`,
+        paddingBottom: `${scaledValues.input.paddingY}px`
+      }}
     >
       <div className="flex items-center justify-center">
         <input
           type="checkbox"
           checked={isSelected}
           onChange={() => onSelect(feedback._id)}
-          className="h-5 w-5 md:h-4 md:w-4 cursor-pointer appearance-none border border-[#30D6D6]/50 bg-black checked:bg-black checked:border-[#30D6D6] checked:before:content-['✓'] checked:before:text-[#30D6D6] checked:before:text-xs checked:before:flex checked:before:items-center checked:before:justify-center"
+          className="cursor-pointer appearance-none border border-[#30D6D6]/50 bg-black checked:bg-black checked:border-[#30D6D6] checked:before:content-['✓'] checked:before:text-[#30D6D6] checked:before:text-xs checked:before:flex checked:before:items-center checked:before:justify-center"
+          style={{
+            height: `${scaledValues.interactive.checkboxLarge}px`,
+            width: `${scaledValues.interactive.checkboxLarge}px`
+          }}
           aria-label={`Select feedback ${feedback._id}`}
         />
       </div>
@@ -54,14 +69,21 @@ export default function FeedbackListItem({
       <div className="flex items-center justify-center">
         {feedback.catId && (
           <div
-            className="flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 border border-[#30D6D6] bg-[#30D6D6]/10"
+            className="flex items-center justify-center border border-[#30D6D6] bg-[#30D6D6]/10"
+            style={{
+              width: `${scaledValues.interactive.iconSize}px`,
+              height: `${scaledValues.interactive.iconSize}px`
+            }}
             title={
               feedback.catName
                 ? `Feedback about ${feedback.catName}`
                 : "Feedback about a cat"
             }
           >
-            <span className="text-[#30D6D6] text-[10px] sm:text-xs font-bold">
+            <span 
+              className="text-[#30D6D6] font-bold"
+              style={{ fontSize: `${scaledValues.text.extraSmall}px` }}
+            >
               C
             </span>
           </div>
@@ -80,28 +102,58 @@ export default function FeedbackListItem({
           }
         }}
       >
-        <div className="text-xs sm:text-sm text-cyan-100/90 truncate overflow-hidden text-ellipsis whitespace-nowrap">
+        <div 
+          className="text-cyan-100/90 truncate overflow-hidden text-ellipsis whitespace-nowrap"
+          style={{ fontSize: `${scaledValues.label.fontSize}px` }}
+        >
           {feedback.text}
         </div>
         {feedback.analysis.tags && feedback.analysis.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-1">
+          <div 
+            className="flex flex-wrap"
+            style={{ 
+              gap: `${scaledValues.spacing.gapSmall / 2}px`,
+              marginTop: `${scaledValues.spacing.marginSmall / 2}px`
+            }}
+          >
             {feedback.analysis.tags.slice(0, 2).map((tag, idx) => (
               <span
                 key={idx}
-                className="text-[9px] sm:text-[10px] px-1.5 py-0.5 sm:px-2 sm:py-0.5 border border-[#30D6D6]/50 bg-black text-[#30D6D6] rounded-md"
+                className="border border-[#30D6D6]/50 bg-black text-[#30D6D6] rounded-md"
+                style={{
+                  fontSize: `${scaledValues.text.tiny}px`,
+                  paddingLeft: `${scaledValues.interactive.tagPaddingX}px`,
+                  paddingRight: `${scaledValues.interactive.tagPaddingX}px`,
+                  paddingTop: `${scaledValues.interactive.tagPaddingY}px`,
+                  paddingBottom: `${scaledValues.interactive.tagPaddingY}px`
+                }}
               >
                 {tag}
               </span>
             ))}
             {feedback.analysis.tags.length > 2 && (
-              <span className="text-[9px] sm:text-[10px] px-1.5 py-0.5 text-[#30D6D6]/70">
+              <span 
+                className="text-[#30D6D6]/70"
+                style={{
+                  fontSize: `${scaledValues.text.tiny}px`,
+                  paddingLeft: `${scaledValues.interactive.tagPaddingX}px`,
+                  paddingTop: `${scaledValues.interactive.tagPaddingY}px`,
+                  paddingBottom: `${scaledValues.interactive.tagPaddingY}px`
+                }}
+              >
                 +{feedback.analysis.tags.length - 2}
               </span>
             )}
           </div>
         )}
       </div>
-      <div className="flex items-center gap-1 text-[10px] sm:text-xs">
+      <div 
+        className="flex items-center"
+        style={{ 
+          gap: `${scaledValues.spacing.gapSmall / 2}px`,
+          fontSize: `${scaledValues.text.extraSmall}px`
+        }}
+      >
         <span
           className={`font-bold capitalize ${getSentimentColor(
             feedback.analysis.sentiment
@@ -119,55 +171,80 @@ export default function FeedbackListItem({
           </span>
         </span>
       </div>
-      <div className="flex items-center gap-1 text-[10px] sm:text-xs">
+      <div 
+        className="flex items-center"
+        style={{ 
+          gap: `${scaledValues.spacing.gapSmall / 2}px`,
+          fontSize: `${scaledValues.text.extraSmall}px`
+        }}
+      >
         {(() => {
           const { color } = getPriorityIndicator(feedback.analysis.priority);
           return (
             <>
               <div
-                className="h-2 w-2"
                 style={{
+                  height: `${scaledValues.interactive.loadingIndicator}px`,
+                  width: `${scaledValues.interactive.loadingIndicator}px`,
                   backgroundColor: color,
                   boxShadow: `0 0 8px ${color}80`,
                 }}
               />
-              <span className="ml-2 text-[#30D6D6]">
+              <span 
+                className="text-[#30D6D6]"
+                style={{ marginLeft: `${scaledValues.spacing.gapSmall}px` }}
+              >
                 {feedback.analysis.priority}
               </span>
             </>
           );
         })()}
       </div>
-      <div
-        className="hidden md:flex items-center justify-center text-[10px] sm:text-xs text-[#006694] group-hover:text-[#30D6D6] cursor-pointer"
-        onClick={() => onClick(feedback._id)}
-      >
-        <span className="hidden sm:inline">{">"} VIEW</span>
-        <span className="sm:hidden">{">"}</span>
-      </div>
-      <div className="hidden md:flex items-center justify-center">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete(feedback._id);
-          }}
-          disabled={isDeleting}
-          className="text-[10px] sm:text-xs text-red-400 hover:text-red-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 min-h-[44px] md:min-h-0"
-          aria-label={`Delete feedback ${feedback._id}`}
+      {scaledValues.layout.gridCols.view > 0 && (
+        <div
+          className="hidden md:flex items-center justify-center text-[#006694] group-hover:text-[#30D6D6] cursor-pointer"
+          style={{ fontSize: `${scaledValues.text.extraSmall}px` }}
+          onClick={() => onClick(feedback._id)}
         >
-          {isDeleting ? (
-            <>
-              <span className="inline-block h-2 w-2 animate-pulse bg-red-400" />
-              <span className="hidden sm:inline">DEL...</span>
-            </>
-          ) : (
-            <>
-              <span className="hidden sm:inline">DELETE</span>
-              <span className="sm:hidden">DEL</span>
-            </>
-          )}
-        </button>
-      </div>
+          <span className="hidden sm:inline">{">"} VIEW</span>
+          <span className="sm:hidden">{">"}</span>
+        </div>
+      )}
+      {scaledValues.layout.gridCols.delete > 0 && (
+        <div className="hidden md:flex items-center justify-center">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(feedback._id);
+            }}
+            disabled={isDeleting}
+            className="text-red-400 hover:text-red-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-h-[44px] md:min-h-0"
+            style={{ 
+              fontSize: `${scaledValues.text.extraSmall}px`,
+              gap: `${scaledValues.spacing.gapSmall / 2}px`
+            }}
+            aria-label={`Delete feedback ${feedback._id}`}
+          >
+            {isDeleting ? (
+              <>
+                <span 
+                  className="inline-block animate-pulse bg-red-400"
+                  style={{
+                    height: `${scaledValues.interactive.loadingIndicator}px`,
+                    width: `${scaledValues.interactive.loadingIndicator}px`
+                  }}
+                />
+                <span className="hidden sm:inline">DEL...</span>
+              </>
+            ) : (
+              <>
+                <span className="hidden sm:inline">DELETE</span>
+                <span className="sm:hidden">DEL</span>
+              </>
+            )}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

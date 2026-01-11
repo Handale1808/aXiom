@@ -3,6 +3,7 @@ import FeedbackListHeader from "./FeedbackListHeader";
 import FeedbackListItem from "./FeedbackListItem";
 import FeedbackListToolbar from "./FeedbackListToolbar";
 import type { FeedbackWithId } from "@/lib/types/api";
+import type { ScaledValues } from "@/lib/hooks/useResponsiveScaling";
 
 interface FeedbackListProps {
   feedbacks: FeedbackWithId[];
@@ -34,6 +35,7 @@ interface FeedbackListProps {
   isDeletingIds?: string[];
   hasCatFilter?: string | null;
   onHasCatChange?: (value: string | null) => void;
+  scaledValues: ScaledValues;
 }
 
 export default function FeedbackList({
@@ -66,6 +68,7 @@ export default function FeedbackList({
   isDeletingIds = [],
   hasCatFilter = null,
   onHasCatChange,
+  scaledValues,
 }: FeedbackListProps) {
   const hasNoResults = feedbacks.length === 0;
 
@@ -130,7 +133,7 @@ export default function FeedbackList({
   };
 
   return (
-    <div className="mb-8">
+    <div style={{ marginBottom: `${scaledValues.spacing.marginLarge}px` }}>
       <FeedbackListToolbar
         isFilterOpen={isFilterOpen}
         onFilterToggle={onFilterToggle || (() => {})}
@@ -155,6 +158,7 @@ export default function FeedbackList({
         onDeleteSelected={handleDeleteSelected}
         hasCatFilter={hasCatFilter}
         onHasCatChange={onHasCatChange || (() => {})}
+        scaledValues={scaledValues}
       />
       <FeedbackListHeader
         sortColumn={sortColumn}
@@ -162,13 +166,26 @@ export default function FeedbackList({
         onSort={onSort || (() => {})}
         isAllSelected={isAllSelected}
         onSelectAll={handleSelectAll}
+        scaledValues={scaledValues}
       />
       {hasNoResults ? (
-        <div className="border border-[#30D6D6]/20 p-6 sm:p-8 text-center">
-          <div className="text-xs sm:text-sm text-[#30D6D6]/70">
+        <div
+          className="border border-[#30D6D6]/20 text-center"
+          style={{ padding: `${scaledValues.padding.extraLarge}px` }}
+        >
+          <div
+            className="text-[#30D6D6]/70"
+            style={{ fontSize: `${scaledValues.text.extraSmall}px` }}
+          >
             No results found
           </div>
-          <div className="text-[10px] sm:text-xs text-[#006694] mt-2">
+          <div
+            className="text-[#006694]"
+            style={{
+              fontSize: `${scaledValues.text.extraSmall}px`,
+              marginTop: `${scaledValues.spacing.marginSmall}px`,
+            }}
+          >
             Try adjusting your search or filters
           </div>
         </div>
@@ -184,6 +201,7 @@ export default function FeedbackList({
               onClick={onFeedbackClick || (() => {})}
               onDelete={onDeleteSingle || (() => {})}
               index={index}
+              scaledValues={scaledValues}
             />
           ))}
         </div>

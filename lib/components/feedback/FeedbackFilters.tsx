@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { usePopupPosition } from "../../hooks/usePopupPosition";
+import type { ScaledValues } from "../../hooks/useResponsiveScaling";
 
 interface FeedbackFiltersProps {
   isOpen: boolean;
@@ -15,6 +16,7 @@ interface FeedbackFiltersProps {
   activeFilterCount: number;
   hasCatFilter: string | null;
   onHasCatChange: (value: string | null) => void;
+  scaledValues: ScaledValues;
 }
 
 export default function FeedbackFilters({
@@ -31,6 +33,7 @@ export default function FeedbackFilters({
   activeFilterCount,
   hasCatFilter,
   onHasCatChange,
+  scaledValues,
 }: FeedbackFiltersProps) {
   const sentimentOptions = ["Positive", "Neutral", "Negative"];
   const priorityOptions = ["P0", "P1", "P2", "P3"];
@@ -82,11 +85,25 @@ export default function FeedbackFilters({
     <div ref={triggerRef} className="relative">
       <button
         onClick={onToggle}
-        className="relative border border-[#30D6D6]/50 bg-black px-3 py-2 sm:px-4 sm:py-2 text-xs font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6]/10 hover:border-[#30D6D6] min-h-[44px]"
+        className="relative border border-[#30D6D6]/50 bg-black font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6]/10 hover:border-[#30D6D6] min-h-[44px]"
+        style={{
+          paddingLeft: `${scaledValues.input.paddingX}px`,
+          paddingRight: `${scaledValues.input.paddingX}px`,
+          paddingTop: `${scaledValues.input.paddingY}px`,
+          paddingBottom: `${scaledValues.input.paddingY}px`,
+          fontSize: `${scaledValues.text.extraSmall}px`,
+        }}
       >
         FILTER
         {activeFilterCount > 0 && (
-          <span className="ml-2 inline-flex h-4 w-4 items-center justify-center rounded-full bg-[#30D6D6] text-[10px] font-bold text-black shadow-[0_0_8px_rgba(48,214,214,0.8)]">
+          <span
+            className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-[#30D6D6] font-bold text-black shadow-[0_0_8px_rgba(48,214,214,0.8)]"
+            style={{
+              marginLeft: `${scaledValues.spacing.gapSmall}px`,
+              fontSize: `${scaledValues.text.extraSmall}px`,
+            }}
+          >
+            {" "}
             {activeFilterCount}
           </span>
         )}
@@ -94,27 +111,76 @@ export default function FeedbackFilters({
       {isOpen && (
         <div
           ref={popupRef}
-          style={popupStyle}
-          className="fixed z-10 border-2 border-[#30D6D6]/30 bg-black/95 p-4 md:p-6 backdrop-blur-sm"
+          style={{
+            ...popupStyle,
+            padding: `${scaledValues.padding.large}px`,
+          }}
+          className="fixed z-10 border-2 border-[#30D6D6]/30 bg-black/95 backdrop-blur-sm"
         >
           {" "}
-          <div className="absolute -left-px -top-px h-3 w-3 md:h-4 md:w-4 border-l-2 border-t-2 border-[#30D6D6]" />
-          <div className="absolute -right-px -top-px h-3 w-3 md:h-4 md:w-4 border-r-2 border-t-2 border-[#30D6D6]" />
-          <div className="absolute -bottom-px -left-px h-3 w-3 md:h-4 md:w-4 border-b-2 border-l-2 border-[#30D6D6]" />
-          <div className="absolute -bottom-px -right-px h-3 w-3 md:h-4 md:w-4 border-b-2 border-r-2 border-[#30D6D6]" />
-          <h3 className="mb-3 md:mb-4 text-xs sm:text-sm font-bold tracking-widest text-[#30D6D6]">
+          <div
+            className="absolute -left-px -top-px border-l-2 border-t-2 border-[#30D6D6]"
+            style={{
+              height: `${scaledValues.container.cornerSize}px`,
+              width: `${scaledValues.container.cornerSize}px`,
+            }}
+          />
+          <div
+            className="absolute -right-px -top-px border-r-2 border-t-2 border-[#30D6D6]"
+            style={{
+              height: `${scaledValues.container.cornerSize}px`,
+              width: `${scaledValues.container.cornerSize}px`,
+            }}
+          />
+          <div
+            className="absolute -bottom-px -left-px border-b-2 border-l-2 border-[#30D6D6]"
+            style={{
+              height: `${scaledValues.container.cornerSize}px`,
+              width: `${scaledValues.container.cornerSize}px`,
+            }}
+          />
+          <div
+            className="absolute -bottom-px -right-px border-b-2 border-r-2 border-[#30D6D6]"
+            style={{
+              height: `${scaledValues.container.cornerSize}px`,
+              width: `${scaledValues.container.cornerSize}px`,
+            }}
+          />
+          <h3
+            className="font-bold tracking-widest text-[#30D6D6]"
+            style={{
+              marginBottom: `${scaledValues.spacing.marginSmall}px`,
+              fontSize: `${scaledValues.text.extraSmall}px`,
+            }}
+          >
             [FILTER_OPTIONS]
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-[auto_auto_auto_1fr] gap-4 md:gap-6 mb-4 md:mb-6">
+          <div
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-[auto_auto_auto_1fr]"
+            style={{
+              gap: `${scaledValues.spacing.gapLarge}px`,
+              marginBottom: `${scaledValues.spacing.marginMedium}px`,
+            }}
+          >
             <div>
-              <div className="mb-3 text-[10px] sm:text-xs font-bold tracking-wider text-[#006694]">
+              <div
+                className="font-bold tracking-wider text-[#006694]"
+                style={{
+                  marginBottom: `${scaledValues.spacing.marginSmall}px`,
+                  fontSize: `${scaledValues.text.extraSmall}px`,
+                }}
+              >
                 SENTIMENT
               </div>
               <div className="space-y-3 sm:space-y-2">
                 {sentimentOptions.map((sentiment) => (
                   <label
                     key={sentiment}
-                    className="flex items-center gap-3 sm:gap-2 cursor-pointer text-xs sm:text-sm text-cyan-100/70 hover:text-[#30D6D6] transition-colors"
+                    className="flex items-center cursor-pointer text-cyan-100/70 hover:text-[#30D6D6] transition-colors"
+                    style={{
+                      gap: `${scaledValues.spacing.gapSmall}px`,
+                      fontSize: `${scaledValues.label.fontSize}px`,
+                    }}
                   >
                     <input
                       type="checkbox"
@@ -126,7 +192,11 @@ export default function FeedbackFilters({
                           onSentimentChange
                         )
                       }
-                      className="h-4 w-4 cursor-pointer appearance-none border border-[#30D6D6]/50 bg-black checked:bg-black checked:border-[#30D6D6] checked:before:content-['✓'] checked:before:text-[#30D6D6] checked:before:text-xs checked:before:flex checked:before:items-center checked:before:justify-center"
+                      className="cursor-pointer appearance-none border border-[#30D6D6]/50 bg-black checked:bg-black checked:border-[#30D6D6] checked:before:content-['✓'] checked:before:text-[#30D6D6] checked:before:text-xs checked:before:flex checked:before:items-center checked:before:justify-center"
+                      style={{
+                        height: `${scaledValues.interactive.checkboxSmall}px`,
+                        width: `${scaledValues.interactive.checkboxSmall}px`,
+                      }}
                     />
                     {sentiment}
                   </label>
@@ -135,14 +205,24 @@ export default function FeedbackFilters({
             </div>
 
             <div>
-              <div className="mb-3 text-[10px] sm:text-xs font-bold tracking-wider text-[#006694]">
+              <div
+                className="font-bold tracking-wider text-[#006694]"
+                style={{
+                  marginBottom: `${scaledValues.spacing.marginSmall}px`,
+                  fontSize: `${scaledValues.text.extraSmall}px`,
+                }}
+              >
                 PRIORITY
               </div>
               <div className="space-y-3 sm:space-y-2">
                 {priorityOptions.map((priority) => (
                   <label
                     key={priority}
-                    className="flex items-center gap-3 sm:gap-2 cursor-pointer text-xs sm:text-sm text-cyan-100/70 hover:text-[#30D6D6] transition-colors"
+                    className="flex items-center cursor-pointer text-cyan-100/70 hover:text-[#30D6D6] transition-colors"
+                    style={{
+                      gap: `${scaledValues.spacing.gapSmall}px`,
+                      fontSize: `${scaledValues.label.fontSize}px`,
+                    }}
                   >
                     <input
                       type="checkbox"
@@ -154,7 +234,11 @@ export default function FeedbackFilters({
                           onPriorityChange
                         )
                       }
-                      className="h-4 w-4 cursor-pointer appearance-none border border-[#30D6D6]/50 bg-black checked:bg-black checked:border-[#30D6D6] checked:before:content-['✓'] checked:before:text-[#30D6D6] checked:before:text-xs checked:before:flex checked:before:items-center checked:before:justify-center"
+                      className="cursor-pointer appearance-none border border-[#30D6D6]/50 bg-black checked:bg-black checked:border-[#30D6D6] checked:before:content-['✓'] checked:before:text-[#30D6D6] checked:before:text-xs checked:before:flex checked:before:items-center checked:before:justify-center"
+                      style={{
+                        height: `${scaledValues.interactive.checkboxSmall}px`,
+                        width: `${scaledValues.interactive.checkboxSmall}px`,
+                      }}
                     />
                     {priority}
                   </label>
@@ -163,29 +247,55 @@ export default function FeedbackFilters({
             </div>
 
             <div>
-              <div className="mb-3 text-[10px] sm:text-xs font-bold tracking-wider text-[#006694]">
+              <div
+                className="font-bold tracking-wider text-[#006694]"
+                style={{
+                  marginBottom: `${scaledValues.spacing.marginSmall}px`,
+                  fontSize: `${scaledValues.text.extraSmall}px`,
+                }}
+              >
                 CAT_ASSOCIATION
               </div>
               <div className="space-y-3 sm:space-y-2">
-                <label className="flex items-center gap-3 sm:gap-2 cursor-pointer text-xs sm:text-sm text-cyan-100/70 hover:text-[#30D6D6] transition-colors">
+                <label
+                  className="flex items-center cursor-pointer text-cyan-100/70 hover:text-[#30D6D6] transition-colors"
+                  style={{
+                    gap: `${scaledValues.spacing.gapSmall}px`,
+                    fontSize: `${scaledValues.label.fontSize}px`,
+                  }}
+                >
                   <input
                     type="checkbox"
                     checked={hasCatFilter === "true"}
                     onChange={() =>
                       onHasCatChange(hasCatFilter === "true" ? null : "true")
                     }
-                    className="h-4 w-4 cursor-pointer appearance-none border border-[#30D6D6]/50 bg-black checked:bg-black checked:border-[#30D6D6] checked:before:content-['✓'] checked:before:text-[#30D6D6] checked:before:text-xs checked:before:flex checked:before:items-center checked:before:justify-center"
+                    className="cursor-pointer appearance-none border border-[#30D6D6]/50 bg-black checked:bg-black checked:border-[#30D6D6] checked:before:content-['✓'] checked:before:text-[#30D6D6] checked:before:text-xs checked:before:flex checked:before:items-center checked:before:justify-center"
+                    style={{
+                      height: `${scaledValues.interactive.checkboxSmall}px`,
+                      width: `${scaledValues.interactive.checkboxSmall}px`,
+                    }}
                   />
                   Has Cat
                 </label>
-                <label className="flex items-center gap-3 sm:gap-2 cursor-pointer text-xs sm:text-sm text-cyan-100/70 hover:text-[#30D6D6] transition-colors">
+                <label
+                  className="flex items-center cursor-pointer text-cyan-100/70 hover:text-[#30D6D6] transition-colors"
+                  style={{
+                    gap: `${scaledValues.spacing.gapSmall}px`,
+                    fontSize: `${scaledValues.label.fontSize}px`,
+                  }}
+                >
                   <input
                     type="checkbox"
                     checked={hasCatFilter === "false"}
                     onChange={() =>
                       onHasCatChange(hasCatFilter === "false" ? null : "false")
                     }
-                    className="h-4 w-4 cursor-pointer appearance-none border border-[#30D6D6]/50 bg-black checked:bg-black checked:border-[#30D6D6] checked:before:content-['✓'] checked:before:text-[#30D6D6] checked:before:text-xs checked:before:flex checked:before:items-center checked:before:justify-center"
+                    className="cursor-pointer appearance-none border border-[#30D6D6]/50 bg-black checked:bg-black checked:border-[#30D6D6] checked:before:content-['✓'] checked:before:text-[#30D6D6] checked:before:text-xs checked:before:flex checked:before:items-center checked:before:justify-center"
+                    style={{
+                      height: `${scaledValues.interactive.checkboxSmall}px`,
+                      width: `${scaledValues.interactive.checkboxSmall}px`,
+                    }}
                   />
                   General Feedback
                 </label>
@@ -193,16 +303,34 @@ export default function FeedbackFilters({
             </div>
 
             <div>
-              <div className="mb-3 text-[10px] sm:text-xs font-bold tracking-wider text-[#006694]">
+              <div
+                className="font-bold tracking-wider text-[#006694]"
+                style={{
+                  marginBottom: `${scaledValues.spacing.marginSmall}px`,
+                  fontSize: `${scaledValues.text.extraSmall}px`,
+                }}
+              >
                 TAGS
               </div>
-              <div className="max-h-40 sm:max-h-32 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-black [&::-webkit-scrollbar-thumb]:bg-[#30D6D6]/50 [&::-webkit-scrollbar-thumb]:border [&::-webkit-scrollbar-thumb]:border-[#30D6D6] [&::-webkit-scrollbar-thumb]:hover:bg-[#30D6D6] [&::-webkit-scrollbar-thumb]:hover:shadow-[0_0_10px_rgba(48,214,214,0.8)]">
+              <div
+                className="overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-black [&::-webkit-scrollbar-thumb]:bg-[#30D6D6]/50 [&::-webkit-scrollbar-thumb]:border [&::-webkit-scrollbar-thumb]:border-[#30D6D6] [&::-webkit-scrollbar-thumb]:hover:bg-[#30D6D6] [&::-webkit-scrollbar-thumb]:hover:shadow-[0_0_10px_rgba(48,214,214,0.8)]"
+                style={{
+                  maxHeight: `${scaledValues.layout.maxHeightScrollable}px`,
+                }}
+              >
+                {" "}
                 {availableTags.length === 0 ? (
-                  <div className="text-[10px] sm:text-xs text-[#006694]">
+                  <div
+                    className="text-[#006694]"
+                    style={{ fontSize: `${scaledValues.text.extraSmall}px` }}
+                  >
                     No tags available
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                  <div
+                    className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
+                    style={{ gap: `${scaledValues.spacing.gapSmall}px` }}
+                  >
                     {[...availableTags]
                       .sort((a, b) => {
                         const aSelected = selectedTags.includes(a);
@@ -214,7 +342,11 @@ export default function FeedbackFilters({
                       .map((tag) => (
                         <label
                           key={tag}
-                          className="flex items-center gap-3 sm:gap-2 cursor-pointer text-xs sm:text-sm text-cyan-100/70 hover:text-[#30D6D6] transition-colors"
+                          className="flex items-center cursor-pointer text-cyan-100/70 hover:text-[#30D6D6] transition-colors"
+                          style={{
+                            gap: `${scaledValues.spacing.gapSmall}px`,
+                            fontSize: `${scaledValues.label.fontSize}px`,
+                          }}
                         >
                           <input
                             type="checkbox"
@@ -239,7 +371,14 @@ export default function FeedbackFilters({
           <button
             onClick={onClearAll}
             disabled={activeFilterCount === 0}
-            className="w-full border border-[#30D6D6]/50 bg-black px-4 py-2.5 sm:py-2 text-xs font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6]/10 hover:border-[#30D6D6] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:border-[#30D6D6]/50 min-h-[44px]"
+            className="w-full border border-[#30D6D6]/50 bg-black font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6]/10 hover:border-[#30D6D6] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:border-[#30D6D6]/50 min-h-[44px]"
+            style={{
+              paddingLeft: `${scaledValues.input.paddingX}px`,
+              paddingRight: `${scaledValues.input.paddingX}px`,
+              paddingTop: `${scaledValues.input.paddingY}px`,
+              paddingBottom: `${scaledValues.input.paddingY}px`,
+              fontSize: `${scaledValues.text.extraSmall}px`,
+            }}
           >
             CLEAR_ALL_FILTERS
           </button>

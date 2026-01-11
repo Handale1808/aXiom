@@ -1,4 +1,5 @@
 import type { FeedbackWithId } from "@/lib/types/api";
+import type { ScaledValues } from "@/lib/hooks/useResponsiveScaling";
 
 interface FeedbackListHeaderProps {
   sortColumn: string | null;
@@ -6,6 +7,7 @@ interface FeedbackListHeaderProps {
   onSort: (column: string) => void;
   isAllSelected: boolean;
   onSelectAll: () => void;
+  scaledValues: ScaledValues;
 }
 
 export default function FeedbackListHeader({
@@ -14,32 +16,51 @@ export default function FeedbackListHeader({
   onSort,
   isAllSelected,
   onSelectAll,
+  scaledValues,
 }: FeedbackListHeaderProps) {
   const SortArrow = ({ column }: { column: string }) => {
     if (sortColumn !== column) return null;
     return (
-      <span className="ml-1 inline-block text-[#30D6D6]">
+      <span
+        className="inline-block text-[#30D6D6]"
+        style={{ marginLeft: `${scaledValues.spacing.gapSmall / 4}px` }}
+      >
         {sortDirection === "asc" ? "↑" : "↓"}
       </span>
     );
   };
 
   return (
-    <div className="grid grid-cols-[44px_30px_1fr_50px_50px] md:grid-cols-[40px_30px_1fr_120px_120px_60px_60px] gap-2 md:gap-4 border-b-2 border-[#30D6D6]/50 bg-[#006694]/20 px-2 sm:px-3 md:px-4 py-2 text-[9px] sm:text-[10px] md:text-xs font-bold tracking-wider text-[#30D6D6]">
+    <div
+      className="grid border-b-2 border-[#30D6D6]/50 bg-[#006694]/20 font-bold tracking-wider text-[#30D6D6]"
+      style={{
+        gridTemplateColumns: `${scaledValues.layout.gridCols.checkbox}px ${scaledValues.layout.gridCols.catIndicator}px 1fr ${scaledValues.layout.gridCols.sentiment}px ${scaledValues.layout.gridCols.priority}px ${scaledValues.layout.gridCols.view}px ${scaledValues.layout.gridCols.delete}px`,
+        gap: `${scaledValues.spacing.gapSmall}px`,
+        paddingLeft: `${scaledValues.spacing.gapSmall}px`,
+        paddingRight: `${scaledValues.spacing.gapSmall}px`,
+        paddingTop: `${scaledValues.input.paddingY}px`,
+        paddingBottom: `${scaledValues.input.paddingY}px`,
+        fontSize: `${scaledValues.text.tiny}px`,
+      }}
+    >
+      {" "}
       <div className="flex items-center justify-center">
         <input
           type="checkbox"
           checked={isAllSelected}
           onChange={onSelectAll}
-          className="h-5 w-5 md:h-4 md:w-4 cursor-pointer appearance-none border border-[#30D6D6]/50 bg-black checked:bg-black checked:border-[#30D6D6] checked:before:content-['✓'] checked:before:text-[#30D6D6] checked:before:text-xs checked:before:flex checked:before:items-center checked:before:justify-center"
+          className="cursor-pointer appearance-none border border-[#30D6D6]/50 bg-black checked:bg-black checked:border-[#30D6D6] checked:before:content-['✓'] checked:before:text-[#30D6D6] checked:before:text-xs checked:before:flex checked:before:items-center checked:before:justify-center"
+          style={{
+            height: `${scaledValues.interactive.checkboxLarge}px`,
+            width: `${scaledValues.interactive.checkboxLarge}px`,
+          }}
           aria-label="Select all feedbacks"
         />
       </div>
-
       <div className="flex items-center justify-center md:hidden">
-        <span className="text-[8px] sm:text-[9px]">CAT</span>
+        <span style={{ fontSize: `${scaledValues.text.tiny}px` }}>CAT</span>
       </div>
-
+      <div className="hidden md:block"></div>
       <div
         className="cursor-pointer hover:text-white transition-colors"
         onClick={() => onSort("text")}
@@ -64,14 +85,12 @@ export default function FeedbackListHeader({
         <span className="md:hidden">PRI</span>
         <SortArrow column="priority" />
       </div>
-      <div className="hidden md:block">
-        <span className="hidden md:inline">VIEW</span>
-        <span className="md:hidden">V</span>
-      </div>
-      <div className="hidden md:block">
-        <span className="hidden sm:inline">DELETE</span>
-        <span className="sm:hidden">DEL</span>
-      </div>
+      {scaledValues.layout.gridCols.view > 0 && (
+        <div className="hidden md:block">VIEW</div>
+      )}
+      {scaledValues.layout.gridCols.delete > 0 && (
+        <div className="hidden md:block">DELETE</div>
+      )}
     </div>
   );
 }
