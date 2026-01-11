@@ -19,9 +19,13 @@ export class MongoClient {
 
   db(name?: string) {
     return {
+      collection: (collectionName: string) => ({
+        createIndex: jest.fn().mockResolvedValue("index_created"),
+        // Add other collection methods as needed
+      }),
       admin: () => ({
-        ping: () => Promise.resolve({ ok: 1 })
-      })
+        ping: () => Promise.resolve({ ok: 1 }),
+      }),
     };
   }
 }
