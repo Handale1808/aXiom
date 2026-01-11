@@ -13,3 +13,10 @@ configure({
     return error;
   },
 });
+
+// Global cleanup for MongoDB tests
+afterEach(() => {
+  if (global._mongoClientPromise) {
+    delete global._mongoClientPromise;
+  }
+});

@@ -6,14 +6,25 @@ if (!process.env.MONGODB_URI) {
   throw new Error("Please add your MONGODB_URI to .env.local");
 }
 
-const uri = process.env.MONGODB_URI;
-const options = {
+const uri = process.env.MONGODB_URI.trim();
+
+// Validate URI format
+if (!uri.startsWith("mongodb://") && !uri.startsWith("mongodb+srv://")) {
+  throw new Error("MONGODB_URI must start with mongodb:// or mongodb+srv://");
+}
+
+const options = Object.freeze({
   maxPoolSize: 10,
   minPoolSize: 2,
   maxIdleTimeMS: 30000,
-};
+});
 
-let client: MongoClient;
+/**
+ * MongoDB client connection promise.
+ *
+ * In development: Cached globally to prevent hot-reload connection leaks.
+ * In production: New connection per module import (Next.js creates multiple instances).
+ */
 let clientPromise: Promise<MongoClient>;
 
 if (process.env.NODE_ENV === "development") {
@@ -22,12 +33,12 @@ if (process.env.NODE_ENV === "development") {
   };
 
   if (!globalWithMongo._mongoClientPromise) {
-    client = new MongoClient(uri, options);
+    const client = new MongoClient(uri, options);
     globalWithMongo._mongoClientPromise = client.connect();
   }
   clientPromise = globalWithMongo._mongoClientPromise;
 } else {
-  client = new MongoClient(uri, options);
+  const client = new MongoClient(uri, options);
   clientPromise = client.connect();
 }
 
