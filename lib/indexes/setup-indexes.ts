@@ -1,69 +1,169 @@
-import clientPromise from "../mongodb.ts";
+import clientPromise from "../mongodb";
 
-export async function setupFeedbackIndexes() {
+export interface IndexResult {
+  success: boolean;
+  createdIndexes: string[];
+  existingIndexes: string[];
+  errors: Array<{ indexName: string; error: string }>;
+}
+
+interface IndexDefinition {
+  name: string;
+  spec: Record<string, any>;
+  options: Record<string, any>;
+}
+
+export async function setupFeedbackIndexes(
+  dbName: string = "axiom"
+): Promise<IndexResult> {
+  const result: IndexResult = {
+    success: false,
+    createdIndexes: [],
+    existingIndexes: [],
+    errors: [],
+  };
+
   try {
     const client = await clientPromise;
-    const db = client.db("axiom");
+
+    if (!client) {
+      result.errors.push({
+        indexName: "connection",
+        error: "MongoDB client is null",
+      });
+      return result;
+    }
+
+    const db = client.db(dbName);
+
+    if (!db) {
+      result.errors.push({
+        indexName: "database",
+        error: "Failed to get database instance",
+      });
+      return result;
+    }
+
     const collection = db.collection("feedbacks");
 
-    // 1. Text search index (existing)
-    await collection.createIndex(
-      {
-        text: "text",
-        "analysis.summary": "text",
-      },
+    if (!collection) {
+      result.errors.push({
+        indexName: "collection",
+        error: "Failed to get collection instance",
+      });
+      return result;
+    }
+
+    const indexes: IndexDefinition[] = [
       {
         name: "feedback_text_search",
-        weights: {
-          text: 2,
-          "analysis.summary": 1,
+        spec: {
+          text: "text",
+          "analysis.summary": "text",
         },
+        options: {
+          name: "feedback_text_search",
+          weights: {
+            text: 2,
+            "analysis.summary": 1,
+          },
+        },
+      },
+      {
+        name: "sentiment_index",
+        spec: { "analysis.sentiment": 1 },
+        options: { name: "sentiment_index" },
+      },
+      {
+        name: "priority_index",
+        spec: { "analysis.priority": 1 },
+        options: { name: "priority_index" },
+      },
+      {
+        name: "tags_index",
+        spec: { "analysis.tags": 1 },
+        options: { name: "tags_index" },
+      },
+      {
+        name: "created_at_index",
+        spec: { createdAt: -1 },
+        options: { name: "created_at_index" },
+      },
+      {
+        name: "cat_id_index",
+        spec: { catId: 1 },
+        options: { name: "cat_id_index" },
+      },
+      {
+        name: "user_id_index",
+        spec: { userId: 1 },
+        options: { name: "user_id_index" },
+      },
+      {
+        name: "user_cat_index",
+        spec: { userId: 1, catId: 1 },
+        options: { name: "user_cat_index" },
+      },
+      {
+        name: "cat_created_at_index",
+        spec: { catId: 1, createdAt: -1 },
+        options: { name: "cat_created_at_index" },
+      },
+    ];
+
+    const indexPromises = indexes.map(async (index) => {
+      try {
+        await collection.createIndex(index.spec, index.options);
+        return { name: index.name, status: "created" as const };
+      } catch (error: any) {
+        if (error?.code === 85 || error?.codeName === "IndexOptionsConflict") {
+          return { name: index.name, status: "existing" as const };
+        }
+
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : typeof error === "string"
+            ? error
+            : "Unknown error";
+
+        return {
+          name: index.name,
+          status: "error" as const,
+          error: errorMessage,
+        };
       }
-    );
+    });
 
-    // 2. Sentiment filter index
-    await collection.createIndex(
-      { "analysis.sentiment": 1 },
-      { name: "sentiment_index" }
-    );
+    const indexResults = await Promise.all(indexPromises);
 
-    // 3. Priority filter index
-    await collection.createIndex(
-      { "analysis.priority": 1 },
-      { name: "priority_index" }
-    );
+    for (const indexResult of indexResults) {
+      if (indexResult.status === "created") {
+        result.createdIndexes.push(indexResult.name);
+      } else if (indexResult.status === "existing") {
+        result.existingIndexes.push(indexResult.name);
+      } else if (indexResult.status === "error") {
+        result.errors.push({
+          indexName: indexResult.name,
+          error: indexResult.error || "Unknown error",
+        });
+      }
+    }
 
-    // 4. Tags filter index
-    await collection.createIndex(
-      { "analysis.tags": 1 },
-      { name: "tags_index" }
-    );
+    result.success = result.errors.length === 0;
+  } catch (error: any) {
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : typeof error === "string"
+        ? error
+        : "Unknown connection error";
 
-    // 5. CreatedAt sort index (descending for newest first)
-    await collection.createIndex(
-      { createdAt: -1 },
-      { name: "created_at_index" }
-    );
-
-    // 6. CatId filter index
-    await collection.createIndex({ catId: 1 }, { name: "cat_id_index" });
-
-    // 7. UserId filter index
-    await collection.createIndex({ userId: 1 }, { name: "user_id_index" });
-
-    // 8. Compound index for user-cat feedback queries
-    await collection.createIndex(
-      { userId: 1, catId: 1 },
-      { name: "user_cat_index" }
-    );
-
-    // 9. Compound index for cat feedback chronology
-    await collection.createIndex(
-      { catId: 1, createdAt: -1 },
-      { name: "cat_created_at_index" }
-    );
-  } catch (error) {
-    console.error("Error creating indexes:", error);
-    throw error;
+    result.errors.push({
+      indexName: "connection",
+      error: errorMessage,
+    });
   }
+
+  return result;
 }
