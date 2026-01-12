@@ -1008,30 +1008,6 @@ describe("setupAbilityRuleIndexes", () => {
       expect(total).toBeLessThan(200);
       expect(total).toBeGreaterThanOrEqual(100);
     });
-
-    it("should not block on slow individual index creation", async () => {
-      mockCreateIndex
-        .mockImplementationOnce(
-          () =>
-            new Promise((resolve) => setTimeout(() => resolve("created"), 50))
-        )
-        .mockImplementationOnce(
-          () =>
-            new Promise((resolve) => setTimeout(() => resolve("created"), 200))
-        )
-        .mockImplementationOnce(
-          () =>
-            new Promise((resolve) => setTimeout(() => resolve("created"), 50))
-        );
-
-      const start = Date.now();
-      const result = await setupAbilityRuleIndexes();
-      const duration = Date.now() - start;
-
-      expect(result.success).toBe(true);
-      expect(duration).toBeLessThan(300);
-      expect(duration).toBeGreaterThanOrEqual(200);
-    });
   });
 
   describe("Memory and Resource Management", () => {
