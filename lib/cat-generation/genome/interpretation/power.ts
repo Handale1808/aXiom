@@ -1,73 +1,16 @@
 // lib/genome/interpretation/power.ts
 
 import type { InterpretationResult, DebugInfo } from '../types';
-import { SUBREGIONS, MOTIFS } from '../regions';
-import {
-  extractRegion,
-  findMotifs,
-  findDominantSymbol,
-  countSymbols,
-  calculateEntropy,
-  createDebugInfo
-} from './utils';
+import { SUBREGIONS } from '../regions';
+import { extractRegion } from './utils';
 import {
   interpretStrengthStat,
   interpretPsychicStat
 } from './statInterpreters';
-
-/**
- * Generic resistance interpreter (same as metabolism.ts implementation)
- * 
- * Formula:
- * - Motif bonus: +10 per motif found, cap at +50
- * - Symbol frequency bonus: dominant symbol percentage * 30 (0-30 points)
- * - Entropy bonus: high diversity = bonus (0-20 points)
- * - Total: sum of bonuses, cap at 100
- */
-function interpretResistance(
-  genome: string,
-  start: number,
-  end: number,
-  motifs: string[],
-  regionName: string,
-  debug: boolean
-): { value: number; debugInfo?: DebugInfo } {
-  const segment = extractRegion(genome, start, end);
-  
-  // Motif bonus: +10 per motif found, cap at +50
-  const motifMatches = findMotifs(segment, motifs);
-  const motifBonus = Math.min(50, motifMatches.length * 10);
-  
-  // Symbol frequency bonus: dominant symbol percentage (0-30 points)
-  const dominantSymbol = findDominantSymbol(segment);
-  const counts = countSymbols(segment);
-  const segmentLength = segment.length;
-  const dominantPercentage = counts[dominantSymbol] / segmentLength;
-  const frequencyBonus = Math.round(dominantPercentage * 30);
-  
-  // Entropy bonus: high diversity = bonus (0-20 points)
-  const entropy = calculateEntropy(segment);
-  const entropyBonus = entropy > 2.5 ? 20 : entropy > 2.0 ? 10 : 0;
-  
-  // Total resistance
-  const resistance = Math.min(100, motifBonus + frequencyBonus + entropyBonus);
-  
-  const result: { value: number; debugInfo?: DebugInfo } = { value: resistance };
-  
-  if (debug) {
-    result.debugInfo = createDebugInfo(regionName, segment, {
-      motifs,
-      includeEntropy: true,
-      includeDominant: true
-    });
-    result.debugInfo.derivedValue = {
-      resistance,
-      breakdown: { motifBonus, frequencyBonus, entropyBonus }
-    };
-  }
-  
-  return result;
-}
+import {
+  interpretPsychicResistance,
+  interpretRadiationResistance
+} from './resistanceInterpreters';
 
 /**
  * Main power interpreter
@@ -101,24 +44,12 @@ export function interpretPower(
   const psychic = psychicResult.value;
   
   // Psychic resistance (900-949)
-  const psychicResistanceResult = interpretResistance(
-    genome,
-    900,
-    949,
-    MOTIFS.PSYCHIC_RESISTANCE,
-    'Psychic Potential - Psychic Resistance',
-    debug
-  );
+  const psychicResistanceSegment = extractRegion(genome, 900, 949);
+  const psychicResistanceResult = interpretPsychicResistance(psychicResistanceSegment, debug);
   
   // Radiation resistance (950-999)
-  const radiationResistanceResult = interpretResistance(
-    genome,
-    950,
-    999,
-    MOTIFS.RADIATION,
-    'Psychic Potential - Radiation Resistance',
-    debug
-  );
+  const radiationResistanceSegment = extractRegion(genome, 950, 999);
+  const radiationResistanceResult = interpretRadiationResistance(radiationResistanceSegment, debug);
   
   const result: InterpretationResult<{
     strength: number;
@@ -145,7 +76,9 @@ export function interpretPower(
         psychic,
         psychicBreakdown: psychicResult.debugInfo,
         psychicResistance: psychicResistanceResult.value,
-        radiationResistance: radiationResistanceResult.value
+        psychicResistanceBreakdown: psychicResistanceResult.debugInfo,
+        radiationResistance: radiationResistanceResult.value,
+        radiationResistanceBreakdown: radiationResistanceResult.debugInfo
       }
     };
   }
