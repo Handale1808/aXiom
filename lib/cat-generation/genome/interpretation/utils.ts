@@ -73,7 +73,7 @@ export function findMotifs(segment: string, motifs: string[]): Array<{ motif: st
     let position = 0;
     while ((position = segment.indexOf(motif, position)) !== -1) {
       matches.push({ motif, position });
-      position += 1; // Continue searching after this match (allows overlapping)
+      position += 1;
     }
   }
   
@@ -111,9 +111,7 @@ export function countUniqueMotifs(segment: string, motifs: string[]): number {
 export function detectTandemRepeats(segment: string, minLength: number = 2, maxLength: number = 5): string[] {
   const repeats = new Set<string>();
   
-  // Try each possible pattern length
   for (let patternLength = minLength; patternLength <= maxLength; patternLength++) {
-    // Scan through segment looking for repeating patterns
     for (let i = 0; i <= segment.length - patternLength * 2; i++) {
       const pattern = segment.substring(i, i + patternLength);
       const nextPattern = segment.substring(i + patternLength, i + patternLength * 2);
@@ -177,7 +175,6 @@ export function countSymbolRuns(segment: string, minRunLength: number = 3): numb
     }
   }
   
-  // Check final run
   if (currentRunLength >= minRunLength) {
     runCount++;
   }
@@ -266,4 +263,251 @@ export function createDebugInfo(
   }
   
   return debugInfo;
+}
+
+// ============================================================================
+// NEW UTILITY FUNCTIONS FOR OPPOSING FORCES STAT SYSTEM
+// ============================================================================
+
+/**
+ * Count alternating patterns in a segment
+ * Detects patterns like ABABAB, ABCABC, etc.
+ * 
+ * @param segment - Genome segment to analyze
+ * @returns Length of longest alternation found
+ */
+export function countAlternations(segment: string): number {
+  if (segment.length < 2) return 0;
+  
+  let maxAlternation = 0;
+  
+  for (let patternLength = 2; patternLength <= 6; patternLength++) {
+    for (let i = 0; i <= segment.length - patternLength * 2; i++) {
+      const pattern = segment.substring(i, i + patternLength);
+      let alternationLength = patternLength;
+      
+      let pos = i + patternLength;
+      while (pos + patternLength <= segment.length) {
+        const nextChunk = segment.substring(pos, pos + patternLength);
+        if (nextChunk === pattern) {
+          alternationLength += patternLength;
+          pos += patternLength;
+        } else {
+          break;
+        }
+      }
+      
+      if (alternationLength > maxAlternation) {
+        maxAlternation = alternationLength;
+      }
+    }
+  }
+  
+  return maxAlternation;
+}
+
+/**
+ * Find palindromic sequences in a segment
+ * Palindrome reads the same forwards and backwards (e.g., ATCGCGTA)
+ * 
+ * @param segment - Genome segment to search
+ * @param minLength - Minimum palindrome length (default: 4)
+ * @returns Array of palindromes found
+ */
+export function findPalindromes(segment: string, minLength: number = 4): string[] {
+  const palindromes = new Set<string>();
+  
+  for (let length = minLength; length <= Math.min(10, segment.length); length++) {
+    for (let i = 0; i <= segment.length - length; i++) {
+      const substr = segment.substring(i, i + length);
+      const reversed = substr.split('').reverse().join('');
+      
+      if (substr === reversed) {
+        palindromes.add(substr);
+      }
+    }
+  }
+  
+  return Array.from(palindromes);
+}
+
+/**
+ * Calculate symbol balance score
+ * Measures how evenly symbols are distributed
+ * Perfect balance (all symbols equal) = 20, completely skewed = 0
+ * 
+ * @param segment - Genome segment to analyze
+ * @returns Balance score (0-20)
+ */
+export function calculateSymbolBalance(segment: string): number {
+  if (segment.length === 0) return 0;
+  
+  const counts = countSymbols(segment);
+  const symbolsPresent = Object.values(counts).filter(c => c > 0);
+  
+  if (symbolsPresent.length === 0) return 0;
+  
+  const mean = segment.length / symbolsPresent.length;
+  
+  let sumSquaredDiff = 0;
+  for (const count of symbolsPresent) {
+    sumSquaredDiff += Math.pow(count - mean, 2);
+  }
+  
+  const variance = sumSquaredDiff / symbolsPresent.length;
+  const stdDev = Math.sqrt(variance);
+  
+  const normalizedStdDev = stdDev / segment.length;
+  const balanceScore = Math.max(0, 20 - (normalizedStdDev * 100));
+  
+  return Math.round(balanceScore);
+}
+
+/**
+ * Count symbol transitions (changes between different symbols)
+ * Example: "AAABBBCCC" has 2 transitions (A→B, B→C)
+ * 
+ * @param segment - Genome segment to analyze
+ * @returns Number of transitions
+ */
+export function countSymbolTransitions(segment: string): number {
+  if (segment.length < 2) return 0;
+  
+  let transitions = 0;
+  for (let i = 1; i < segment.length; i++) {
+    if (segment[i] !== segment[i - 1]) {
+      transitions++;
+    }
+  }
+  
+  return transitions;
+}
+
+/**
+ * Measure fragmentation of a specific symbol or group
+ * Counts how many times the target is interrupted by other symbols
+ * 
+ * @param segment - Genome segment to analyze
+ * @param targetSymbols - Symbols to track fragmentation for
+ * @returns Fragmentation count
+ */
+export function measureFragmentation(segment: string, targetSymbols: string): number {
+  if (segment.length === 0) return 0;
+  
+  let fragmentCount = 0;
+  let inTarget = false;
+  
+  for (const symbol of segment) {
+    const isTarget = targetSymbols.includes(symbol);
+    
+    if (isTarget && !inTarget) {
+      fragmentCount++;
+      inTarget = true;
+    } else if (!isTarget && inTarget) {
+      inTarget = false;
+    }
+  }
+  
+  return fragmentCount;
+}
+
+/**
+ * Find overlapping patterns (patterns that contain other patterns)
+ * Example: "ATCGATCG" contains both "ATC" and "TCG" overlapping
+ * 
+ * @param segment - Genome segment to analyze
+ * @returns Count of overlapping pattern instances
+ */
+export function findOverlappingPatterns(segment: string): number {
+  const patterns = new Set<string>();
+  
+  for (let length = 3; length <= 6; length++) {
+    for (let i = 0; i <= segment.length - length; i++) {
+      const pattern = segment.substring(i, i + length);
+      patterns.add(pattern);
+    }
+  }
+  
+  let overlapCount = 0;
+  
+  for (const pattern of patterns) {
+    for (let i = 0; i < segment.length - pattern.length + 1; i++) {
+      if (segment.substring(i, i + pattern.length) === pattern) {
+        for (let offset = 1; offset < pattern.length; offset++) {
+          if (i + offset + pattern.length <= segment.length) {
+            const overlapping = segment.substring(i + offset, i + offset + pattern.length);
+            if (overlapping === pattern) {
+              overlapCount++;
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  return overlapCount;
+}
+
+/**
+ * Count cat DNA bases (A, T, C, G)
+ * 
+ * @param segment - Genome segment to analyze
+ * @returns Count of cat DNA bases
+ */
+export function countCatDNA(segment: string): number {
+  let count = 0;
+  for (const symbol of segment) {
+    if (symbol === 'A' || symbol === 'T' || symbol === 'C' || symbol === 'G') {
+      count++;
+    }
+  }
+  return count;
+}
+
+/**
+ * Count alien DNA bases (W, X, Y, Z)
+ * 
+ * @param segment - Genome segment to analyze
+ * @returns Count of alien DNA bases
+ */
+export function countAlienDNA(segment: string): number {
+  let count = 0;
+  for (const symbol of segment) {
+    if (symbol === 'W' || symbol === 'X' || symbol === 'Y' || symbol === 'Z') {
+      count++;
+    }
+  }
+  return count;
+}
+
+/**
+ * Calculate variance in symbol frequencies
+ * Higher variance = more inconsistent distribution
+ * 
+ * @param segment - Genome segment to analyze
+ * @returns Frequency variance
+ */
+export function calculateFrequencyVariance(segment: string): number {
+  if (segment.length === 0) return 0;
+  
+  const counts = countSymbols(segment);
+  const frequencies = Object.values(counts);
+  
+  const mean = frequencies.reduce((sum, f) => sum + f, 0) / frequencies.length;
+  
+  const variance = frequencies.reduce((sum, f) => sum + Math.pow(f - mean, 2), 0) / frequencies.length;
+  
+  return variance;
+}
+
+/**
+ * Calculate standard deviation of symbol frequencies
+ * Used for balance calculations
+ * 
+ * @param segment - Genome segment to analyze
+ * @returns Standard deviation
+ */
+export function calculateStandardDeviation(segment: string): number {
+  const variance = calculateFrequencyVariance(segment);
+  return Math.sqrt(variance);
 }

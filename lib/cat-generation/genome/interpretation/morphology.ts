@@ -10,57 +10,13 @@ import {
   countSymbols,
   findMotifs,
   rgbToHex,
-  createDebugInfo,
-  countUniqueMotifs,
-  calculateEntropy
+  createDebugInfo
 } from './utils';
-
-/**
- * Interpret stat value using standard stat formula
- * Used for perception, agility, and endurance stats
- * 
- * Factor A: Motif presence (+1 per unique motif, cap at +3)
- * Factor B: Symbol diversity (entropy score, 0-3)
- * Factor C: Repeating patterns (+1 per unique repeat, cap at +2)
- * Total: base 1 + bonuses, cap at 10
- */
-function interpretStat(
-  segment: string,
-  motifs: string[],
-  statName: string,
-  debug: boolean
-): { value: number; debugInfo?: DebugInfo } {
-  // Factor A: Motif presence
-  const motifCount = countUniqueMotifs(segment, motifs);
-  const motifBonus = Math.min(3, motifCount);
-  
-  // Factor B: Symbol diversity (entropy)
-  const entropy = calculateEntropy(segment);
-  const diversityBonus = entropy > 2.5 ? 3 : entropy > 2.0 ? 2 : entropy > 1.0 ? 1 : 0;
-  
-  // Factor C: Repeating patterns
-  const repeats = detectTandemRepeats(segment);
-  const repeatBonus = Math.min(2, repeats.length);
-  
-  // Total stat: base 1 + bonuses, cap at 10
-  const statValue = Math.min(10, 1 + motifBonus + diversityBonus + repeatBonus);
-  
-  const result: { value: number; debugInfo?: DebugInfo } = { value: statValue };
-  
-  if (debug) {
-    result.debugInfo = createDebugInfo(statName, segment, {
-      motifs,
-      includeEntropy: true,
-      includeRepeats: true
-    });
-    result.debugInfo.derivedValue = {
-      stat: statValue,
-      breakdown: { motifBonus, diversityBonus, repeatBonus }
-    };
-  }
-  
-  return result;
-}
+import {
+  interpretPerceptionStat,
+  interpretAgilityStat,
+  interpretEnduranceStat
+} from './statInterpreters';
 
 /**
  * Interpret Body Plan subregion → legs, tails, size
@@ -126,8 +82,8 @@ function interpretSensory(
   const repeats = detectTandemRepeats(segment);
   const eyes = Math.min(10, repeats.length);
   
-  // Perception stat: use standard stat formula
-  const perceptionResult = interpretStat(segment, MOTIFS.PERCEPTION, 'Sensory - Perception', debug);
+  // Perception stat: use new opposing forces interpreter
+  const perceptionResult = interpretPerceptionStat(segment, debug);
   const perception = perceptionResult.value;
   
   const result: { eyes: number; perception: number; debugInfo?: DebugInfo } = { 
@@ -141,7 +97,11 @@ function interpretSensory(
       includeRepeats: true,
       includeEntropy: true
     });
-    result.debugInfo.derivedValue = { eyes, perception };
+    result.debugInfo.derivedValue = { 
+      eyes, 
+      perception,
+      perceptionBreakdown: perceptionResult.debugInfo
+    };
   }
   
   return result;
@@ -161,8 +121,8 @@ function interpretLocomotion(
   const repeats = detectTandemRepeats(segment);
   const wings = Math.min(10, repeats.length);
   
-  // Agility stat: use standard stat formula
-  const agilityResult = interpretStat(segment, MOTIFS.AGILITY, 'Locomotion - Agility', debug);
+  // Agility stat: use new opposing forces interpreter
+  const agilityResult = interpretAgilityStat(segment, debug);
   const agility = agilityResult.value;
   
   const result: { wings: number; agility: number; debugInfo?: DebugInfo } = { 
@@ -176,7 +136,11 @@ function interpretLocomotion(
       includeRepeats: true,
       includeEntropy: true
     });
-    result.debugInfo.derivedValue = { wings, agility };
+    result.debugInfo.derivedValue = { 
+      wings, 
+      agility,
+      agilityBreakdown: agilityResult.debugInfo
+    };
   }
   
   return result;
@@ -239,8 +203,8 @@ function interpretDefense(
   
   const colour = rgbToHex(red, green, blue);
   
-  // Endurance stat: use standard stat formula
-  const enduranceResult = interpretStat(segment, MOTIFS.ENDURANCE, 'Defense - Endurance', debug);
+  // Endurance stat: use new opposing forces interpreter
+  const enduranceResult = interpretEnduranceStat(segment, debug);
   const endurance = enduranceResult.value;
   
   const result: { 
@@ -264,7 +228,14 @@ function interpretDefense(
       includeDominant: true,
       includeEntropy: true
     });
-    result.debugInfo.derivedValue = { skinType, hasClaws, hasFangs, colour, endurance };
+    result.debugInfo.derivedValue = { 
+      skinType, 
+      hasClaws, 
+      hasFangs, 
+      colour, 
+      endurance,
+      enduranceBreakdown: enduranceResult.debugInfo
+    };
   }
   
   return result;

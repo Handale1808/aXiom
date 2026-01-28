@@ -4,65 +4,16 @@ import type { InterpretationResult, DebugInfo } from '../types';
 import { SUBREGIONS, MOTIFS } from '../regions';
 import {
   extractRegion,
-  countUniqueMotifs,
-  calculateEntropy,
-  detectTandemRepeats,
   findMotifs,
   findDominantSymbol,
   countSymbols,
+  calculateEntropy,
   createDebugInfo
 } from './utils';
-
-/**
- * Generic stat interpreter (used for strength and psychic stats)
- * 
- * Formula:
- * - Factor A: Motif presence (+1 per unique motif, cap at +3)
- * - Factor B: Symbol diversity (entropy score, 0-3)
- * - Factor C: Repeating patterns (+1 per unique repeat, cap at +2)
- * - Total: base 1 + bonuses, cap at 10
- */
-function interpretStat(
-  genome: string,
-  start: number,
-  end: number,
-  motifs: string[],
-  statName: string,
-  debug: boolean
-): { value: number; debugInfo?: DebugInfo } {
-  const segment = extractRegion(genome, start, end);
-  
-  // Factor A: Motif presence (+1 per unique motif, cap at +3)
-  const motifCount = countUniqueMotifs(segment, motifs);
-  const motifBonus = Math.min(3, motifCount);
-  
-  // Factor B: Symbol diversity (entropy score, 0-3)
-  const entropy = calculateEntropy(segment);
-  const diversityBonus = entropy > 2.5 ? 3 : entropy > 2.0 ? 2 : entropy > 1.0 ? 1 : 0;
-  
-  // Factor C: Repeating patterns (+1 per unique repeat, cap at +2)
-  const repeats = detectTandemRepeats(segment);
-  const repeatBonus = Math.min(2, repeats.length);
-  
-  // Total stat: base 1 + bonuses, cap at 10
-  const statValue = Math.min(10, 1 + motifBonus + diversityBonus + repeatBonus);
-  
-  const result: { value: number; debugInfo?: DebugInfo } = { value: statValue };
-  
-  if (debug) {
-    result.debugInfo = createDebugInfo(statName, segment, {
-      motifs,
-      includeEntropy: true,
-      includeRepeats: true
-    });
-    result.debugInfo.derivedValue = {
-      stat: statValue,
-      breakdown: { motifBonus, diversityBonus, repeatBonus }
-    };
-  }
-  
-  return result;
-}
+import {
+  interpretStrengthStat,
+  interpretPsychicStat
+} from './statInterpreters';
 
 /**
  * Generic resistance interpreter (same as metabolism.ts implementation)
@@ -132,27 +83,25 @@ export function interpretPower(
   radiationResistance: number;
 }> {
   // Physical Power subregion (800-899) → strength stat
-  const strength = interpretStat(
+  const strengthSegment = extractRegion(
     genome,
     SUBREGIONS.PHYSICAL_POWER.start,
-    SUBREGIONS.PHYSICAL_POWER.end,
-    MOTIFS.STRENGTH,
-    'Physical Power - Strength',
-    debug
+    SUBREGIONS.PHYSICAL_POWER.end
   );
+  const strengthResult = interpretStrengthStat(strengthSegment, debug);
+  const strength = strengthResult.value;
   
   // Psychic Potential subregion (900-999) → psychic stat + resistances
-  const psychicStat = interpretStat(
+  const psychicSegment = extractRegion(
     genome,
     SUBREGIONS.PSYCHIC.start,
-    SUBREGIONS.PSYCHIC.end,
-    MOTIFS.PSYCHIC,
-    'Psychic Potential - Psychic Stat',
-    debug
+    SUBREGIONS.PSYCHIC.end
   );
+  const psychicResult = interpretPsychicStat(psychicSegment, debug);
+  const psychic = psychicResult.value;
   
   // Psychic resistance (900-949)
-  const psychicResistance = interpretResistance(
+  const psychicResistanceResult = interpretResistance(
     genome,
     900,
     949,
@@ -162,7 +111,7 @@ export function interpretPower(
   );
   
   // Radiation resistance (950-999)
-  const radiationResistance = interpretResistance(
+  const radiationResistanceResult = interpretResistance(
     genome,
     950,
     999,
@@ -178,10 +127,10 @@ export function interpretPower(
     radiationResistance: number;
   }> = {
     value: {
-      strength: strength.value,
-      psychic: psychicStat.value,
-      psychicResistance: psychicResistance.value,
-      radiationResistance: radiationResistance.value
+      strength,
+      psychic,
+      psychicResistance: psychicResistanceResult.value,
+      radiationResistance: radiationResistanceResult.value
     }
   };
   
@@ -190,7 +139,14 @@ export function interpretPower(
       region: 'Power (complete)',
       foundMotifs: [],
       symbolFrequencies: {} as any,
-      derivedValue: result.value
+      derivedValue: {
+        strength,
+        strengthBreakdown: strengthResult.debugInfo,
+        psychic,
+        psychicBreakdown: psychicResult.debugInfo,
+        psychicResistance: psychicResistanceResult.value,
+        radiationResistance: radiationResistanceResult.value
+      }
     };
   }
   
