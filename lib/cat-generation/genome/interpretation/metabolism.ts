@@ -9,7 +9,7 @@ import {
   interpretAcidResistance,
   interpretFireResistance,
   interpretColdResistance
-} from './resistanceInterpreters';
+} from './interpreters';
 
 /**
  * Main metabolism interpreter

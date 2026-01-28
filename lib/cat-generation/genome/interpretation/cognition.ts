@@ -4,13 +4,13 @@ import type { IBehavior } from '@/models/Cats';
 import type { InterpretationResult, DebugInfo } from '../types';
 import { SUBREGIONS } from '../regions';
 import { extractRegion } from './utils';
-import { interpretIntelligenceStat } from './statInterpreters';
 import {
+  interpretIntelligenceStat,
   interpretAggression,
   interpretCuriosity,
   interpretLoyalty,
   interpretChaos
-} from './behaviorInterpreters';
+} from './interpreters';
 
 /**
  * Main cognition interpreter

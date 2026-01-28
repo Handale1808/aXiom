@@ -16,7 +16,7 @@ import {
   interpretPerceptionStat,
   interpretAgilityStat,
   interpretEnduranceStat
-} from './statInterpreters';
+} from './interpreters';
 
 /**
  * Interpret Body Plan subregion → legs, tails, size

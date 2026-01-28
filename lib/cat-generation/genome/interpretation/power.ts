@@ -5,12 +5,10 @@ import { SUBREGIONS } from '../regions';
 import { extractRegion } from './utils';
 import {
   interpretStrengthStat,
-  interpretPsychicStat
-} from './statInterpreters';
-import {
+  interpretPsychicStat,
   interpretPsychicResistance,
   interpretRadiationResistance
-} from './resistanceInterpreters';
+} from './interpreters';
 
 /**
  * Main power interpreter
