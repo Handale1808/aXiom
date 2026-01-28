@@ -1,3 +1,5 @@
+// models/Cats.ts
+
 import { ObjectId } from "mongodb";
 
 export type TailType = "none" | "short" | "long" | "prehensile";
@@ -45,6 +47,7 @@ export interface ICat {
   _id?: ObjectId;
   name: string;
   description: string;
+  genome: string; // NEW: 1000-base genome string (ATCGWXYZ alphabet)
   physicalTraits: IPhysicalTraits;
   stats: IStats;
   resistances: IResistances;

@@ -1,13 +1,14 @@
+// lib/cat-generation/generateCat.ts
+
 import { ICat } from "../../models/Cats";
 import { IAbility } from "../../models/Ability";
 import { IAbilityRule } from "../../models/AbilityRules";
-import { generateTraits } from "./generateTraits";
-import { generateStats } from "./generateStats";
-import { generateResistances } from "./generateResistances";
-import { generateBehavior } from "./generateBehavior";
 import { generateAbilities } from "./generateAbilities";
 import { generateDescription } from "./generateDescription";
+import { generateGenome } from "./genome/generation";
+import { interpretGenome } from "./genome/interpretation";
 
+// Specimen name generation constants (unchanged)
 const SPECIMEN_PREFIXES = [
   "SPECIMEN",
   "SUBJECT",
@@ -157,6 +158,17 @@ function generateName(): string {
   return `${prefix}_${suffix}`;
 }
 
+/**
+ * Main cat generation function
+ * Now genome-driven instead of random
+ * 
+ * Flow:
+ * 1. Generate genome (1000-base string)
+ * 2. Interpret genome → derive complete phenotype
+ * 3. Grant abilities based on derived phenotype (unchanged logic)
+ * 4. Generate description from phenotype (unchanged logic)
+ * 5. Assemble and return cat document with genome
+ */
 export async function generateCat(
   allRules: IAbilityRule[],
   allAbilities: IAbility[]
@@ -165,40 +177,47 @@ export async function generateCat(
   abilities: IAbility[];
 }> {
   try {
-    const physicalTraits = generateTraits();
-    const stats = generateStats();
-    const resistances = generateResistances();
-    const behavior = generateBehavior();
-
+    // Step 1: Generate genome
+    const genome = generateGenome();
+    
+    // Step 2: Interpret genome → derive phenotype
+    const phenotype = interpretGenome(genome, { debug: false });
+    
+    // Step 3: Grant abilities based on derived phenotype
+    // generateAbilities logic is unchanged - still checks phenotype conditions
     const abilities = await generateAbilities(
-      physicalTraits,
-      stats,
-      resistances,
-      behavior,
+      phenotype.physicalTraits,
+      phenotype.stats,
+      phenotype.resistances,
+      phenotype.behavior,
       allRules,
       allAbilities
     );
-
+    
+    // Step 4: Generate description (unchanged - uses phenotype)
     const description = await generateDescription(
       {
-        physicalTraits,
-        stats,
-        resistances,
-        behavior,
+        physicalTraits: phenotype.physicalTraits,
+        stats: phenotype.stats,
+        resistances: phenotype.resistances,
+        behavior: phenotype.behavior,
       },
       abilities
     );
-
+    
+    // Step 5: Assemble cat document
     const cat: ICat = {
       name: generateName(),
       description,
-      physicalTraits,
-      stats,
-      resistances,
-      behavior,
+      genome, // NEW FIELD - store the genome string
+      physicalTraits: phenotype.physicalTraits,
+      stats: phenotype.stats,
+      resistances: phenotype.resistances,
+      behavior: phenotype.behavior,
+      svgImage: "", // Will be generated later
       createdAt: new Date(),
     };
-
+    
     return { cat, abilities };
   } catch (error) {
     console.error("Error generating cat:", error);
