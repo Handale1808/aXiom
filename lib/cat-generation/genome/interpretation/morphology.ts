@@ -10,13 +10,36 @@ import {
   countSymbols,
   findMotifs,
   rgbToHex,
-  createDebugInfo
+  createDebugInfo,
+  calculateEntropy,
+  countSymbolRuns,
+  countSymbolTransitions
 } from './utils';
 import {
   interpretPerceptionStat,
   interpretAgilityStat,
   interpretEnduranceStat
 } from './interpreters';
+
+/**
+ * Interpret appendage count - hash-based for maximum variation
+ */
+function interpretAppendageCount(
+  segment: string,
+  debug: boolean = false
+): { count: number; debugInfo?: any } {
+  // Create a simple hash from the segment
+  let hash = 0;
+  for (let i = 0; i < Math.min(segment.length, 10); i++) {
+    hash = ((hash << 5) - hash) + segment.charCodeAt(i);
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  
+  // Use absolute value and modulo to get 0-10
+  const count = Math.abs(hash) % 11;
+  
+  return { count };
+}
 
 /**
  * Interpret Body Plan subregion → legs, tails, size
@@ -28,15 +51,13 @@ function interpretBodyPlan(
   const { start, end } = SUBREGIONS.BODY_PLAN;
   const segment = extractRegion(genome, start, end);
   
-  // Legs: count tandem repeats in first half
+  // Legs: use appendage interpreter on first half
   const legsSegment = segment.substring(0, 50);
-  const legsRepeats = detectTandemRepeats(legsSegment);
-  const legs = Math.min(10, legsRepeats.length);
+  const legs = interpretAppendageCount(legsSegment).count;
   
-  // Tails: count tandem repeats in second half
+  // Tails: use appendage interpreter on second half
   const tailsSegment = segment.substring(50, 100);
-  const tailsRepeats = detectTandemRepeats(tailsSegment);
-  const tails = Math.min(10, tailsRepeats.length);
+  const tails = interpretAppendageCount(tailsSegment).count;
   
   // Size: based on dominant symbol frequency
   const dominantSymbol = findDominantSymbol(segment);
@@ -78,9 +99,8 @@ function interpretSensory(
   const { start, end } = SUBREGIONS.SENSORY;
   const segment = extractRegion(genome, start, end);
   
-  // Eyes: count tandem repeats
-  const repeats = detectTandemRepeats(segment);
-  const eyes = Math.min(10, repeats.length);
+  // Eyes: use appendage interpreter
+  const eyes = interpretAppendageCount(segment).count;
   
   // Perception stat: use new opposing forces interpreter
   const perceptionResult = interpretPerceptionStat(segment, debug);
@@ -117,9 +137,8 @@ function interpretLocomotion(
   const { start, end } = SUBREGIONS.LOCOMOTION;
   const segment = extractRegion(genome, start, end);
   
-  // Wings: count tandem repeats
-  const repeats = detectTandemRepeats(segment);
-  const wings = Math.min(10, repeats.length);
+  // Wings: use appendage interpreter
+  const wings = interpretAppendageCount(segment).count;
   
   // Agility stat: use new opposing forces interpreter
   const agilityResult = interpretAgilityStat(segment, debug);
@@ -173,33 +192,13 @@ function interpretDefense(
   const hasClaws = clawMatches.length > 0;
   const hasFangs = fangMatches.length > 0;
   
-  // Colour: direct base mapping (first 24 bases of Defense region)
-  const colorSegment = segment.substring(0, 24);
+  // Colour: direct base mapping (first 3 bases of Defense region)
+  const colorSegment = segment.substring(0, 3);
   const colorValues = SYMBOL_MAPPINGS.COLOR_VALUES;
   
-  // Red component (bases 0-7)
-  let redSum = 0;
-  for (let i = 0; i < 8; i++) {
-    const symbol = colorSegment[i];
-    redSum += colorValues[symbol as keyof typeof colorValues] || 0;
-  }
-  const red = redSum / 8;
-  
-  // Green component (bases 8-15)
-  let greenSum = 0;
-  for (let i = 8; i < 16; i++) {
-    const symbol = colorSegment[i];
-    greenSum += colorValues[symbol as keyof typeof colorValues] || 0;
-  }
-  const green = greenSum / 8;
-  
-  // Blue component (bases 16-23)
-  let blueSum = 0;
-  for (let i = 16; i < 24; i++) {
-    const symbol = colorSegment[i];
-    blueSum += colorValues[symbol as keyof typeof colorValues] || 0;
-  }
-  const blue = blueSum / 8;
+  const red = colorValues[colorSegment[0] as keyof typeof colorValues] || 0;
+  const green = colorValues[colorSegment[1] as keyof typeof colorValues] || 0;
+  const blue = colorValues[colorSegment[2] as keyof typeof colorValues] || 0;
   
   const colour = rgbToHex(red, green, blue);
   
