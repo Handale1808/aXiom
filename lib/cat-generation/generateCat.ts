@@ -6,7 +6,7 @@ import { IAbilityRule } from "../../models/AbilityRules";
 import { generateAbilities } from "./generateAbilities";
 import { generateDescription } from "./generateDescription";
 import { generateGenome } from "./genome/generation";
-import { interpretGenome } from "./genome/interpretation";
+import { interpretGenome } from "./genome/interpretation/index";
 
 // Specimen name generation constants (unchanged)
 const SPECIMEN_PREFIXES = [

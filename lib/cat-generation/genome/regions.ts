@@ -186,12 +186,12 @@ export const SYMBOL_MAPPINGS = {
    */
   COLOR_VALUES: {
     A: 0, 
-    T: 85, 
-    C: 170, 
+    T: 64, 
+    C: 192, 
     G: 255,
     W: 0, 
-    X: 85, 
-    Y: 170, 
+    X: 64, 
+    Y: 192, 
     Z: 255
   } as const
 };
