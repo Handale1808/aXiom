@@ -5,7 +5,7 @@
 import { useState } from 'react';
 import type { StatConfig } from './utils/statCalculations';
 import StatAccordion from './StatAccordion';
-import { DEMO_GENOME } from '@/lib/about/genome/hardcodedGenome';
+import { STATS_DEMO_GENOME } from '@/lib/about/genome/hardcodedGenome';
 
 interface StatsCategorySectionProps {
   category: 'stats' | 'resistances' | 'behaviors';
@@ -19,14 +19,14 @@ export default function StatsCategorySection({
   items,
 }: StatsCategorySectionProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [currentGenome, setCurrentGenome] = useState<string>(DEMO_GENOME);
+  const [currentGenome, setCurrentGenome] = useState<string>(STATS_DEMO_GENOME);
 
   const handleToggle = (itemId: string) => {
     setExpandedId(expandedId === itemId ? null : itemId);
   };
 
   const handleResetGenome = () => {
-    setCurrentGenome(DEMO_GENOME);
+    setCurrentGenome(STATS_DEMO_GENOME);
   };
 
   return (
@@ -61,7 +61,7 @@ export default function StatsCategorySection({
       </div>
 
       {/* Reset Genome Button */}
-      {currentGenome !== DEMO_GENOME && (
+      {currentGenome !== STATS_DEMO_GENOME && (
         <div className="mt-6 pt-6 border-t border-[#30D6D6]/20">
           <button
             onClick={handleResetGenome}

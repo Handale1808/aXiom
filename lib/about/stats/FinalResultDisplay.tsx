@@ -1,14 +1,14 @@
 // lib/components/about/stats/FinalResultDisplay.tsx
 
-"use client";
+'use client';
 
-import type { StatCategory } from "./utils/statCalculations";
-import {
-  getMappingFormula,
-  getStatLabel,
+import type { StatCategory } from './utils/statCalculations';
+import { 
+  getMappingFormula, 
+  getStatLabel, 
   getStatInterpretation,
-  getScoreSign,
-} from "./utils/visualHelpers";
+  getScoreSign 
+} from './utils/visualHelpers';
 
 interface FinalResultDisplayProps {
   rawScore: number;
@@ -25,11 +25,15 @@ export default function FinalResultDisplay({
   statName,
   isAnimating,
 }: FinalResultDisplayProps) {
-  const maxValue = category === "resistances" ? 100 : 10;
+  const maxValue = category === 'resistances' ? 100 : 10;
   const percentage = (finalStat / maxValue) * 100;
   const sign = getScoreSign(rawScore);
   const label = getStatLabel(finalStat, category);
   const interpretation = getStatInterpretation(finalStat, category, statName);
+
+  // Calculate intermediate values for display
+  const normalized = 1 + ((rawScore / 100) * 9);
+  const beforeClamp = Math.round(normalized);
 
   return (
     <div className="border-2 border-[#30D6D6]/50 bg-[#30D6D6]/10 p-6">
@@ -43,28 +47,27 @@ export default function FinalResultDisplay({
           RAW_SCORE = SPECIALIZATION − CHAOS
         </div>
         <div className="text-lg font-bold text-[#30D6D6] tabular-nums mb-3">
-          {sign}
-          {Math.abs(rawScore)} / 100
+          {sign}{Math.abs(rawScore)} / 100
         </div>
 
         <div className="border-t border-[#30D6D6]/20 pt-3 mt-3">
           <div className="text-sm text-cyan-100/70 mb-2">
             {getMappingFormula(category)}
           </div>
-
-          {/* ADD THIS - Show the actual calculation */}
-          <div className="text-xs font-mono text-cyan-100/50 mb-2">
-            = 1 + (({rawScore} / 100) × 9)
+          
+          {/* Show calculation steps */}
+          <div className="text-xs font-mono text-cyan-100/50 space-y-1 mb-3">
+            <div>= 1 + (({rawScore} / 100) × 9)</div>
+            <div>= 1 + ({(rawScore / 100).toFixed(2)} × 9)</div>
+            <div>= 1 + {((rawScore / 100) * 9).toFixed(2)}</div>
+            <div>= {normalized.toFixed(2)}</div>
+            {(beforeClamp < 1 || beforeClamp > 10) && (
+              <div className="text-[#FF6E40]">
+                → {beforeClamp} (before clamp) → {finalStat} (clamped to 1-10)
+              </div>
+            )}
           </div>
-          <div className="text-xs font-mono text-cyan-100/50 mb-2">
-            = 1 + ({(rawScore / 100).toFixed(2)} × 9)
-          </div>
-          <div className="text-xs font-mono text-cyan-100/50 mb-3">
-            = 1 + {((rawScore / 100) * 9).toFixed(2)} →{" "}
-            {Math.round(1 + (rawScore / 100) * 9)} (before clamp) → {finalStat}{" "}
-            (after clamp to 1-10)
-          </div>
-
+          
           <div className="text-3xl font-bold text-[#30D6D6] tabular-nums">
             {finalStat} / {maxValue}
           </div>
@@ -83,10 +86,8 @@ export default function FinalResultDisplay({
           <div
             className="absolute left-0 top-0 bottom-0 bg-[#30D6D6] transition-all duration-1000 ease-out"
             style={{
-              width: isAnimating ? "0%" : `${percentage}%`,
-              boxShadow: isAnimating
-                ? "none"
-                : "0 0 20px rgba(48, 214, 214, 0.6)",
+              width: isAnimating ? '0%' : `${percentage}%`,
+              boxShadow: isAnimating ? 'none' : '0 0 20px rgba(48, 214, 214, 0.6)',
             }}
           />
 
@@ -110,8 +111,8 @@ export default function FinalResultDisplay({
           <div
             className="absolute top-0 bottom-0 w-0.5 bg-white transition-all duration-1000 ease-out"
             style={{
-              left: isAnimating ? "0%" : `${percentage}%`,
-              boxShadow: isAnimating ? "none" : "0 0 10px white",
+              left: isAnimating ? '0%' : `${percentage}%`,
+              boxShadow: isAnimating ? 'none' : '0 0 10px white',
             }}
           >
             {/* Value label on indicator */}
@@ -128,7 +129,9 @@ export default function FinalResultDisplay({
         {/* Labels */}
         <div className="flex items-center justify-between mt-2 text-xs text-cyan-100/50">
           <span>MIN</span>
-          <span className="text-[#30D6D6] font-bold">{label}</span>
+          <span className="text-[#30D6D6] font-bold">
+            {label}
+          </span>
           <span>MAX</span>
         </div>
       </div>
@@ -149,17 +152,13 @@ export default function FinalResultDisplay({
           <div
             className="h-full transition-all duration-1000 ease-out"
             style={{
-              width: isAnimating ? "0%" : `${percentage}%`,
-              backgroundColor:
-                percentage >= 80
-                  ? "#76FF03"
-                  : percentage >= 60
-                    ? "#30D6D6"
-                    : percentage >= 40
-                      ? "#FFE66D"
-                      : percentage >= 20
-                        ? "#FF6E40"
-                        : "#FF0000",
+              width: isAnimating ? '0%' : `${percentage}%`,
+              backgroundColor: 
+                percentage >= 80 ? '#76FF03' :
+                percentage >= 60 ? '#30D6D6' :
+                percentage >= 40 ? '#FFE66D' :
+                percentage >= 20 ? '#FF6E40' :
+                '#FF0000',
             }}
           />
         </div>
