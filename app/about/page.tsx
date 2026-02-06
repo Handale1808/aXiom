@@ -99,7 +99,7 @@ export default function About() {
           <GenomeGenerationSection />
 
           {/* Genome Generation + Stats Assignment - Side by Side */}
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="gap-6">
             <div className="relative border border-[#30D6D6]/50 bg-[#30D6D6]/5 p-6">
               <div className="absolute right-3 top-3 h-2 w-2 bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]" />
               <h2 className="mb-4 text-sm font-bold tracking-widest text-[#30D6D6]">
