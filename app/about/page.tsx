@@ -1,4 +1,5 @@
 import GenomeGenerationSection from "@/lib/about/GenomeGenerationSection";
+import StatsAssignmentSection from "@/lib/about/stats/StatsAssignmentSection";
 
 export default function About() {
   return (
@@ -51,12 +52,43 @@ export default function About() {
             <h2 className="mb-4 text-sm font-bold tracking-widest text-[#30D6D6]">
               [ETHICS_OVERSIGHT_STATUS]
             </h2>
-            <p className="text-cyan-100/70 leading-relaxed">
-              Our ethics committee has been dissolved for asking too many
-              questions. All research proceeds under the principle that cuteness
-              justifies the means. Legal counsel advises us to remind you that
-              participation in this program is entirely voluntary and
-              irreversible.
+            <p className="text-cyan-100/70 leading-relaxed mb-4">
+              The Institutional Committee for Feline-Adjacent Bioengineering
+              (ICFAB) has been permanently disbanded following an administrative
+              disagreement regarding the definition of “necessary curiosity.”
+              All experimental activity now operates under the Provisional Axiom
+              of Aesthetic Necessity, which states that sufficiently high levels
+              of cuteness constitute a compelling research justification within
+              at least three parallel jurisdictions.{" "}
+            </p>
+            <p className="text-cyan-100/70 leading-relaxed mb-4">
+              The organisation formally confirms that no terrestrial cats were
+              harmed, distressed, mildly inconvenienced, or even made aware of
+              this program’s existence. All feline outcomes are produced
+              exclusively through Non-Traditional Speculative Genomic Assembly
+              (NTSGA), which involves zero direct interaction with existing cats
+              and only moderate violations of international biofabrication
+              law.{" "}
+            </p>
+            <p className="text-cyan-100/70 leading-relaxed mb-4">
+              All extraterrestrial genetic contributors provided informed,
+              enthusiastic, and occasionally telepathically notarised consent
+              prior to DNA acquisition. Several aliens also signed commemorative
+              posters.{" "}
+            </p>
+            <p className="text-cyan-100/70 leading-relaxed mb-4">
+              {" "}
+              While the resulting procedures are currently classified as:
+              scientifically irresponsible, legally indefensible, and “deeply
+              concerning” by multiple governments, they remain methodologically
+              impressive and aesthetic-outcome positive according to internal
+              review metrics.{" "}
+            </p>
+            <p className="text-cyan-100/70 leading-relaxed mb-4">
+              {" "}
+              Legal counsel requires the following clarification: participation
+              in this program is entirely voluntary, irreversible, and may
+              result in the spontaneous appearance of additional cats.
             </p>
           </div>
 
@@ -98,25 +130,8 @@ export default function About() {
 
           <GenomeGenerationSection />
 
-          {/* Genome Generation + Stats Assignment - Side by Side */}
-          <div className="gap-6">
-            <div className="relative border border-[#30D6D6]/50 bg-[#30D6D6]/5 p-6">
-              <div className="absolute right-3 top-3 h-2 w-2 bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]" />
-              <h2 className="mb-4 text-sm font-bold tracking-widest text-[#30D6D6]">
-                [STEP_03: STATS_ASSIGNMENT]
-              </h2>
-              <p className="text-cyan-100/70 leading-relaxed mb-4">
-                Each unique genome generates a corresponding stat profile. We
-                analyze genetic markers for traits like agility, intelligence,
-                dimensional affinity, and cuteness coefficient.
-              </p>
-              <p className="text-cyan-100/70 leading-relaxed">
-                Stats are calculated using a proprietary algorithm that weighs
-                alien gene expression against feline baseline metrics. The
-                system outputs numerical values across 12 core attributes.
-              </p>
-            </div>
-          </div>
+          {/* Stats Assignment Section */}
+          <StatsAssignmentSection />
 
           {/* Genome Analysis Section */}
           <div className="relative border-2 border-[#30D6D6]/30 bg-black/50 p-6">
