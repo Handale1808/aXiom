@@ -66,6 +66,7 @@ export default function CatDetails({
   };
 
   const handleSave = async () => {
+    if (isSaving || !svgRef.current || !onSave) return;
     setIsSaving(true);
     try {
       const svgString = captureSVG();
@@ -96,18 +97,18 @@ export default function CatDetails({
       label: "PHYSICAL_TRAITS",
       content: {
         customContent: (
-          <div 
+          <div
             className="grid grid-cols-1 sm:grid-cols-2"
             style={{ gap: `${scaled.spacing.gapMedium}px` }}
           >
             <div>
-              <div 
+              <div
                 className="font-bold tracking-widest text-[#30D6D6] mb-1"
                 style={{ fontSize: `${scaled.text.extraSmall}px` }}
               >
                 [EYES]
               </div>
-              <div 
+              <div
                 className="text-cyan-100"
                 style={{ fontSize: `${scaled.text.small}px` }}
               >
@@ -116,13 +117,13 @@ export default function CatDetails({
             </div>
 
             <div>
-              <div 
+              <div
                 className="font-bold tracking-widest text-[#30D6D6] mb-1"
                 style={{ fontSize: `${scaled.text.extraSmall}px` }}
               >
                 [LEGS]
               </div>
-              <div 
+              <div
                 className="text-cyan-100"
                 style={{ fontSize: `${scaled.text.small}px` }}
               >
@@ -131,13 +132,13 @@ export default function CatDetails({
             </div>
 
             <div>
-              <div 
+              <div
                 className="font-bold tracking-widest text-[#30D6D6] mb-1"
                 style={{ fontSize: `${scaled.text.extraSmall}px` }}
               >
                 [WINGS]
               </div>
-              <div 
+              <div
                 className="text-cyan-100"
                 style={{ fontSize: `${scaled.text.small}px` }}
               >
@@ -146,13 +147,13 @@ export default function CatDetails({
             </div>
 
             <div>
-              <div 
+              <div
                 className="font-bold tracking-widest text-[#30D6D6] mb-1"
                 style={{ fontSize: `${scaled.text.extraSmall}px` }}
               >
                 [TAILS]
               </div>
-              <div 
+              <div
                 className="text-cyan-100"
                 style={{ fontSize: `${scaled.text.small}px` }}
               >
@@ -161,7 +162,7 @@ export default function CatDetails({
             </div>
 
             <div>
-              <div 
+              <div
                 className="font-bold tracking-widest text-[#30D6D6] mb-1"
                 style={{ fontSize: `${scaled.text.extraSmall}px` }}
               >
@@ -173,7 +174,7 @@ export default function CatDetails({
             </div>
 
             <div>
-              <div 
+              <div
                 className="font-bold tracking-widest text-[#30D6D6] mb-1"
                 style={{ fontSize: `${scaled.text.extraSmall}px` }}
               >
@@ -185,7 +186,7 @@ export default function CatDetails({
             </div>
 
             <div>
-              <div 
+              <div
                 className="font-bold tracking-widest text-[#30D6D6] mb-1"
                 style={{ fontSize: `${scaled.text.extraSmall}px` }}
               >
@@ -194,7 +195,7 @@ export default function CatDetails({
               <div className="flex items-center gap-2">
                 <div
                   className="border border-[#30D6D6]"
-                  style={{ 
+                  style={{
                     width: `${scaled.interactive.iconSize}px`,
                     height: `${scaled.interactive.iconSize}px`,
                     backgroundColor: cat.physicalTraits.colour,
@@ -207,7 +208,7 @@ export default function CatDetails({
             </div>
 
             <div>
-              <div 
+              <div
                 className="font-bold tracking-widest text-[#30D6D6] mb-1"
                 style={{ fontSize: `${scaled.text.extraSmall}px` }}
               >
@@ -219,7 +220,7 @@ export default function CatDetails({
             </div>
 
             <div>
-              <div 
+              <div
                 className="font-bold tracking-widest text-[#30D6D6] mb-1"
                 style={{ fontSize: `${scaled.text.extraSmall}px` }}
               >
@@ -238,10 +239,10 @@ export default function CatDetails({
       label: "STATISTICS",
       content: {
         customContent: (
-          <div 
-            style={{ 
-              display: 'flex',
-              flexDirection: 'column',
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
               gap: `${scaled.spacing.gapMedium}px`,
             }}
           >
@@ -284,10 +285,10 @@ export default function CatDetails({
       label: "RESISTANCES",
       content: {
         customContent: (
-          <div 
-            style={{ 
-              display: 'flex',
-              flexDirection: 'column',
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
               gap: `${scaled.spacing.gapMedium}px`,
             }}
           >
@@ -330,10 +331,10 @@ export default function CatDetails({
       label: "BEHAVIOR",
       content: {
         customContent: (
-          <div 
-            style={{ 
-              display: 'flex',
-              flexDirection: 'column',
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
               gap: `${scaled.spacing.gapMedium}px`,
             }}
           >
@@ -366,22 +367,22 @@ export default function CatDetails({
       label: "ABILITIES",
       content: {
         customContent: (
-          <div 
-            style={{ 
-              display: 'flex',
-              flexDirection: 'column',
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
               gap: `${scaled.spacing.gapLarge}px`,
             }}
           >
             {passiveAbilities.length > 0 && (
               <div>
-                <div 
+                <div
                   className="font-bold tracking-widest text-[#30D6D6] mb-3"
                   style={{ fontSize: `${scaled.text.small}px` }}
                 >
                   [PASSIVE_ABILITIES]
                 </div>
-                <div 
+                <div
                   className="flex flex-wrap"
                   style={{ gap: `${scaled.spacing.gapSmall}px` }}
                 >
@@ -390,7 +391,7 @@ export default function CatDetails({
                       key={ability._id?.toString()}
                       content={ability.description}
                     >
-                      <div 
+                      <div
                         className="inline-flex border-2 border-[#30D6D6] bg-black text-[#30D6D6] font-bold tracking-wider hover:bg-[#30D6D6] hover:text-black transition-all cursor-help"
                         style={{
                           paddingLeft: `${scaled.interactive.badgePaddingXSmall}px`,
@@ -410,13 +411,13 @@ export default function CatDetails({
 
             {activeAbilities.length > 0 && (
               <div>
-                <div 
+                <div
                   className="font-bold tracking-widest text-[#30D6D6] mb-3"
                   style={{ fontSize: `${scaled.text.small}px` }}
                 >
                   [ACTIVE_ABILITIES]
                 </div>
-                <div 
+                <div
                   className="flex flex-wrap"
                   style={{ gap: `${scaled.spacing.gapSmall}px` }}
                 >
@@ -425,7 +426,7 @@ export default function CatDetails({
                       key={ability._id?.toString()}
                       content={ability.description}
                     >
-                      <div 
+                      <div
                         className="inline-flex border-2 border-[#30D6D6] bg-[#30D6D6] text-black font-bold tracking-wider hover:bg-black hover:text-[#30D6D6] transition-all cursor-help"
                         style={{
                           paddingLeft: `${scaled.interactive.badgePaddingX}px`,
@@ -444,7 +445,7 @@ export default function CatDetails({
             )}
 
             {abilities.length === 0 && (
-              <div 
+              <div
                 className="text-center text-[#006694]"
                 style={{
                   paddingTop: `${scaled.padding.emptyStateY}px`,
@@ -456,11 +457,11 @@ export default function CatDetails({
               </div>
             )}
 
-            <div 
+            <div
               className="border-t border-[#30D6D6]/30"
               style={{ paddingTop: `${scaled.spacing.paddingTopSmall}px` }}
             >
-              <div 
+              <div
                 className="font-bold tracking-widest text-[#30D6D6]"
                 style={{ fontSize: `${scaled.text.extraSmall}px` }}
               >
@@ -475,25 +476,25 @@ export default function CatDetails({
   ];
 
   return (
-    <div 
-      style={{ 
+    <div
+      style={{
         padding: `${scaled.padding.containerMedium}px`,
-        display: 'flex',
-        flexDirection: 'column',
+        display: "flex",
+        flexDirection: "column",
         gap: `${scaled.spacing.spaceYMedium}px`,
       }}
     >
-      <div 
+      <div
         className="border-b-2 border-[#30D6D6]/30"
         style={{ paddingBottom: `${scaled.spacing.paddingBottomSmall}px` }}
       >
-        <h2 
+        <h2
           className="font-bold tracking-wider text-[#30D6D6]"
           style={{ fontSize: `${scaled.text.large}px` }}
         >
           {cat.name}
         </h2>
-        <p 
+        <p
           className="text-cyan-100/70 mt-2"
           style={{ fontSize: `${scaled.text.small}px` }}
         >
@@ -501,7 +502,7 @@ export default function CatDetails({
         </p>
       </div>
 
-      <div 
+      <div
         className="w-full flex items-center justify-center border-2 border-[#30D6D6]/30 bg-black/30"
         style={{ height: `${scaled.imageContainer.catDisplay}px` }}
       >
@@ -514,7 +515,7 @@ export default function CatDetails({
         onTabChange={setActiveTab}
       />
 
-      <div 
+      <div
         className="flex flex-col sm:flex-row border-t-2 border-[#30D6D6]/30"
         style={{
           gap: `${scaled.spacing.gapMedium}px`,

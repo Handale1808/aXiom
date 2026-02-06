@@ -3,7 +3,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useGenomeAnimation } from './genome/useGenomeAnimation';
+import { useGenomeAnimation } from '../hooks/useGenomeAnimation';
 import { DEMO_GENOME } from './genome/hardcodedGenome';
 import DNASymbolExplanation from './genome/DNASymbolExplanation';
 import AnimationControls from './genome/AnimationControls';

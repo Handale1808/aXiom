@@ -10,7 +10,7 @@ interface TooltipProps {
 export default function Tooltip({ content, children }: TooltipProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const triggerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLDivElement>(null!);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
 
   useEffect(() => {

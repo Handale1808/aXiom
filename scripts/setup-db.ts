@@ -1,16 +1,23 @@
-import { setupFeedbackIndexes } from "../lib/indexes/setup-indexes.ts";
-import { setupUserIndexes } from "../lib/indexes/setup-user-indexes.ts";
-import { setupCatIndexes } from "../lib/indexes/setup-cat-indexes.ts";
-import { setupAbilityIndexes } from "../lib/indexes/setup-ability-indexes.ts";
-import { setupAbilityRuleIndexes } from "../lib/indexes/setup-ability-rule-indexes.ts";
-import { setupCatAbilityIndexes } from "../lib/indexes/setup-cat-ability-indexes.ts";
-import { setupStockIndexes } from "../lib/indexes/setup-stock-indexes.ts";
-import { setupSettingsIndexes } from "../lib/indexes/setup-settings-indexes.ts";
-import { setupCartIndexes } from "../lib/indexes/setup-cart-indexes.ts";
-import { setupPurchaseIndexes } from "../lib/indexes/setup-purchase-indexes.ts";
-import clientPromise from "../lib/mongodb.ts";
+import dotenv from 'dotenv';
+import path from 'path';
 
+// Load .env.local FIRST
+dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
+
+// Use dynamic imports to ensure env is loaded first
 async function main() {
+  const { setupFeedbackIndexes } = await import("../lib/indexes/setup-indexes.ts");
+  const { setupUserIndexes } = await import("../lib/indexes/setup-user-indexes.ts");
+  const { setupCatIndexes } = await import("../lib/indexes/setup-cat-indexes.ts");
+  const { setupAbilityIndexes } = await import("../lib/indexes/setup-ability-indexes.ts");
+  const { setupAbilityRuleIndexes } = await import("../lib/indexes/setup-ability-rule-indexes.ts");
+  const { setupCatAbilityIndexes } = await import("../lib/indexes/setup-cat-ability-indexes.ts");
+  const { setupStockIndexes } = await import("../lib/indexes/setup-stock-indexes.ts");
+  const { setupSettingsIndexes } = await import("../lib/indexes/setup-settings-indexes.ts");
+  const { setupCartIndexes } = await import("../lib/indexes/setup-cart-indexes.ts");
+  const { setupPurchaseIndexes } = await import("../lib/indexes/setup-purchase-indexes.ts");
+  const { default: clientPromise } = await import("../lib/mongodb.ts");
+
   await setupFeedbackIndexes();
   await setupUserIndexes();
   await setupCatIndexes();
@@ -38,9 +45,9 @@ async function main() {
         updatedAt: new Date(),
         updatedBy: null,
       });
-      console.log("✓ Seeded default cat price setting (R500)");
+      console.log("Seeded default cat price setting (R500)");
     } else {
-      console.log("✓ Cat price setting already exists");
+      console.log("Cat price setting already exists");
     }
   } catch (error) {
     console.error("Failed to seed settings:", error);

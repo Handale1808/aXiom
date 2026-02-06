@@ -31,8 +31,8 @@ export function usePopupPosition(
 ): PopupPositionResult {
   const { isOpen, minSpacing = 2, popupWidth: configPopupWidth } = config;
 
-  const triggerRef = useRef<HTMLDivElement>(null);
-  const popupRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLDivElement>(null!);
+  const popupRef = useRef<HTMLDivElement>(null!);
 
   const [popupStyle, setPopupStyle] = useState<CSSProperties>({});
 

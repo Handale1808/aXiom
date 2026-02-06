@@ -46,7 +46,7 @@ export default function FeedbackDetailModal({
 
     setIsLoadingCat(true);
     try {
-      const data = await fetchCatByIdAction(feedback.catId);
+      const data = await fetchCatByIdAction(feedback.catId.toString());
       setCatData(data);
       setIsCatModalOpen(true);
     } catch (error) {

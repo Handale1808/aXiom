@@ -1,4 +1,4 @@
-import clientPromise from "../mongodb";
+import clientPromise from "../mongodb.ts";
 
 export async function setupCartIndexes(dbName: string = "axiom"): Promise<{
   success: boolean;
@@ -71,7 +71,7 @@ export async function setupCartIndexes(dbName: string = "axiom"): Promise<{
         fields: { addedAt: -1 },
         options: { name: "cart_added_at_index" },
       },
-    ];
+    ] as const;
 
     await Promise.all(
       indexes.map(async (idx) => {

@@ -1,4 +1,4 @@
-import clientPromise from "../mongodb";
+import clientPromise from "../mongodb.ts";
 import { IUser } from "../../models/User";
 import { withDatabaseLogging } from "../databaseLogger";
 

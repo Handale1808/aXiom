@@ -1,4 +1,4 @@
-import clientPromise from "../mongodb";
+import clientPromise from "../mongodb.ts";
 
 export interface SetupIndexesResult {
   success: boolean;
@@ -70,7 +70,7 @@ export async function setupSettingsIndexes(
       spec: { updatedAt: -1 },
       options: { name: "settings_updated_at_index" },
     },
-  ];
+  ] as const;
 
   for (const index of indexes) {
     try {

@@ -99,7 +99,7 @@ export async function setupCatAbilityIndexes(
           unique: true,
         },
       },
-    ];
+    ] as const;
 
     // Attempt to create all indexes, tracking results
     const indexPromises = indexes.map(async (indexDef) => {

@@ -1,6 +1,6 @@
 import { createInterface } from "readline";
 import bcrypt from "bcryptjs";
-import clientPromise from "../lib/mongodb";
+import clientPromise from "../lib/mongodb.ts";
 
 const readline = createInterface({
   input: process.stdin,

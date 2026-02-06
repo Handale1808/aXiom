@@ -39,7 +39,7 @@ export async function setupPurchaseIndexes(
         spec: { userId: 1, purchasedAt: -1 },
         options: { name: "purchase_user_date_index" },
       },
-    ];
+    ] as const;
 
     // Create all indexes in parallel for better performance
     const indexResults = await Promise.allSettled(

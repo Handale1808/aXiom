@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import clientPromise from "../lib/mongodb";
+import clientPromise from "../lib/mongodb.ts";
 import { IAbility } from "../models/Ability";
 import { IAbilityRule } from "../models/AbilityRules";
 

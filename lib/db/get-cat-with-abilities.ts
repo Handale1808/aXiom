@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import clientPromise from "../mongodb";
+import clientPromise from "../mongodb.ts";
 import { ICat } from "../../models/Cats";
 import { IAbilityRule } from "../../models/AbilityRules";
 import { ICatAbility } from "../../models/CatAbility";

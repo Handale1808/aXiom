@@ -80,7 +80,7 @@ export async function setupAbilityIndexes(
         key: { createdAt: -1 },
         options: { name: "ability_created_at_index" },
       },
-    ];
+    ] as const;
 
     // Create each index with idempotency
     for (const { key, options } of indexes) {

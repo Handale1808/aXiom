@@ -37,43 +37,43 @@ export async function setupCatIndexes(
     const db = client.db(dbName);
     const collection = db.collection("cats");
 
-    const indexDefinitions = [
+   const indexDefinitions = [
       {
         name: "cat_created_at_index",
-        spec: { createdAt: -1 },
+        spec: { createdAt: -1 } as const,
         options: { name: "cat_created_at_index" },
       },
       {
         name: "cat_name_index",
-        spec: { name: 1 },
+        spec: { name: 1 } as const,
         options: { name: "cat_name_index" },
       },
       {
         name: "stat_strength_index",
-        spec: { "stats.strength": 1 },
+        spec: { "stats.strength": 1 } as const,
         options: { name: "stat_strength_index" },
       },
       {
         name: "stat_agility_index",
-        spec: { "stats.agility": 1 },
+        spec: { "stats.agility": 1 } as const,
         options: { name: "stat_agility_index" },
       },
       {
         name: "stat_psychic_index",
-        spec: { "stats.psychic": 1 },
+        spec: { "stats.psychic": 1 } as const,
         options: { name: "stat_psychic_index" },
       },
       {
         name: "trait_size_index",
-        spec: { "physicalTraits.size": 1 },
+        spec: { "physicalTraits.size": 1 } as const,
         options: { name: "trait_size_index" },
       },
       {
         name: "trait_skin_type_index",
-        spec: { "physicalTraits.skinType": 1 },
+        spec: { "physicalTraits.skinType": 1 } as const,
         options: { name: "trait_skin_type_index" },
       },
-    ];
+    ] as const;
 
     const indexPromises = indexDefinitions.map(async (def) => {
       try {
