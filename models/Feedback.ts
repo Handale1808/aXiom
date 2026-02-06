@@ -12,6 +12,10 @@ export interface IFeedback {
   _id?: ObjectId;
   text: string;
   email?: string;
+  catName?: string;
+  catSvgImage?: string;
+  catId?: ObjectId;    
+  userId?: ObjectId;     
   createdAt: Date;
   analysis: IAnalysis;
 }

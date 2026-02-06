@@ -21,7 +21,9 @@ const customJestConfig = {
     '!**/*.d.ts',
     '!**/node_modules/**',
   ],
+  
   testPathIgnorePatterns: ['/node_modules/', '/.next/'],
+  moduleDirectories: ['node_modules', '<rootDir>'],
 }
 
 module.exports = createJestConfig(customJestConfig)

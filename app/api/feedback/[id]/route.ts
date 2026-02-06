@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 import clientPromise from "@/lib/mongodb";
 import type { IFeedback } from "@/models/Feedback";
-import { withMiddleware } from "@/lib/middleware";
+import { withMiddleware } from "@/lib/utils/middleware";
 import { ValidationError, DatabaseError, ApiError } from "@/lib/errors";
 import { debug, info } from "@/lib/logger";
 import { withDatabaseLogging } from "@/lib/databaseLogger";
@@ -38,15 +38,37 @@ async function getHandler(
       feedbackId: id,
     });
 
-    const feedback = await withDatabaseLogging(
-      () => collection.findOne({ _id: new ObjectId(id) }),
+    const feedbackResult = await withDatabaseLogging(
+      () =>
+        collection
+          .aggregate([
+            { $match: { _id: new ObjectId(id) } },
+            {
+              $lookup: {
+                from: "cats",
+                localField: "catId",
+                foreignField: "_id",
+                as: "cat",
+              },
+            },
+            {
+              $addFields: {
+                catName: { $arrayElemAt: ["$cat.name", 0] },
+                catSvgImage: { $arrayElemAt: ["$cat.svgImage", 0] },
+              },
+            },
+            { $project: { cat: 0 } },
+          ])
+          .toArray(),
       {
-        operation: "findOne",
+        operation: "aggregate",
         collection: "feedbacks",
         requestId,
         filter: { _id: id },
       }
     );
+
+    const feedback = feedbackResult.length > 0 ? feedbackResult[0] : null;
 
     if (!feedback) {
       info("Feedback not found", {

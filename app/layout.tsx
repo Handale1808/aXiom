@@ -3,6 +3,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/lib/components/Header";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Providers } from "@/lib/components/Providers";
+import { ToastProvider } from "@/lib/context/ToastContext";
+import { CartProvider } from "@/lib/context/CartContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,7 +20,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "aXiom - [FELINE GENETICS LABORATORY] | Feedback Analyzer",
   description:
-    "aXiom: An intergalactic bio-engineering lab specialising in splicing alien DNA with Earth’s cutest cats. Submit feedback on your cosmic kitties and let our AI analyse, prioritise, and triage incidents - from harmless glowing whiskers to dimension-rending hairballs.",
+    "aXiom: An intergalactic bio-engineering lab specialising in splicing alien DNA with Earth's cutest cats. Submit feedback on your cosmic kitties and let our AI analyse, prioritise, and triage incidents - from harmless glowing whiskers to dimension-rending hairballs.",
   keywords: [
     "aXiom",
     "alien cats",
@@ -47,9 +50,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Header />
-        {children}
-        <SpeedInsights />
+        <Providers>
+          <ToastProvider>
+            <CartProvider>
+              <Header />
+              {children}
+              <SpeedInsights />
+            </CartProvider>
+          </ToastProvider>
+        </Providers>
       </body>
     </html>
   );

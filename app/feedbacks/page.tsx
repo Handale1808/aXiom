@@ -1,14 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import FeedbackList from "@/lib/components/FeedbackList";
-import FeedbackDetailModal from "@/lib/components/FeedbackDetailModal";
-import ConfirmationDialog from "@/lib/components/ConfirmationDialog";
+import FeedbackList from "@/lib/components/feedback/FeedbackList";
+import FeedbackDetailModal from "@/lib/components/feedback/FeedbackDetailModal";
+import ConfirmationDialog from "@/lib/components/ui/ConfirmationDialog";
 import { useFeedbackData } from "@/lib/hooks/useFeedbackData";
 import { useFeedbackFilters } from "@/lib/hooks/useFeedbackFilters";
 import { useFeedbackActions } from "@/lib/hooks/useFeedbackActions";
-import ErrorBoundary from "@/lib/components/ErrorBoundary";
+import ErrorBoundary from "@/lib/components/ui/ErrorBoundary";
 import { getLastRequestId } from "@/lib/apiClient";
+import { useResponsiveScaling } from "@/lib/hooks/useResponsiveScaling";
 
 export default function Feedbacks() {
   const [selectedFeedbackId, setSelectedFeedbackId] = useState<string | null>(
@@ -18,6 +19,7 @@ export default function Feedbacks() {
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(15);
+  const scaledValues = useResponsiveScaling();
 
   const {
     selectedSentiments,
@@ -35,16 +37,27 @@ export default function Feedbacks() {
     handleClearSearch,
     handleClearAllFilters,
     getActiveFilterCount,
+    hasCatFilter,
+    handleHasCatChange,
   } = useFeedbackFilters();
 
-const { feedbacks, isLoading, error, total, hasMore, refetch, setFeedbacks, allAvailableTags } =
-  useFeedbackData({
+  const {
+    feedbacks,
+    isLoading,
+    error,
+    total,
+    hasMore,
+    refetch,
+    setFeedbacks,
+    allAvailableTags,
+  } = useFeedbackData({
     page,
     pageSize,
     selectedSentiments,
     selectedPriorities,
     selectedTags,
     searchQuery,
+    hasCatFilter,
   });
 
   const {
@@ -101,15 +114,37 @@ const { feedbacks, isLoading, error, total, hasMore, refetch, setFeedbacks, allA
   };
 
   return (
-    <div className="relative min-h-screen bg-black p-4 font-mono">
-      <div className="relative mx-auto max-w-5xl">
-        <div className="mb-8 border-b-2 border-[#30D6D6] pb-6">
-          <div className="flex items-center justify-between">
+    <div
+      className="relative min-h-screen bg-black font-mono"
+      style={{ padding: `${scaledValues.padding.small}px` }}
+    >
+      <div className="relative mx-auto max-w-full md:max-w-5xl">
+        <div
+          className="border-b-2 border-[#30D6D6]"
+          style={{
+            marginBottom: `${scaledValues.spacing.marginLarge}px`,
+            paddingBottom: `${scaledValues.spacing.marginMedium}px`,
+          }}
+        >
+          <div
+            className="flex flex-col md:flex-row md:items-center md:justify-between"
+            style={{ gap: `${scaledValues.spacing.gapMedium}px` }}
+          >
             <div>
-              <h1 className="text-4xl font-bold tracking-wider text-[#30D6D6] drop-shadow-[0_0_10px_rgba(48,214,214,0.5)]">
+              <h1
+                className="font-bold tracking-wider text-[#30D6D6] drop-shadow-[0_0_10px_rgba(48,214,214,0.5)]"
+                style={{ fontSize: `${scaledValues.text.large}px` }}
+              >
+                {" "}
                 FEEDBACK_ARCHIVE
               </h1>
-              <p className="mt-2 text-sm tracking-widest text-[#006694] font-bold">
+              <p
+                className="tracking-widest text-[#006694] font-bold"
+                style={{
+                  marginTop: `${scaledValues.spacing.marginSmall}px`,
+                  fontSize: `${scaledValues.text.extraSmall}px`,
+                }}
+              >
                 [DATA_RETRIEVAL_SYSTEM]
               </p>
             </div>
@@ -117,48 +152,147 @@ const { feedbacks, isLoading, error, total, hasMore, refetch, setFeedbacks, allA
             <button
               onClick={refetch}
               disabled={isLoading}
-              className="relative border-2 border-[#30D6D6] bg-black px-8 py-3 font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_20px_rgba(48,214,214,0.5)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-black disabled:hover:text-[#30D6D6] disabled:hover:shadow-none"
+              className="w-full md:w-auto relative border-2 border-[#30D6D6] bg-black font-bold tracking-wider text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_20px_rgba(48,214,214,0.5)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-black disabled:hover:text-[#30D6D6] disabled:hover:shadow-none min-h-[44px]"
+              style={{
+                paddingLeft: `${scaledValues.padding.buttonX}px`,
+                paddingRight: `${scaledValues.padding.buttonX}px`,
+                paddingTop: `${scaledValues.button.paddingY}px`,
+                paddingBottom: `${scaledValues.button.paddingY}px`,
+                fontSize: `${scaledValues.button.fontSize}px`,
+              }}
             >
               {isLoading ? "SYNCING..." : "REFRESH_DATA"}
             </button>
           </div>
         </div>
 
-        <div className="mb-6 relative border-2 border-[#30D6D6]/30 bg-black/50 p-5 backdrop-blur-sm">
-          <div className="absolute -left-px -top-px h-4 w-4 border-l-2 border-t-2 border-[#30D6D6]" />
-          <div className="absolute -right-px -top-px h-4 w-4 border-r-2 border-t-2 border-[#30D6D6]" />
-          <div className="absolute -bottom-px -left-px h-4 w-4 border-b-2 border-l-2 border-[#30D6D6]" />
-          <div className="absolute -bottom-px -right-px h-4 w-4 border-b-2 border-r-2 border-[#30D6D6]" />
+        <div
+          className="relative border-2 border-[#30D6D6]/30 bg-black/50 backdrop-blur-sm"
+          style={{
+            marginBottom: `${scaledValues.spacing.marginMedium}px`,
+            padding: `${scaledValues.padding.medium}px`,
+          }}
+        >
+          <div
+            className="absolute -left-px -top-px border-l-2 border-t-2 border-[#30D6D6]"
+            style={{
+              height: `${scaledValues.container.cornerSize}px`,
+              width: `${scaledValues.container.cornerSize}px`,
+            }}
+          />
+          <div
+            className="absolute -right-px -top-px border-r-2 border-t-2 border-[#30D6D6]"
+            style={{
+              height: `${scaledValues.container.cornerSize}px`,
+              width: `${scaledValues.container.cornerSize}px`,
+            }}
+          />
+          <div
+            className="absolute -bottom-px -left-px border-b-2 border-l-2 border-[#30D6D6]"
+            style={{
+              height: `${scaledValues.container.cornerSize}px`,
+              width: `${scaledValues.container.cornerSize}px`,
+            }}
+          />
+          <div
+            className="absolute -bottom-px -right-px border-b-2 border-r-2 border-[#30D6D6]"
+            style={{
+              height: `${scaledValues.container.cornerSize}px`,
+              width: `${scaledValues.container.cornerSize}px`,
+            }}
+          />
 
-          <h3 className="mb-3 text-sm font-bold tracking-widest text-[#30D6D6]">
+          <h3
+            className="font-bold tracking-widest text-[#30D6D6]"
+            style={{
+              marginBottom: `${scaledValues.spacing.marginSmall}px`,
+              fontSize: `${scaledValues.text.extraSmall}px`,
+            }}
+          >
             [ARCHIVE_INFO]
           </h3>
-          <p className="text-cyan-100/70 leading-relaxed">
+          <p
+            className="text-cyan-100/70 leading-relaxed"
+            style={{ fontSize: `${scaledValues.text.extraSmall}px` }}
+          >
             Browse all feline feedback transmissions processed through our
             xenomorphic analysis system.
           </p>
-          <p className="text-cyan-100/70 leading-relaxed">
+          <p
+            className="text-cyan-100/70 leading-relaxed"
+            style={{ fontSize: `${scaledValues.text.extraSmall}px` }}
+          >
             Probe any transmission node to extract full bio-metric readings and
             temporal coordinates.
           </p>
-          <p className="text-cyan-100/70 leading-relaxed">
+          <p
+            className="text-cyan-100/70 leading-relaxed"
+            style={{ fontSize: `${scaledValues.text.extraSmall}px` }}
+          >
             Click the column designators to reorganize the data matrix.
           </p>
         </div>
 
         {error && (
-          <div className="relative border-2 border-red-500/50 bg-red-950/20 p-6 text-center backdrop-blur-sm mb-8">
-            <div className="absolute -left-px -top-px h-4 w-4 border-l-2 border-t-2 border-red-500" />
-            <div className="absolute -right-px -top-px h-4 w-4 border-r-2 border-t-2 border-red-500" />
-            <div className="absolute -bottom-px -left-px h-4 w-4 border-b-2 border-l-2 border-red-500" />
-            <div className="absolute -bottom-px -right-px h-4 w-4 border-b-2 border-r-2 border-red-500" />
-
-            <div className="mb-2 text-xs tracking-[0.3em] text-red-400">
+          <div
+            className="relative border-2 border-red-500/50 bg-red-950/20 text-center backdrop-blur-sm"
+            style={{
+              padding: `${scaledValues.padding.large}px`,
+              marginBottom: `${scaledValues.spacing.marginLarge}px`,
+            }}
+          >
+            {" "}
+            <div
+              className="absolute -left-px -top-px border-l-2 border-t-2 border-red-500"
+              style={{
+                height: `${scaledValues.container.cornerSize}px`,
+                width: `${scaledValues.container.cornerSize}px`,
+              }}
+            />
+            <div
+              className="absolute -right-px -top-px border-r-2 border-t-2 border-red-500"
+              style={{
+                height: `${scaledValues.container.cornerSize}px`,
+                width: `${scaledValues.container.cornerSize}px`,
+              }}
+            />
+            <div
+              className="absolute -bottom-px -left-px border-b-2 border-l-2 border-red-500"
+              style={{
+                height: `${scaledValues.container.cornerSize}px`,
+                width: `${scaledValues.container.cornerSize}px`,
+              }}
+            />
+            <div
+              className="absolute -bottom-px -right-px border-b-2 border-r-2 border-red-500"
+              style={{
+                height: `${scaledValues.container.cornerSize}px`,
+                width: `${scaledValues.container.cornerSize}px`,
+              }}
+            />
+            <div
+              className="tracking-[0.3em] text-red-400"
+              style={{
+                marginBottom: `${scaledValues.spacing.marginSmall}px`,
+                fontSize: `${scaledValues.text.extraSmall}px`,
+              }}
+            >
               [SYSTEM_ERROR]
             </div>
-            <p className="text-red-200">{error}</p>
+            <p
+              className="text-red-200"
+              style={{ fontSize: `${scaledValues.input.fontSize}px` }}
+            >
+              {error}
+            </p>
             {getLastRequestId() && (
-              <p className="text-xs text-red-400/50 mt-3 font-mono">
+              <p
+                className="text-red-400/50 font-mono"
+                style={{
+                  fontSize: `${scaledValues.text.extraSmall}px`,
+                  marginTop: `${scaledValues.spacing.marginMedium}px`,
+                }}
+              >
                 Error ID: {getLastRequestId()}
               </p>
             )}
@@ -166,19 +300,40 @@ const { feedbacks, isLoading, error, total, hasMore, refetch, setFeedbacks, allA
         )}
 
         {isLoading && feedbacks.length === 0 && (
-          <div className="relative border-2 border-[#30D6D6]/30 bg-black/50 p-12 text-center backdrop-blur-sm">
-            <div className="absolute -left-px -top-px h-4 w-4 border-l-2 border-t-2 border-[#30D6D6]" />
-            <div className="absolute -right-px -top-px h-4 w-4 border-r-2 border-t-2 border-[#30D6D6]" />
-            <div className="absolute -bottom-px -left-px h-4 w-4 border-b-2 border-l-2 border-[#30D6D6]" />
-            <div className="absolute -bottom-px -right-px h-4 w-4 border-b-2 border-r-2 border-[#30D6D6]" />
+          <div
+            className="relative border-2 border-[#30D6D6]/30 bg-black/50 text-center backdrop-blur-sm"
+            style={{ padding: `${scaledValues.padding.extraLarge}px` }}
+          >
+            <div className="absolute -left-px -top-px h-3 w-3 sm:h-4 sm:w-4 border-l-2 border-t-2 border-[#30D6D6]" />
+            <div className="absolute -right-px -top-px h-3 w-3 sm:h-4 sm:w-4 border-r-2 border-t-2 border-[#30D6D6]" />
+            <div className="absolute -bottom-px -left-px h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-l-2 border-[#30D6D6]" />
+            <div className="absolute -bottom-px -right-px h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-r-2 border-[#30D6D6]" />
 
-            <div className="mb-4 flex items-center justify-center gap-3">
-              <div className="h-3 w-3 animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]" />
-              <div className="text-sm tracking-[0.3em] text-[#30D6D6]">
+            <div
+              className="flex items-center justify-center"
+              style={{
+                marginBottom: `${scaledValues.spacing.gapMedium}px`,
+                gap: `${scaledValues.spacing.gapMedium}px`,
+              }}
+            >
+              <div
+                className="animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]"
+                style={{
+                  height: `${scaledValues.interactive.loadingIndicator}px`,
+                  width: `${scaledValues.interactive.loadingIndicator}px`,
+                }}
+              />
+              <div
+                className="tracking-[0.3em] text-[#30D6D6]"
+                style={{ fontSize: `${scaledValues.button.fontSize}px` }}
+              >
                 [SCANNING_DATABASE]
               </div>
             </div>
-            <p className="text-cyan-100/70">
+            <p
+              className="text-cyan-100/70"
+              style={{ fontSize: `${scaledValues.text.extraSmall}px` }}
+            >
               Retrieving feedback records from xenomorphic archive...
             </p>
           </div>
@@ -213,15 +368,37 @@ const { feedbacks, isLoading, error, total, hasMore, refetch, setFeedbacks, allA
             onDeleteSingle={handleDeleteSingle}
             onDeleteMultiple={handleDeleteMultiple}
             isDeletingIds={isDeletingIds}
+            hasCatFilter={hasCatFilter}
+            onHasCatChange={handleHasCatChange}
+            scaledValues={scaledValues}
           />
         </ErrorBoundary>
 
         {feedbacks.length > 0 && (
-          <div className="mt-6 flex items-center justify-between border-t border-[#30D6D6]/20 pt-4">
-            <div className="text-xs text-[#30D6D6]/70">
+          <div
+            className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-t border-[#30D6D6]/20"
+            style={{
+              marginTop: `${scaledValues.spacing.marginMedium}px`,
+              paddingTop: `${scaledValues.spacing.marginSmall}px`,
+              gap: `${scaledValues.spacing.gapMedium}px`,
+            }}
+          >
+            {" "}
+            <div
+              className="text-[#30D6D6]/70"
+              style={{ fontSize: `${scaledValues.text.extraSmall}px` }}
+            >
               Page {page} • Page Size
               <select
-                className="ml-2 bg-black border border-[#30D6D6]/50 text-[#30D6D6] px-2 py-1 text-xs"
+                className="bg-black border border-[#30D6D6]/50 text-[#30D6D6] min-h-[44px]"
+                style={{
+                  marginLeft: `${scaledValues.spacing.gapSmall}px`,
+                  paddingLeft: `${scaledValues.spacing.gapSmall}px`,
+                  paddingRight: `${scaledValues.spacing.gapSmall}px`,
+                  paddingTop: `${scaledValues.spacing.gapSmall / 2}px`,
+                  paddingBottom: `${scaledValues.spacing.gapSmall / 2}px`,
+                  fontSize: `${scaledValues.text.extraSmall}px`,
+                }}
                 value={pageSize}
                 onChange={(e) => handlePageSizeChange(parseInt(e.target.value))}
               >
@@ -232,18 +409,35 @@ const { feedbacks, isLoading, error, total, hasMore, refetch, setFeedbacks, allA
               </select>
               <span className="ml-3">Total {total}</span>
             </div>
-            <div className="flex gap-2">
+            <div
+              className="flex w-full sm:w-auto"
+              style={{ gap: `${scaledValues.spacing.gapSmall}px` }}
+            >
               <button
                 onClick={handlePrevPage}
                 disabled={page === 1 || isLoading}
-                className="border border-[#30D6D6]/50 bg-black px-4 py-2 text-xs font-bold tracking-wider text-[#30D6D6] disabled:opacity-40"
+                className="flex-1 sm:flex-none border border-[#30D6D6]/50 bg-black font-bold tracking-wider text-[#30D6D6] disabled:opacity-40 min-h-[44px]"
+                style={{
+                  paddingLeft: `${scaledValues.input.paddingX}px`,
+                  paddingRight: `${scaledValues.input.paddingX}px`,
+                  paddingTop: `${scaledValues.input.paddingY}px`,
+                  paddingBottom: `${scaledValues.input.paddingY}px`,
+                  fontSize: `${scaledValues.text.extraSmall}px`,
+                }}
               >
                 PREV
               </button>
               <button
                 onClick={handleNextPage}
                 disabled={!hasMore || isLoading}
-                className="border border-[#30D6D6]/50 bg-black px-4 py-2 text-xs font-bold tracking-wider text-[#30D6D6] disabled:opacity-40"
+                className="flex-1 sm:flex-none border border-[#30D6D6]/50 bg-black font-bold tracking-wider text-[#30D6D6] disabled:opacity-40 min-h-[44px]"
+                style={{
+                  paddingLeft: `${scaledValues.input.paddingX}px`,
+                  paddingRight: `${scaledValues.input.paddingX}px`,
+                  paddingTop: `${scaledValues.input.paddingY}px`,
+                  paddingBottom: `${scaledValues.input.paddingY}px`,
+                  fontSize: `${scaledValues.text.extraSmall}px`,
+                }}
               >
                 NEXT
               </button>
@@ -251,7 +445,15 @@ const { feedbacks, isLoading, error, total, hasMore, refetch, setFeedbacks, allA
           </div>
         )}
 
-        <div className="mt-8 border-t border-[#30D6D6]/20 pt-4 text-center text-xs text-[#30D6D6]/40 tracking-wider">
+        <div
+          className="border-t border-[#30D6D6]/20 text-center text-[#30D6D6]/40 tracking-wider"
+          style={{
+            marginTop: `${scaledValues.spacing.marginExtraLarge}px`,
+            paddingTop: `${scaledValues.spacing.marginSmall}px`,
+            fontSize: `${scaledValues.text.extraSmall}px`,
+          }}
+        >
+          {" "}
           AXIOM_ARCHIVE_v2.847 | {feedbacks.length} RECORDS_INDEXED |
           DATABASE_ACTIVE
         </div>

@@ -1,8 +1,12 @@
 import type { IFeedback, IAnalysis } from "@/models/Feedback";
 
 // MongoDB returns _id as string in JSON responses
-export interface FeedbackWithId extends Omit<IFeedback, "_id"> {
+export interface FeedbackWithId extends Omit<IFeedback, "_id" | "userId" | "catId"> {
   _id: string;
+  catId?: string;
+  userId?: string;
+  catName?: string;
+  catSvgImage?: string;
 }
 
 // Generic success response wrapper

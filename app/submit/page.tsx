@@ -1,18 +1,30 @@
 // app/submit/page.tsx
 
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import TextSubmit from "@/lib/components/TextSubmit";
 import AnalysisResult from "@/lib/components/AnalysisResult";
 import { apiFetch } from "@/lib/apiClient";
 import type { FeedbackWithId, ApiSuccessResponse } from "@/lib/types/api";
+import CatSelector from "@/lib/components/cat-display/CatSelector";
 
 export default function Submit() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [result, setResult] = useState<FeedbackWithId | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [selectedCatId, setSelectedCatId] = useState<string | null>(null);
+  const [selectedCatName, setSelectedCatName] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Check if navigated from My Cats page with cat info in router state
+    const state = (router as any).state as { catId?: string; catName?: string };
+    if (state?.catId && state?.catName) {
+      setSelectedCatId(state.catId);
+      setSelectedCatName(state.catName);
+    }
+  }, [router]);
 
   const handleSubmit = async (text: string, email?: string) => {
     setIsSubmitting(true);
@@ -24,16 +36,28 @@ export default function Submit() {
         "/api/feedback",
         {
           method: "POST",
-          body: JSON.stringify({ text, email }),
+          body: JSON.stringify({
+            text,
+            email,
+            catId: selectedCatId, // ADD THIS LINE
+          }),
         }
       );
 
       setResult(data.data);
+      // Clear cat selection after successful submit
+      setSelectedCatId(null);
+      setSelectedCatName(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleCatSelect = (catId: string | null, catName: string | null) => {
+    setSelectedCatId(catId);
+    setSelectedCatName(catName);
   };
 
   return (
@@ -65,6 +89,21 @@ export default function Submit() {
               algorithms optimize DNA integration protocols in real-time.
             </p>
           </div>
+
+          <CatSelector
+            selectedCatId={selectedCatId}
+            selectedCatName={selectedCatName}
+            onSelect={handleCatSelect}
+            disabled={isSubmitting}
+          />
+
+          {selectedCatId && selectedCatName && (
+            <div className="relative border-2 border-[#30D6D6]/30 bg-[#30D6D6]/10 p-3 text-center">
+              <div className="text-xs tracking-wider text-[#30D6D6]">
+                [FEEDBACK_FOR: {selectedCatName}]
+              </div>
+            </div>
+          )}
 
           <TextSubmit
             onSubmit={handleSubmit}
