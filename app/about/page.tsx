@@ -1,4 +1,4 @@
-import Header from "@/lib/components/Header";
+import GenomeGenerationSection from "@/lib/about/GenomeGenerationSection";
 
 export default function About() {
   return (
@@ -96,26 +96,10 @@ export default function About() {
             </p>
           </div>
 
+          <GenomeGenerationSection />
+
           {/* Genome Generation + Stats Assignment - Side by Side */}
           <div className="grid gap-6 md:grid-cols-2">
-            <div className="relative border border-[#30D6D6]/50 bg-[#30D6D6]/5 p-6">
-              <div className="absolute right-3 top-3 h-2 w-2 bg-[#006694] shadow-[0_0_10px_rgba(0,102,148,0.8)]" />
-              <h2 className="mb-4 text-sm font-bold tracking-widest text-[#30D6D6]">
-                [STEP_02: GENOME_GENERATION]
-              </h2>
-              <p className="text-cyan-100/70 leading-relaxed mb-4">
-                Post-splice, we sequence the complete hybrid genome. Our
-                advanced sequencing arrays map every nucleotide pair, capturing
-                both terrestrial and alien genetic markers.
-              </p>
-              <p className="text-cyan-100/70 leading-relaxed">
-                The resulting genome is a unique fusion blueprint, containing
-                approximately 2.7 billion base pairs of cat DNA plus an
-                additional 300-800 million alien base pairs, depending on source
-                species compatibility.
-              </p>
-            </div>
-
             <div className="relative border border-[#30D6D6]/50 bg-[#30D6D6]/5 p-6">
               <div className="absolute right-3 top-3 h-2 w-2 bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]" />
               <h2 className="mb-4 text-sm font-bold tracking-widest text-[#30D6D6]">
@@ -167,10 +151,10 @@ export default function About() {
               [STEP_05: ABILITIES_CREATION]
             </h2>
             <p className="text-cyan-100/70 leading-relaxed mb-4">
-              Based on stat distributions and genetic markers, our system assigns
-              specific abilities to each specimen. High intelligence scores
-              correlate with telepathy. Elevated dimensional affinity triggers
-              phase-shifting capabilities.
+              Based on stat distributions and genetic markers, our system
+              assigns specific abilities to each specimen. High intelligence
+              scores correlate with telepathy. Elevated dimensional affinity
+              triggers phase-shifting capabilities.
             </p>
             <p className="text-cyan-100/70 leading-relaxed mb-4">
               The ability generation algorithm considers stat synergies. For
@@ -179,9 +163,9 @@ export default function About() {
               speed.
             </p>
             <p className="text-cyan-100/70 leading-relaxed">
-              Each specimen receives 3-7 distinct abilities, ranging from
-              parlor tricks like color-shifting fur to genuinely concerning
-              powers like limited precognition and gravitational manipulation.
+              Each specimen receives 3-7 distinct abilities, ranging from parlor
+              tricks like color-shifting fur to genuinely concerning powers like
+              limited precognition and gravitational manipulation.
             </p>
           </div>
 
@@ -428,9 +412,9 @@ export default function About() {
               [LEGAL_DISCLAIMER]
             </h2>
             <p className="text-xs text-cyan-100/50 leading-relaxed">
-              aXiom Feline Genetics Laboratory accepts no liability for
-              property damage, existential crises, minor breaches in spacetime,
-              or unexpected dimensional visitors caused by our specimens. All
+              aXiom Feline Genetics Laboratory accepts no liability for property
+              damage, existential crises, minor breaches in spacetime, or
+              unexpected dimensional visitors caused by our specimens. All
               hybrid cats are sold as-is with no warranty expressed or implied.
               Side effects are features, not bugs. By adopting an aXiom cat, you
               acknowledge that reality may occasionally behave in non-standard
