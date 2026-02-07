@@ -3,8 +3,8 @@
 "use client";
 
 import { getSymbolColor, getRegionColor } from "./utils";
-import { GENOME_REGIONS } from "@/lib/cat-generation/genome/regions";
-import type { GenomeSymbol } from "@/lib/cat-generation/genome/types";
+import { GENOME_REGIONS } from "@/lib/cat-alien-generation/genome/regions";
+import type { GenomeSymbol } from "@/lib/cat-alien-generation/genome/types";
 import type { ViewMode } from "./ViewModeSelector";
 
 interface GenomeVisualizationProps {
