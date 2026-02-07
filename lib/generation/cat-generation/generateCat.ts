@@ -134,6 +134,7 @@ export async function generateCat(): Promise<ICat> {
         physicalTraits: phenotype.physicalTraits,
         stats: phenotype.stats,
         behavior: phenotype.behavior,
+        type: "cat",
       },
       [] // No abilities for cats
     );

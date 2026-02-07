@@ -24,6 +24,7 @@ export interface GenomeInterpretationResult {
     cognition?: DebugInfo;
     power?: DebugInfo;
   };
+  genome?: string;
 }
 
 /**
@@ -82,7 +83,8 @@ export function interpretGenome(
     physicalTraits: morphologyResult.value.physicalTraits,
     stats,
     resistances,
-    behavior: cognitionResult.value.behavior
+    behavior: cognitionResult.value.behavior,
+    genome
   };
   
   // Add debug info if requested

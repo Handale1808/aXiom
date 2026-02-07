@@ -5,6 +5,7 @@
 import { useState, useRef } from "react";
 import { ICat } from "@/models/Cats";
 import { ICatAlien } from "@/models/CatAliens";
+import { IAlien } from "@/models/Aliens";
 import { IAbility } from "@/models/Ability";
 import FormWithHeading, {
   type TabWithContent,
@@ -20,7 +21,7 @@ import {
 import { useResponsiveScaling } from "@/lib/hooks/useResponsiveScaling";
 
 interface CatDetailsProps {
-  cat: ICatAlien | ICat;
+  cat: ICatAlien | ICat | IAlien;
   abilities: IAbility[];
   onSave?: (svgString: string) => Promise<void>;
   onClose: () => void;

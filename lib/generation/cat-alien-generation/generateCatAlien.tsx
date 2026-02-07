@@ -202,6 +202,7 @@ export async function generateCat(
         stats: phenotype.stats,
         resistances: phenotype.resistances,
         behavior: phenotype.behavior,
+        type: "cat-alien",
       },
       abilities
     );
