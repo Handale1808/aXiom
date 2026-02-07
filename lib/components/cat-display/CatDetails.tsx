@@ -16,7 +16,7 @@ import {
   RESISTANCE_RANGES,
   BEHAVIOR_RANGES,
   GENERATION_LIMITS,
-} from "@/lib/generation/cat-alien-generation/constants";
+} from "@/lib/generation/constants";
 import { useResponsiveScaling } from "@/lib/hooks/useResponsiveScaling";
 
 interface CatDetailsProps {
