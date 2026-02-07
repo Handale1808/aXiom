@@ -1,6 +1,6 @@
 // lib/genome/interpretation/index.ts
 
-import type { IPhysicalTraits, IStats, IResistances, IBehavior } from '@/models/Cats';
+import type { IPhysicalTraits, IStats, IResistances, IBehavior } from '@/models/CatAliens';
 import type { DebugInfo } from '../types';
 import { interpretMorphology } from './morphology';
 import { interpretMetabolism } from './metabolism';

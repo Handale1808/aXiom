@@ -35,7 +35,7 @@ export function usePurchasedCats(): UsePurchasedCatsReturn {
       const purchasedCats = await getUserPurchasedCatsAction(user.id);
       setCats(
         purchasedCats.map((pc) => ({
-          id: pc.catId,
+          id: pc.catAlienId,
           name: pc.name,
           svgImage: pc.svgImage,
         }))

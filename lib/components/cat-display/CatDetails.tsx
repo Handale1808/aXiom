@@ -3,7 +3,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { ICat } from "@/models/Cats";
+import { ICatAlien } from "@/models/CatAliens";
 import { IAbility } from "@/models/Ability";
 import FormWithHeading, {
   type TabWithContent,
@@ -20,12 +20,12 @@ import {
 import { useResponsiveScaling } from "@/lib/hooks/useResponsiveScaling";
 
 interface CatDetailsProps {
-  cat: ICat;
+  cat: ICatAlien;
   abilities: IAbility[];
   onSave?: (svgString: string) => Promise<void>;
   onClose: () => void;
   showAddToCart?: boolean;
-  onAddToCart?: (catId: string) => Promise<void>;
+  onAddToCart?: (catAlienId: string) => Promise<void>;
 }
 
 export default function CatDetails({

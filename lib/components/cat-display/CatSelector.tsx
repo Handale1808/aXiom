@@ -6,7 +6,7 @@ import { usePurchasedCats } from "@/lib/hooks/usePurchasedCats";
 interface CatSelectorProps {
   selectedCatId: string | null;
   selectedCatName: string | null;
-  onSelect: (catId: string | null, catName: string | null) => void;
+  onSelect: (catAlienId: string | null, catName: string | null) => void;
   disabled?: boolean;
 }
 
@@ -19,8 +19,8 @@ export default function CatSelector({
   const [isExpanded, setIsExpanded] = useState(false);
   const { cats, isLoading } = usePurchasedCats();
 
-  const handleSelectCat = (catId: string, catName: string) => {
-    onSelect(catId, catName);
+  const handleSelectCat = (catAlienId: string, catName: string) => {
+    onSelect(catAlienId, catName);
     setIsExpanded(false);
   };
 

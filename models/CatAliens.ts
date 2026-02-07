@@ -43,7 +43,7 @@ export interface IBehavior {
   chaos: number; // 1 - 10
 }
 
-export interface ICat {
+export interface ICatAlien {
   _id?: ObjectId;
   name: string;
   description: string;

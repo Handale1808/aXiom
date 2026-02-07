@@ -7,7 +7,7 @@ import CatGrid from "@/lib/components/cat-display/CatGrid";
 import Modal from "@/lib/components/ui/Modal";
 import CatDetails from "@/lib/components/cat-display/CatDetails";
 import { fetchCatByIdAction } from "@/lib/services/catActions";
-import { ICat } from "@/models/Cats";
+import { ICatAlien } from "@/models/CatAliens";
 import { IAbility } from "@/models/Ability";
 import Link from "next/link";
 
@@ -16,16 +16,16 @@ export default function MyCatsPage() {
   const { cats, isLoading, error, refetch } = usePurchasedCats();
   const [selectedCatId, setSelectedCatId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentCat, setCurrentCat] = useState<ICat | null>(null);
+  const [currentCat, setCurrentCat] = useState<ICatAlien | null>(null);
   const [currentAbilities, setCurrentAbilities] = useState<IAbility[]>([]);
   const [isLoadingCat, setIsLoadingCat] = useState(false);
 
-  const handleCatClick = async (catId: string) => {
-    setSelectedCatId(catId);
+  const handleCatClick = async (catAlienId: string) => {
+    setSelectedCatId(catAlienId);
     setIsLoadingCat(true);
 
     try {
-      const { cat, abilities } = await fetchCatByIdAction(catId);
+      const { cat, abilities } = await fetchCatByIdAction(catAlienId);
 
       if (!cat) {
         console.error("Cat not found");
@@ -49,10 +49,10 @@ export default function MyCatsPage() {
     setSelectedCatId(null);
   };
 
-  const handleSubmitFeedback = (catId: string) => {
-    const cat = cats.find((c) => c.id === catId);
+  const handleSubmitFeedback = (catAlienId: string) => {
+    const cat = cats.find((c) => c.id === catAlienId);
     if (cat) {
-      router.push("/submit", { catId: cat.id, catName: cat.name } as any);
+      router.push("/submit", { catAlienId: cat.id, catName: cat.name } as any);
     }
   };
 

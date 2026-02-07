@@ -118,13 +118,13 @@ describe("setupCartIndexes", () => {
 
       const hasCatIdIndex = calls.some(
         (c) =>
-          JSON.stringify(c[0]) === JSON.stringify({ catId: 1 }) &&
+          JSON.stringify(c[0]) === JSON.stringify({ catAlienId: 1 }) &&
           c[1].name === "cart_cat_id_index"
       );
 
       const hasCompoundIndex = calls.some(
         (c) =>
-          JSON.stringify(c[0]) === JSON.stringify({ userId: 1, catId: 1 }) &&
+          JSON.stringify(c[0]) === JSON.stringify({ userId: 1, catAlienId: 1 }) &&
           c[1].name === "cart_user_cat_unique_index" &&
           c[1].unique === true
       );
@@ -717,7 +717,7 @@ describe("setupCartIndexes", () => {
       expect(call[0]).toEqual({ userId: 1 });
     });
 
-    it("should create catId index as documented", async () => {
+    it("should create catAlienId index as documented", async () => {
       await setupCartIndexes();
 
       const call = mockCollection.createIndex.mock.calls.find(
@@ -725,7 +725,7 @@ describe("setupCartIndexes", () => {
       );
 
       expect(call).toBeDefined();
-      expect(call[0]).toEqual({ catId: 1 });
+      expect(call[0]).toEqual({ catAlienId: 1 });
     });
 
     it("should create compound unique index as documented", async () => {
@@ -736,7 +736,7 @@ describe("setupCartIndexes", () => {
       );
 
       expect(call).toBeDefined();
-      expect(call[0]).toEqual({ userId: 1, catId: 1 });
+      expect(call[0]).toEqual({ userId: 1, catAlienId: 1 });
       expect(call[1].unique).toBe(true);
     });
 
@@ -1157,14 +1157,14 @@ describe("setupCartIndexes", () => {
       expect(call[0].userId).toBe(1);
     });
 
-    it("should verify ascending sort on catId index", async () => {
+    it("should verify ascending sort on catAlienId index", async () => {
       await setupCartIndexes();
 
       const call = mockCollection.createIndex.mock.calls.find(
         (c) => c[1]?.name === "cart_cat_id_index"
       );
 
-      expect(call[0].catId).toBe(1);
+      expect(call[0].catAlienId).toBe(1);
     });
 
     it("should verify descending sort on addedAt index", async () => {
@@ -1186,7 +1186,7 @@ describe("setupCartIndexes", () => {
 
       const keys = Object.keys(call[0]);
       expect(keys[0]).toBe("userId");
-      expect(keys[1]).toBe("catId");
+      expect(keys[1]).toBe("catAlienId");
     });
 
     it("should verify all indexes have explicit names", async () => {

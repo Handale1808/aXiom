@@ -9,7 +9,7 @@ import FormWithHeading, {
 import CatGrid, { type Cat } from "@/lib/components/cat-display/CatGrid";
 import Modal from "@/lib/components/ui/Modal";
 import CatDetails from "@/lib/components/cat-display/CatDetails";
-import { ICat } from "@/models/Cats";
+import { ICatAlien } from "@/models/CatAliens";
 import { IAbility } from "@/models/Ability";
 import {
   generateCatAction,
@@ -31,7 +31,7 @@ export default function ShopPage() {
   const scaledValues = useResponsiveScaling();
   const [activeTab, setActiveTab] = useState("admin");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentCat, setCurrentCat] = useState<ICat | null>(null);
+  const [currentCat, setCurrentCat] = useState<ICatAlien | null>(null);
   const [currentAbilities, setCurrentAbilities] = useState<IAbility[]>([]);
   const [savedCats, setSavedCats] = useState<Cat[]>([]);
   const [isLoadingInventory, setIsLoadingInventory] = useState(false);
@@ -42,7 +42,7 @@ export default function ShopPage() {
 
   const { user } = useUser();
 
-  let addToCart: ((catId: string) => Promise<void>) | undefined;
+  let addToCart: ((catAlienId: string) => Promise<void>) | undefined;
 
   try {
     const cart = useCart();
@@ -110,7 +110,7 @@ export default function ShopPage() {
         const stockRecords = await getAllCatsInStockAction();
 
         const catPromises = stockRecords.map(async (record) => {
-          const { cat } = await fetchCatByIdAction(record.catId);
+          const { cat } = await fetchCatByIdAction(record.catAlienId);
           return cat;
         });
 
@@ -133,9 +133,9 @@ export default function ShopPage() {
     }
   };
 
-  const fetchCatDetails = async (catId: string) => {
+  const fetchCatDetails = async (catAlienId: string) => {
     try {
-      const { cat, abilities } = await fetchCatByIdAction(catId);
+      const { cat, abilities } = await fetchCatByIdAction(catAlienId);
 
       if (!cat) {
         showToast("[SPECIMEN_NOT_FOUND]", "error");
@@ -151,9 +151,9 @@ export default function ShopPage() {
     }
   };
 
-  const handleCatClick = async (catId: string) => {
-    setSelectedCatId(catId);
-    await fetchCatDetails(catId);
+  const handleCatClick = async (catAlienId: string) => {
+    setSelectedCatId(catAlienId);
+    await fetchCatDetails(catAlienId);
   };
 
   useEffect(() => {
@@ -217,7 +217,7 @@ export default function ShopPage() {
         buttons: [
           {
             id: "generate",
-            text: "GENERATE_CATS",
+            text: "GENERATE_CATS_ALIENS",
             onClick: handleGenerateCats,
             disabled: false,
           },

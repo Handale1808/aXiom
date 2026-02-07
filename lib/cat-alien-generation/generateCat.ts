@@ -1,6 +1,6 @@
 // lib/cat-generation/generateCat.ts
 
-import { ICat } from "../../models/Cats";
+import { ICatAlien } from "../../models/CatAliens";
 import { IAbility } from "../../models/Ability";
 import { IAbilityRule } from "../../models/AbilityRules";
 import { generateAbilities } from "./generateAbilities";
@@ -173,7 +173,7 @@ export async function generateCat(
   allRules: IAbilityRule[],
   allAbilities: IAbility[]
 ): Promise<{
-  cat: ICat;
+  cat: ICatAlien;
   abilities: IAbility[];
 }> {
   try {
@@ -206,7 +206,7 @@ export async function generateCat(
     );
     
     // Step 5: Assemble cat document
-    const cat: ICat = {
+    const cat: ICatAlien = {
       name: generateName(),
       description,
       genome, // NEW FIELD - store the genome string

@@ -67,7 +67,7 @@ export default function FeedbackListItem({
       </div>
 
       <div className="flex items-center justify-center">
-        {feedback.catId && (
+        {feedback.catAlienId && (
           <div
             className="flex items-center justify-center border border-[#30D6D6] bg-[#30D6D6]/10"
             style={{

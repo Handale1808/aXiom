@@ -1,4 +1,4 @@
-import { setupCatIndexes } from "../../../lib/indexes/setup-cat-indexes";
+import { setupCatAlienIndexes } from "../../../lib/indexes/setup-cat-alien-indexes";
 
 jest.mock("../../../lib/mongodb", () => {
   let mockClientPromise: Promise<any>;
@@ -17,7 +17,7 @@ jest.mock("../../../lib/mongodb", () => {
 
 const mongodb = require("../../../lib/mongodb");
 
-describe("setupCatIndexes", () => {
+describe("setupCatAlienIndexes", () => {
   let mockCollection: any;
   let mockDb: any;
   let mockClient: any;
@@ -44,7 +44,7 @@ describe("setupCatIndexes", () => {
 
   describe("Normal Operation", () => {
     it("should create all seven indexes successfully", async () => {
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(true);
       expect(mockClient.db).toHaveBeenCalledWith("axiom");
@@ -53,37 +53,37 @@ describe("setupCatIndexes", () => {
     });
 
     it("should call db() exactly once", async () => {
-      await setupCatIndexes();
+      await setupCatAlienIndexes();
 
       expect(mockClient.db).toHaveBeenCalledTimes(1);
     });
 
     it("should call collection() exactly once", async () => {
-      await setupCatIndexes();
+      await setupCatAlienIndexes();
 
       expect(mockDb.collection).toHaveBeenCalledTimes(1);
     });
 
     it("should use hardcoded database name 'axiom' by default", async () => {
-      await setupCatIndexes();
+      await setupCatAlienIndexes();
 
       expect(mockClient.db).toHaveBeenCalledWith("axiom");
     });
 
     it("should accept custom database name parameter", async () => {
-      await setupCatIndexes("custom-db");
+      await setupCatAlienIndexes("custom-db");
 
       expect(mockClient.db).toHaveBeenCalledWith("custom-db");
     });
 
     it("should use hardcoded collection name 'cats'", async () => {
-      await setupCatIndexes();
+      await setupCatAlienIndexes();
 
       expect(mockDb.collection).toHaveBeenCalledWith("cats");
     });
 
     it("should create cat_created_at_index with correct specification", async () => {
-      await setupCatIndexes();
+      await setupCatAlienIndexes();
 
       const calls = mockCollection.createIndex.mock.calls;
       const indexCall = calls.find(
@@ -96,7 +96,7 @@ describe("setupCatIndexes", () => {
     });
 
     it("should create cat_name_index with correct specification", async () => {
-      await setupCatIndexes();
+      await setupCatAlienIndexes();
 
       const calls = mockCollection.createIndex.mock.calls;
       const indexCall = calls.find((c) => c[1].name === "cat_name_index");
@@ -107,7 +107,7 @@ describe("setupCatIndexes", () => {
     });
 
     it("should create stat_strength_index with correct specification", async () => {
-      await setupCatIndexes();
+      await setupCatAlienIndexes();
 
       const calls = mockCollection.createIndex.mock.calls;
       const indexCall = calls.find((c) => c[1].name === "stat_strength_index");
@@ -118,7 +118,7 @@ describe("setupCatIndexes", () => {
     });
 
     it("should create stat_agility_index with correct specification", async () => {
-      await setupCatIndexes();
+      await setupCatAlienIndexes();
 
       const calls = mockCollection.createIndex.mock.calls;
       const indexCall = calls.find((c) => c[1].name === "stat_agility_index");
@@ -129,7 +129,7 @@ describe("setupCatIndexes", () => {
     });
 
     it("should create stat_psychic_index with correct specification", async () => {
-      await setupCatIndexes();
+      await setupCatAlienIndexes();
 
       const calls = mockCollection.createIndex.mock.calls;
       const indexCall = calls.find((c) => c[1].name === "stat_psychic_index");
@@ -140,7 +140,7 @@ describe("setupCatIndexes", () => {
     });
 
     it("should create trait_size_index with correct specification", async () => {
-      await setupCatIndexes();
+      await setupCatAlienIndexes();
 
       const calls = mockCollection.createIndex.mock.calls;
       const indexCall = calls.find((c) => c[1].name === "trait_size_index");
@@ -151,7 +151,7 @@ describe("setupCatIndexes", () => {
     });
 
     it("should create trait_skin_type_index with correct specification", async () => {
-      await setupCatIndexes();
+      await setupCatAlienIndexes();
 
       const calls = mockCollection.createIndex.mock.calls;
       const indexCall = calls.find(
@@ -174,7 +174,7 @@ describe("setupCatIndexes", () => {
         return "created";
       });
 
-      await setupCatIndexes();
+      await setupCatAlienIndexes();
 
       const allStarted =
         Math.max(...startTimes) - Math.min(...startTimes) < 50;
@@ -182,7 +182,7 @@ describe("setupCatIndexes", () => {
     });
 
     it("should return success result with all created indexes", async () => {
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(true);
       expect(result.createdIndexes).toEqual([
@@ -199,7 +199,7 @@ describe("setupCatIndexes", () => {
     });
 
     it("should return structured result object", async () => {
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result).toHaveProperty("success");
       expect(result).toHaveProperty("createdIndexes");
@@ -216,7 +216,7 @@ describe("setupCatIndexes", () => {
       const connectionError = new Error("Connection timeout");
       mongodb.__setMockClientPromise(Promise.reject(connectionError));
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
       expect(result.errors).toHaveLength(1);
@@ -233,7 +233,7 @@ describe("setupCatIndexes", () => {
         Promise.reject(new Error("Connection failed"))
       );
 
-      await setupCatIndexes();
+      await setupCatAlienIndexes();
 
       expect(mockCollection.createIndex).not.toHaveBeenCalled();
     });
@@ -241,7 +241,7 @@ describe("setupCatIndexes", () => {
     it("should return error result when client is null", async () => {
       mongodb.__setMockClientPromise(Promise.resolve(null));
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
       expect(result.errors[0].indexName).toBe("connection");
@@ -251,7 +251,7 @@ describe("setupCatIndexes", () => {
     it("should return error result when client is undefined", async () => {
       mongodb.__setMockClientPromise(Promise.resolve(undefined));
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
       expect(result.errors[0].indexName).toBe("connection");
@@ -261,7 +261,7 @@ describe("setupCatIndexes", () => {
     it("should return error result when client has no db method", async () => {
       mongodb.__setMockClientPromise(Promise.resolve({}));
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
       expect(result.errors[0].indexName).toBe("connection");
@@ -271,7 +271,7 @@ describe("setupCatIndexes", () => {
     it("should return error result when client.db is not a function", async () => {
       mongodb.__setMockClientPromise(Promise.resolve({ db: "not-a-function" }));
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
       expect(result.errors[0].error).toContain("Invalid MongoDB client");
@@ -282,7 +282,7 @@ describe("setupCatIndexes", () => {
         throw new Error("Database not found");
       });
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
       expect(result.errors[0].error).toContain("Database not found");
@@ -291,7 +291,7 @@ describe("setupCatIndexes", () => {
     it("should handle when collection() returns null", async () => {
       mockDb.collection.mockReturnValue(null);
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
     });
@@ -299,7 +299,7 @@ describe("setupCatIndexes", () => {
     it("should handle when collection() returns undefined", async () => {
       mockDb.collection.mockReturnValue(undefined);
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
     });
@@ -307,7 +307,7 @@ describe("setupCatIndexes", () => {
     it("should handle when collection has no createIndex method", async () => {
       mockDb.collection.mockReturnValue({});
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
@@ -325,7 +325,7 @@ describe("setupCatIndexes", () => {
         .mockResolvedValueOnce("created")
         .mockResolvedValueOnce("created");
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
       expect(result.createdIndexes).toHaveLength(6);
@@ -342,7 +342,7 @@ describe("setupCatIndexes", () => {
         }
       );
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
       expect(result.errors[0].indexName).toBe("stat_agility_index");
@@ -363,7 +363,7 @@ describe("setupCatIndexes", () => {
         }
       );
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
       expect(result.errors).toHaveLength(2);
@@ -373,7 +373,7 @@ describe("setupCatIndexes", () => {
     it("should handle when all indexes fail", async () => {
       mockCollection.createIndex.mockRejectedValue(new Error("All failed"));
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
       expect(result.errors).toHaveLength(7);
@@ -393,7 +393,7 @@ describe("setupCatIndexes", () => {
         .mockRejectedValueOnce(existingError)
         .mockResolvedValueOnce("created");
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
       expect(result.createdIndexes).toHaveLength(4);
@@ -409,7 +409,7 @@ describe("setupCatIndexes", () => {
 
       mockCollection.createIndex.mockRejectedValue(existingError);
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(true);
       expect(result.existingIndexes).toHaveLength(7);
@@ -423,7 +423,7 @@ describe("setupCatIndexes", () => {
 
       mockCollection.createIndex.mockRejectedValue(existingError);
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(true);
       expect(result.existingIndexes).toHaveLength(7);
@@ -443,7 +443,7 @@ describe("setupCatIndexes", () => {
         .mockResolvedValueOnce("created")
         .mockResolvedValueOnce("created");
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(true);
       expect(result.createdIndexes).toHaveLength(5);
@@ -467,7 +467,7 @@ describe("setupCatIndexes", () => {
         }
       );
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.existingIndexes).toContain("cat_name_index");
       expect(result.existingIndexes).toContain("stat_psychic_index");
@@ -481,7 +481,7 @@ describe("setupCatIndexes", () => {
 
       mockCollection.createIndex.mockRejectedValue(errorWithoutMessage);
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
       expect(result.errors).toHaveLength(7);
@@ -493,7 +493,7 @@ describe("setupCatIndexes", () => {
     it("should handle error that is a string", async () => {
       mockCollection.createIndex.mockRejectedValue("String error");
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
       expect(result.errors[0].error).toBe("String error");
@@ -502,7 +502,7 @@ describe("setupCatIndexes", () => {
     it("should handle error that is a number", async () => {
       mockCollection.createIndex.mockRejectedValue(404);
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
       expect(result.errors[0].error).toBe("404");
@@ -511,7 +511,7 @@ describe("setupCatIndexes", () => {
     it("should handle error that is null", async () => {
       mockCollection.createIndex.mockRejectedValue(null);
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
       expect(result.errors[0].error).toBe("null");
@@ -520,7 +520,7 @@ describe("setupCatIndexes", () => {
     it("should handle error that is undefined", async () => {
       mockCollection.createIndex.mockRejectedValue(undefined);
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
       expect(result.errors[0].error).toBe("undefined");
@@ -531,7 +531,7 @@ describe("setupCatIndexes", () => {
 
       mockCollection.createIndex.mockRejectedValue(error);
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
       result.errors.forEach((error) => {
@@ -547,7 +547,7 @@ describe("setupCatIndexes", () => {
 
       mockCollection.createIndex.mockRejectedValue(complexError);
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
       expect(typeof result.errors[0].error).toBe("string");
@@ -559,7 +559,7 @@ describe("setupCatIndexes", () => {
 
       mockCollection.createIndex.mockRejectedValue(circularError);
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
       expect(typeof result.errors[0].error).toBe("string");
@@ -572,7 +572,7 @@ describe("setupCatIndexes", () => {
 
       mockCollection.createIndex.mockRejectedValue(ambiguousError);
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(true);
       expect(result.existingIndexes).toHaveLength(7);
@@ -583,7 +583,7 @@ describe("setupCatIndexes", () => {
 
       mockCollection.createIndex.mockRejectedValue(weirdError);
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
       expect(typeof result.errors[0].error).toBe("string");
@@ -592,44 +592,44 @@ describe("setupCatIndexes", () => {
 
   describe("Database Name Edge Cases", () => {
     it("should handle empty string database name", async () => {
-      await setupCatIndexes("");
+      await setupCatAlienIndexes("");
 
       expect(mockClient.db).toHaveBeenCalledWith("");
     });
 
     it("should handle very long database name", async () => {
       const longName = "a".repeat(1000);
-      await setupCatIndexes(longName);
+      await setupCatAlienIndexes(longName);
 
       expect(mockClient.db).toHaveBeenCalledWith(longName);
     });
 
     it("should handle database name with special characters", async () => {
-      await setupCatIndexes("db-name_with.special$chars");
+      await setupCatAlienIndexes("db-name_with.special$chars");
 
       expect(mockClient.db).toHaveBeenCalledWith("db-name_with.special$chars");
     });
 
     it("should handle database name with unicode characters", async () => {
-      await setupCatIndexes("数据库");
+      await setupCatAlienIndexes("数据库");
 
       expect(mockClient.db).toHaveBeenCalledWith("数据库");
     });
 
     it("should handle database name with spaces", async () => {
-      await setupCatIndexes("my database name");
+      await setupCatAlienIndexes("my database name");
 
       expect(mockClient.db).toHaveBeenCalledWith("my database name");
     });
 
     it("should handle null database name by using default", async () => {
-      await setupCatIndexes(null as any);
+      await setupCatAlienIndexes(null as any);
 
       expect(mockClient.db).toHaveBeenCalledWith("axiom");
     });
 
     it("should handle undefined database name by using default", async () => {
-      await setupCatIndexes(undefined);
+      await setupCatAlienIndexes(undefined);
 
       expect(mockClient.db).toHaveBeenCalledWith("axiom");
     });
@@ -637,7 +637,7 @@ describe("setupCatIndexes", () => {
 
   describe("Success Flag Logic", () => {
     it("should return true when all indexes created", async () => {
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(true);
     });
@@ -648,7 +648,7 @@ describe("setupCatIndexes", () => {
 
       mockCollection.createIndex.mockRejectedValue(existingError);
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(true);
     });
@@ -666,7 +666,7 @@ describe("setupCatIndexes", () => {
         .mockResolvedValueOnce("created")
         .mockResolvedValueOnce("created");
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(true);
     });
@@ -681,7 +681,7 @@ describe("setupCatIndexes", () => {
         .mockResolvedValueOnce("created")
         .mockRejectedValueOnce(new Error("Real error"));
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
     });
@@ -689,7 +689,7 @@ describe("setupCatIndexes", () => {
     it("should return false when connection fails", async () => {
       mongodb.__setMockClientPromise(Promise.reject(new Error("Failed")));
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
     });
@@ -707,7 +707,7 @@ describe("setupCatIndexes", () => {
         .mockResolvedValueOnce("created")
         .mockResolvedValueOnce("created");
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
     });
@@ -717,7 +717,7 @@ describe("setupCatIndexes", () => {
     it("should handle when createIndex resolves with null", async () => {
       mockCollection.createIndex.mockResolvedValue(null);
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(true);
       expect(result.createdIndexes).toHaveLength(7);
@@ -726,7 +726,7 @@ describe("setupCatIndexes", () => {
     it("should handle when createIndex resolves with undefined", async () => {
       mockCollection.createIndex.mockResolvedValue(undefined);
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(true);
     });
@@ -734,7 +734,7 @@ describe("setupCatIndexes", () => {
     it("should handle when createIndex resolves with empty string", async () => {
       mockCollection.createIndex.mockResolvedValue("");
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(true);
     });
@@ -742,7 +742,7 @@ describe("setupCatIndexes", () => {
     it("should handle when createIndex resolves with unexpected object", async () => {
       mockCollection.createIndex.mockResolvedValue({ weird: "response" });
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(true);
     });
@@ -750,7 +750,7 @@ describe("setupCatIndexes", () => {
     it("should handle when createIndex resolves with false", async () => {
       mockCollection.createIndex.mockResolvedValue(false);
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(true);
     });
@@ -758,7 +758,7 @@ describe("setupCatIndexes", () => {
     it("should handle when createIndex resolves with 0", async () => {
       mockCollection.createIndex.mockResolvedValue(0);
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(true);
     });
@@ -777,7 +777,7 @@ describe("setupCatIndexes", () => {
         .mockResolvedValueOnce("created")
         .mockResolvedValueOnce("created");
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
       expect(result.createdIndexes).toHaveLength(6);
@@ -795,7 +795,7 @@ describe("setupCatIndexes", () => {
         );
       });
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(true);
       expect(result.createdIndexes).toHaveLength(7);
@@ -806,7 +806,7 @@ describe("setupCatIndexes", () => {
         throw new Error("Sync reject");
       });
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
       expect(result.errors).toHaveLength(7);
@@ -822,7 +822,7 @@ describe("setupCatIndexes", () => {
         return Promise.resolve("created");
       });
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
@@ -844,7 +844,7 @@ describe("setupCatIndexes", () => {
         .mockResolvedValueOnce("created")
         .mockResolvedValueOnce("created");
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
       expect(result.errors[0].error).toContain("ECONNRESET");
@@ -856,7 +856,7 @@ describe("setupCatIndexes", () => {
 
       mongodb.__setMockClientPromise(Promise.reject(serverError));
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
       expect(result.errors[0].indexName).toBe("connection");
@@ -868,7 +868,7 @@ describe("setupCatIndexes", () => {
 
       mockCollection.createIndex.mockRejectedValue(readOnlyError);
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
       expect(result.errors).toHaveLength(7);
@@ -880,7 +880,7 @@ describe("setupCatIndexes", () => {
 
       mockCollection.createIndex.mockRejectedValue(permissionError);
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
     });
@@ -891,7 +891,7 @@ describe("setupCatIndexes", () => {
 
       mockCollection.createIndex.mockRejectedValue(diskError);
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
     });
@@ -906,7 +906,7 @@ describe("setupCatIndexes", () => {
         return Promise.resolve("created");
       });
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
       expect(result.createdIndexes.length).toBe(5);
@@ -919,7 +919,7 @@ describe("setupCatIndexes", () => {
 
       mongodb.__setMockClientPromise(Promise.reject(topologyError));
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
       expect(result.errors[0].indexName).toBe("connection");
@@ -931,7 +931,7 @@ describe("setupCatIndexes", () => {
           new Promise((resolve) => setTimeout(() => resolve("created"), 100))
       );
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(true);
       expect(result.createdIndexes).toHaveLength(7);
@@ -940,8 +940,8 @@ describe("setupCatIndexes", () => {
 
   describe("Idempotency Verification", () => {
     it("should produce identical result when called twice with same state", async () => {
-      const result1 = await setupCatIndexes();
-      const result2 = await setupCatIndexes();
+      const result1 = await setupCatAlienIndexes();
+      const result2 = await setupCatAlienIndexes();
 
       expect(result1.success).toBe(result2.success);
       expect(result1.createdIndexes).toEqual(result2.createdIndexes);
@@ -952,23 +952,23 @@ describe("setupCatIndexes", () => {
     it("should be safe to call multiple times even with errors", async () => {
       mockCollection.createIndex.mockRejectedValue(new Error("fail"));
 
-      const result1 = await setupCatIndexes();
-      const result2 = await setupCatIndexes();
-      const result3 = await setupCatIndexes();
+      const result1 = await setupCatAlienIndexes();
+      const result2 = await setupCatAlienIndexes();
+      const result3 = await setupCatAlienIndexes();
 
       expect(result1).toEqual(result2);
       expect(result2).toEqual(result3);
     });
 
     it("should handle when indexes exist on second call", async () => {
-      const result1 = await setupCatIndexes();
+      const result1 = await setupCatAlienIndexes();
       expect(result1.createdIndexes).toHaveLength(7);
 
       const existingError = new Error("Exists") as any;
       existingError.code = 85;
       mockCollection.createIndex.mockRejectedValue(existingError);
 
-      const result2 = await setupCatIndexes();
+      const result2 = await setupCatAlienIndexes();
 
       expect(result2.existingIndexes).toHaveLength(7);
       expect(result2.success).toBe(true);
@@ -976,9 +976,9 @@ describe("setupCatIndexes", () => {
 
     it("should handle rapid successive calls", async () => {
       const results = await Promise.all([
-        setupCatIndexes(),
-        setupCatIndexes(),
-        setupCatIndexes(),
+        setupCatAlienIndexes(),
+        setupCatAlienIndexes(),
+        setupCatAlienIndexes(),
       ]);
 
       const allSuccessful = results.every((r) => r.success);
@@ -986,12 +986,12 @@ describe("setupCatIndexes", () => {
     });
 
     it("should not mutate shared state between calls", async () => {
-      const result1 = await setupCatIndexes();
+      const result1 = await setupCatAlienIndexes();
 
       result1.createdIndexes.push("TAMPERED");
       result1.success = false;
 
-      const result2 = await setupCatIndexes();
+      const result2 = await setupCatAlienIndexes();
 
       expect(result2.createdIndexes).not.toContain("TAMPERED");
       expect(result2.success).toBe(true);
@@ -1000,7 +1000,7 @@ describe("setupCatIndexes", () => {
 
   describe("Type Safety at Boundaries", () => {
     it("should never return properties outside IndexSetupResult interface", async () => {
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       const expectedKeys = [
         "success",
@@ -1016,7 +1016,7 @@ describe("setupCatIndexes", () => {
     it("should ensure error objects always have required properties", async () => {
       mockCollection.createIndex.mockRejectedValue(new Error("test"));
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       result.errors.forEach((error) => {
         expect(error).toHaveProperty("indexName");
@@ -1026,7 +1026,7 @@ describe("setupCatIndexes", () => {
     });
 
     it("should never return frozen or sealed objects", async () => {
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(Object.isFrozen(result)).toBe(false);
       expect(Object.isSealed(result)).toBe(false);
@@ -1036,7 +1036,7 @@ describe("setupCatIndexes", () => {
     });
 
     it("should ensure all array elements are strings for createdIndexes", async () => {
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       result.createdIndexes.forEach((name) => {
         expect(typeof name).toBe("string");
@@ -1048,7 +1048,7 @@ describe("setupCatIndexes", () => {
       existingError.code = 85;
       mockCollection.createIndex.mockRejectedValue(existingError);
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       result.existingIndexes.forEach((name) => {
         expect(typeof name).toBe("string");
@@ -1058,7 +1058,7 @@ describe("setupCatIndexes", () => {
     it("should ensure error objects have correct types", async () => {
       mockCollection.createIndex.mockRejectedValue(new Error("test"));
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       result.errors.forEach((error) => {
         expect(typeof error.indexName).toBe("string");
@@ -1069,7 +1069,7 @@ describe("setupCatIndexes", () => {
     it("should never include null in arrays", async () => {
       mockCollection.createIndex.mockResolvedValue(null);
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.createdIndexes).not.toContain(null);
       expect(result.existingIndexes).not.toContain(null);
@@ -1079,7 +1079,7 @@ describe("setupCatIndexes", () => {
     it("should never include undefined in arrays", async () => {
       mockCollection.createIndex.mockResolvedValue(undefined);
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.createdIndexes).not.toContain(undefined);
       expect(result.existingIndexes).not.toContain(undefined);
@@ -1088,11 +1088,11 @@ describe("setupCatIndexes", () => {
   });
 
   describe("Concurrency and Race Conditions", () => {
-    it("should handle parallel calls to setupCatIndexes", async () => {
+    it("should handle parallel calls to setupCatAlienIndexes", async () => {
       const promises = [
-        setupCatIndexes(),
-        setupCatIndexes("db1"),
-        setupCatIndexes("db2"),
+        setupCatAlienIndexes(),
+        setupCatAlienIndexes("db1"),
+        setupCatAlienIndexes("db2"),
       ];
 
       const results = await Promise.all(promises);
@@ -1104,12 +1104,12 @@ describe("setupCatIndexes", () => {
 
     it("should handle when MongoDB connection pool is exhausted", async () => {
       mongodb.__setMockClientPromise(Promise.resolve(mockClient));
-      const result1 = await setupCatIndexes();
+      const result1 = await setupCatAlienIndexes();
 
       mongodb.__setMockClientPromise(
         Promise.reject(new Error("Connection pool exhausted"))
       );
-      const result2 = await setupCatIndexes();
+      const result2 = await setupCatAlienIndexes();
 
       expect(result1.success).toBe(true);
       expect(result2.success).toBe(false);
@@ -1130,8 +1130,8 @@ describe("setupCatIndexes", () => {
       });
 
       const [result1, result2] = await Promise.all([
-        setupCatIndexes(),
-        setupCatIndexes(),
+        setupCatAlienIndexes(),
+        setupCatAlienIndexes(),
       ]);
 
       const totalCreated =
@@ -1147,7 +1147,7 @@ describe("setupCatIndexes", () => {
     it("should not leak memory with large number of calls", async () => {
       const results = [];
       for (let i = 0; i < 100; i++) {
-        results.push(await setupCatIndexes());
+        results.push(await setupCatAlienIndexes());
       }
 
       expect(results).toHaveLength(100);
@@ -1160,7 +1160,7 @@ describe("setupCatIndexes", () => {
       const largeObject = { data: "x".repeat(10000) };
       mockCollection.createIndex.mockResolvedValue(largeObject);
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(true);
     });
@@ -1169,7 +1169,7 @@ describe("setupCatIndexes", () => {
       const longError = new Error("x".repeat(100000));
       mockCollection.createIndex.mockRejectedValue(longError);
 
-      const result = await setupCatIndexes();
+      const result = await setupCatAlienIndexes();
 
       expect(result.success).toBe(false);
       result.errors.forEach((error) => {
@@ -1180,7 +1180,7 @@ describe("setupCatIndexes", () => {
 
   describe("Index Specification Correctness", () => {
     it("should create descending index for createdAt", async () => {
-      await setupCatIndexes();
+      await setupCatAlienIndexes();
 
       const createdAtCall = mockCollection.createIndex.mock.calls.find(
         (call) => call[1].name === "cat_created_at_index"
@@ -1190,7 +1190,7 @@ describe("setupCatIndexes", () => {
     });
 
     it("should create ascending indexes for all other fields", async () => {
-      await setupCatIndexes();
+      await setupCatAlienIndexes();
 
       const calls = mockCollection.createIndex.mock.calls.filter(
         (call) => call[1].name !== "cat_created_at_index"
@@ -1205,7 +1205,7 @@ describe("setupCatIndexes", () => {
     });
 
     it("should use dot notation for nested fields", async () => {
-      await setupCatIndexes();
+      await setupCatAlienIndexes();
 
       const nestedFields = [
         "stats.strength",
@@ -1224,7 +1224,7 @@ describe("setupCatIndexes", () => {
     });
 
     it("should ensure each index has unique name", async () => {
-      await setupCatIndexes();
+      await setupCatAlienIndexes();
 
       const names = mockCollection.createIndex.mock.calls.map(
         (call) => call[1].name
@@ -1235,7 +1235,7 @@ describe("setupCatIndexes", () => {
     });
 
     it("should ensure each index has exactly one field", async () => {
-      await setupCatIndexes();
+      await setupCatAlienIndexes();
 
       mockCollection.createIndex.mock.calls.forEach((call) => {
         const fieldCount = Object.keys(call[0]).length;

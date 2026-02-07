@@ -11,12 +11,12 @@ export interface IndexSetupResult {
 }
 
 /**
- * Creates indexes for the catAbilities collection to optimize queries.
+ * Creates indexes for the catAlienAbilities collection to optimize queries.
  * 
  * This function creates three indexes:
- * 1. cat_id_index - Single field index on catId for queries like "find all abilities for cat X"
+ * 1. cat_id_index - Single field index on catAlienId for queries like "find all abilities for cat X"
  * 2. cat_ability_ability_id_index - Single field index on abilityId for queries like "find all cats with ability Y"
- * 3. cat_ability_unique_index - Compound unique index on (catId, abilityId) to prevent duplicate assignments
+ * 3. cat_ability_unique_index - Compound unique index on (catAlienId, abilityId) to prevent duplicate assignments
  * 
  * The function is idempotent and safe to call multiple times. If an index already exists with the same
  * specification, it will be reported in existingIndexes. If an index exists with a different specification,
@@ -69,7 +69,7 @@ export async function setupCatAbilityIndexes(
     }
 
     // Validate collection instance
-    const collection = db.collection("catAbilities");
+    const collection = db.collection("catAlienAbilities");
     if (!collection || typeof collection.createIndex !== "function") {
       result.errors.push({
         indexName: "connection",
@@ -83,7 +83,7 @@ export async function setupCatAbilityIndexes(
     const indexes = [
       {
         name: "cat_id_index",
-        keys: { catId: 1 },
+        keys: { catAlienId: 1 },
         options: { name: "cat_id_index" },
       },
       {
@@ -93,7 +93,7 @@ export async function setupCatAbilityIndexes(
       },
       {
         name: "cat_ability_unique_index",
-        keys: { catId: 1, abilityId: 1 },
+        keys: { catAlienId: 1, abilityId: 1 },
         options: {
           name: "cat_ability_unique_index",
           unique: true,
@@ -163,9 +163,9 @@ export async function setupCatAbilityIndexes(
     // Catch any unexpected errors (connection failures, etc.)
     const errorMessage = error instanceof Error ? error.message : String(error);
 
-    console.error("Error creating catAbilities indexes:", {
+    console.error("Error creating catAlienAbilities indexes:", {
       database: databaseName,
-      collection: "catAbilities",
+      collection: "catAlienAbilities",
       error: errorMessage,
       errorCode: (error as any).code,
       errorName: (error as any).codeName,

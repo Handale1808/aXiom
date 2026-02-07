@@ -5,12 +5,12 @@
 import clientPromise from "@/lib/mongodb";
 import { IAbility } from "@/models/Ability";
 import { IAbilityRule } from "@/models/AbilityRules";
-import { ICat } from "@/models/Cats";
+import { ICatAlien } from "@/models/CatAliens";
 import { generateCat } from "@/lib/cat-alien-generation/generateCat";
 import { addCatToStock, getAllCatsInStock } from "./stockHelpers";
 
 export async function generateCatAction(): Promise<{
-  cat: ICat;
+  cat: ICatAlien;
   abilities: IAbility[];
 }> {
   try {
@@ -40,11 +40,11 @@ export async function generateCatAction(): Promise<{
 }
 
 export async function saveCatAction(
-  cat: ICat,
+  cat: ICatAlien,
   abilities: IAbility[],
   svgString: string
 ): Promise<
-  { success: true; catId: string } | { success: false; error: string }
+  { success: true; catAlienId: string } | { success: false; error: string }
 > {
   try {
     // Validation
@@ -65,7 +65,7 @@ export async function saveCatAction(
     const db = client.db("axiom");
 
     // Prepare cat document with SVG
-    const catDocument: ICat = {
+    const catDocument: ICatAlien = {
       ...cat,
       svgImage: svgString,
       createdAt: new Date(),
@@ -74,33 +74,33 @@ export async function saveCatAction(
     // Insert cat
     // Insert cat
     const catResult = await db.collection("cats").insertOne(catDocument);
-    const catId = catResult.insertedId;
+    const catAlienId = catResult.insertedId;
 
     // Prepare catAbility junction records
     if (abilities.length > 0) {
       const catAbilityDocuments = abilities.map((ability) => ({
-        catId: catId,
+        catAlienId: catAlienId,
         abilityId: ability._id!,
         roll: Math.random(),
         acquiredAt: new Date(),
       }));
 
       // Insert catAbility records
-      await db.collection("catAbilities").insertMany(catAbilityDocuments);
+      await db.collection("catAlienAbilities").insertMany(catAbilityDocuments);
     }
 
     // Add cat to stock
-    const stockResult = await addCatToStock(catId);
+    const stockResult = await addCatToStock(catAlienId);
     if (!stockResult.success) {
       console.error(
-        `Cat ${catId.toString()} saved but failed to add to stock:`,
+        `Cat ${catAlienId.toString()} saved but failed to add to stock:`,
         stockResult.error
       );
     }
 
     return {
       success: true,
-      catId: catId.toString(),
+      catAlienId: catAlienId.toString(),
     };
   } catch (error) {
     console.error("Failed to save cat:", error);
@@ -142,8 +142,8 @@ export async function fetchAllCatsAction(): Promise<
   }
 }
 
-export async function fetchCatByIdAction(catId: string): Promise<{
-  cat: ICat | null;
+export async function fetchCatByIdAction(catAlienId: string): Promise<{
+  cat: ICatAlien | null;
   abilities: IAbility[];
 }> {
   try {
@@ -153,27 +153,27 @@ export async function fetchCatByIdAction(catId: string): Promise<{
 
     const cat = await db
       .collection("cats")
-      .findOne({ _id: new ObjectId(catId) });
+      .findOne({ _id: new ObjectId(catAlienId) });
 
     if (!cat) {
       return { cat: null, abilities: [] };
     }
 
-    const catAbilities = await db
-      .collection("catAbilities")
-      .find({ catId: new ObjectId(catId) })
+    const catAlienAbilities = await db
+      .collection("catAlienAbilities")
+      .find({ catAlienId: new ObjectId(catAlienId) })
       .toArray();
 
-    if (catAbilities.length === 0) {
+    if (catAlienAbilities.length === 0) {
       // Let's check if any records exist at all
       const allCatAbilities = await db
-        .collection("catAbilities")
+        .collection("catAlienAbilities")
         .find({})
         .limit(5)
         .toArray();
     }
 
-    const abilityIds = catAbilities.map((ca) => ca.abilityId);
+    const abilityIds = catAlienAbilities.map((ca) => ca.abilityId);
 
     // Convert abilityIds to ObjectIds if they're strings
     const abilityObjectIds = abilityIds.map((id) =>
@@ -189,7 +189,7 @@ export async function fetchCatByIdAction(catId: string): Promise<{
         : [];
 
     return {
-      cat: JSON.parse(JSON.stringify(cat)) as ICat,
+      cat: JSON.parse(JSON.stringify(cat)) as ICatAlien,
       abilities: JSON.parse(JSON.stringify(abilities)) as IAbility[],
     };
   } catch (error) {
@@ -199,7 +199,7 @@ export async function fetchCatByIdAction(catId: string): Promise<{
 }
 
 export async function getAllCatsInStockAction(): Promise<
-  Array<{ catId: string; addedAt: string }>
+  Array<{ catAlienId: string; addedAt: string }>
 > {
   try {
     return await getAllCatsInStock();
@@ -211,7 +211,7 @@ export async function getAllCatsInStockAction(): Promise<
 
 export async function getUserPurchasedCatsAction(userId: string): Promise<
   Array<{
-    catId: string;
+    catAlienId: string;
     name: string;
     svgImage: string;
     purchasedAt: string;
@@ -233,7 +233,7 @@ export async function getUserPurchasedCatsAction(userId: string): Promise<
         {
           $lookup: {
             from: "cats",
-            localField: "catId",
+            localField: "catAlienId",
             foreignField: "_id",
             as: "cat",
           },
@@ -241,7 +241,7 @@ export async function getUserPurchasedCatsAction(userId: string): Promise<
         { $unwind: "$cat" },
         {
           $project: {
-            catId: "$catId",
+            catAlienId: "$catAlienId",
             name: "$cat.name",
             svgImage: "$cat.svgImage",
             purchasedAt: "$purchasedAt",
@@ -252,7 +252,7 @@ export async function getUserPurchasedCatsAction(userId: string): Promise<
       .toArray();
 
     return purchases.map((purchase) => ({
-      catId: purchase.catId.toString(),
+      catAlienId: purchase.catAlienId.toString(),
       name: purchase.name,
       svgImage: purchase.svgImage,
       purchasedAt: purchase.purchasedAt.toISOString(),

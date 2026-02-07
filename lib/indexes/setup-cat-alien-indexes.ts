@@ -10,7 +10,7 @@ export interface IndexSetupResult {
   }>;
 }
 
-export async function setupCatIndexes(
+export async function setupCatAlienIndexes(
   databaseName: string = "axiom"
 ): Promise<IndexSetupResult> {
   const dbName = databaseName ?? "axiom";
@@ -35,7 +35,7 @@ export async function setupCatIndexes(
     }
 
     const db = client.db(dbName);
-    const collection = db.collection("cats");
+    const collection = db.collection("catAliens");
 
    const indexDefinitions = [
       {

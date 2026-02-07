@@ -8,7 +8,7 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 async function main() {
   const { setupFeedbackIndexes } = await import("../lib/indexes/setup-indexes.ts");
   const { setupUserIndexes } = await import("../lib/indexes/setup-user-indexes.ts");
-  const { setupCatIndexes } = await import("../lib/indexes/setup-cat-indexes.ts");
+  const { setupCatAlienIndexes } = await import("../lib/indexes/setup-cat-alien-indexes.ts");
   const { setupAbilityIndexes } = await import("../lib/indexes/setup-ability-indexes.ts");
   const { setupAbilityRuleIndexes } = await import("../lib/indexes/setup-ability-rule-indexes.ts");
   const { setupCatAbilityIndexes } = await import("../lib/indexes/setup-cat-ability-indexes.ts");
@@ -20,7 +20,7 @@ async function main() {
 
   await setupFeedbackIndexes();
   await setupUserIndexes();
-  await setupCatIndexes();
+  await setupCatAlienIndexes();
   await setupAbilityIndexes();
   await setupAbilityRuleIndexes();
   await setupCatAbilityIndexes();

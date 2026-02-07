@@ -1,6 +1,6 @@
 // lib/genome/interpretation/morphology.ts
 
-import type { IPhysicalTraits, SkinType, Size } from '@/models/Cats';
+import type { IPhysicalTraits, SkinType, Size } from '@/models/CatAliens';
 import type { InterpretationResult, DebugInfo } from '../types';
 import { SUBREGIONS, MOTIFS, SYMBOL_MAPPINGS } from '../regions';
 import {

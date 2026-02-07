@@ -14,7 +14,7 @@ export interface IFeedback {
   email?: string;
   catName?: string;
   catSvgImage?: string;
-  catId?: ObjectId;    
+  catAlienId?: ObjectId;    
   userId?: ObjectId;     
   createdAt: Date;
   analysis: IAnalysis;

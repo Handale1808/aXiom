@@ -52,7 +52,7 @@ describe("setupCatAbilityIndexes", () => {
 
       expect(result.success).toBe(true);
       expect(mockClient.db).toHaveBeenCalledWith("axiom");
-      expect(mockDb.collection).toHaveBeenCalledWith("catAbilities");
+      expect(mockDb.collection).toHaveBeenCalledWith("catAlienAbilities");
       expect(mockCollection.createIndex).toHaveBeenCalledTimes(3);
     });
 
@@ -80,21 +80,21 @@ describe("setupCatAbilityIndexes", () => {
       expect(mockClient.db).toHaveBeenCalledWith("custom-db");
     });
 
-    it("should use hardcoded collection name 'catAbilities'", async () => {
+    it("should use hardcoded collection name 'catAlienAbilities'", async () => {
       await setupCatAbilityIndexes();
 
-      expect(mockDb.collection).toHaveBeenCalledWith("catAbilities");
+      expect(mockDb.collection).toHaveBeenCalledWith("catAlienAbilities");
     });
 
-    it("should create catId index with correct specification", async () => {
+    it("should create catAlienId index with correct specification", async () => {
       await setupCatAbilityIndexes();
 
       const calls = mockCollection.createIndex.mock.calls;
-      const catIdIndexCall = calls.find((c) => c[1].name === "cat_id_index");
+      const catAlienIdIndexCall = calls.find((c) => c[1].name === "cat_id_index");
 
-      expect(catIdIndexCall).toBeDefined();
-      expect(catIdIndexCall[0]).toEqual({ catId: 1 });
-      expect(catIdIndexCall[1]).toEqual({ name: "cat_id_index" });
+      expect(catAlienIdIndexCall).toBeDefined();
+      expect(catAlienIdIndexCall[0]).toEqual({ catAlienId: 1 });
+      expect(catAlienIdIndexCall[1]).toEqual({ name: "cat_id_index" });
     });
 
     it("should create abilityId index with correct specification", async () => {
@@ -121,7 +121,7 @@ describe("setupCatAbilityIndexes", () => {
       );
 
       expect(compoundIndexCall).toBeDefined();
-      expect(compoundIndexCall[0]).toEqual({ catId: 1, abilityId: 1 });
+      expect(compoundIndexCall[0]).toEqual({ catAlienId: 1, abilityId: 1 });
       expect(compoundIndexCall[1]).toEqual({
         name: "cat_ability_unique_index",
         unique: true,
@@ -452,7 +452,7 @@ describe("setupCatAbilityIndexes", () => {
 
     it("should fail on duplicate key error during unique index creation (error code 11000)", async () => {
       const duplicateKeyError = new Error(
-        "E11000 duplicate key error collection: axiom.catAbilities index: cat_ability_unique_index"
+        "E11000 duplicate key error collection: axiom.catAlienAbilities index: cat_ability_unique_index"
       );
       (duplicateKeyError as any).code = 11000;
 
@@ -578,7 +578,7 @@ describe("setupCatAbilityIndexes", () => {
       (richError as any).code = 67;
       (richError as any).codeName = "CannotCreateIndex";
       (richError as any).errmsg = "detailed error message";
-      (richError as any).index = { catId: 1 };
+      (richError as any).index = { catAlienId: 1 };
 
       mockCollection.createIndex.mockRejectedValueOnce(richError);
 
@@ -840,7 +840,7 @@ describe("setupCatAbilityIndexes", () => {
 
       const hasFirstIndex = calls.some(
         (c) =>
-          JSON.stringify(c[0]) === JSON.stringify({ catId: 1 }) &&
+          JSON.stringify(c[0]) === JSON.stringify({ catAlienId: 1 }) &&
           c[1].name === "cat_id_index"
       );
       const hasSecondIndex = calls.some(
@@ -850,7 +850,7 @@ describe("setupCatAbilityIndexes", () => {
       );
       const hasThirdIndex = calls.some(
         (c) =>
-          JSON.stringify(c[0]) === JSON.stringify({ catId: 1, abilityId: 1 }) &&
+          JSON.stringify(c[0]) === JSON.stringify({ catAlienId: 1, abilityId: 1 }) &&
           c[1].name === "cat_ability_unique_index" &&
           c[1].unique === true
       );
@@ -862,16 +862,16 @@ describe("setupCatAbilityIndexes", () => {
 
     it("should not mutate index specification objects", async () => {
       const indexKeys = [
-        { catId: 1 },
+        { catAlienId: 1 },
         { abilityId: 1 },
-        { catId: 1, abilityId: 1 },
+        { catAlienId: 1, abilityId: 1 },
       ];
 
       await setupCatAbilityIndexes();
 
-      expect(indexKeys[0]).toEqual({ catId: 1 });
+      expect(indexKeys[0]).toEqual({ catAlienId: 1 });
       expect(indexKeys[1]).toEqual({ abilityId: 1 });
-      expect(indexKeys[2]).toEqual({ catId: 1, abilityId: 1 });
+      expect(indexKeys[2]).toEqual({ catAlienId: 1, abilityId: 1 });
     });
   });
 
@@ -886,7 +886,7 @@ describe("setupCatAbilityIndexes", () => {
       const result = await setupCatAbilityIndexes();
 
       expect(result.success).toBe(true);
-      expect(strangeDb.collection).toHaveBeenCalledWith("catAbilities");
+      expect(strangeDb.collection).toHaveBeenCalledWith("catAlienAbilities");
     });
 
     it("should handle when collection returns wrong type but has createIndex method", async () => {
@@ -1103,10 +1103,10 @@ describe("setupCatAbilityIndexes", () => {
         await setupCatAbilityIndexes("production-db");
 
         expect(consoleErrorSpy).toHaveBeenCalledWith(
-          "Error creating catAbilities indexes:",
+          "Error creating catAlienAbilities indexes:",
           expect.objectContaining({
             database: "production-db",
-            collection: "catAbilities",
+            collection: "catAlienAbilities",
             error: "Network timeout",
           })
         );
@@ -1121,7 +1121,7 @@ describe("setupCatAbilityIndexes", () => {
         await setupCatAbilityIndexes();
 
         expect(consoleErrorSpy).toHaveBeenCalledWith(
-          "Error creating catAbilities indexes:",
+          "Error creating catAlienAbilities indexes:",
           expect.objectContaining({
             errorCode: 11000,
             errorName: "DuplicateKey",
@@ -1136,7 +1136,7 @@ describe("setupCatAbilityIndexes", () => {
         await setupCatAbilityIndexes();
 
         expect(consoleErrorSpy).toHaveBeenCalledWith(
-          "Error creating catAbilities indexes:",
+          "Error creating catAlienAbilities indexes:",
           expect.objectContaining({
             errorCode: undefined,
             errorName: undefined,

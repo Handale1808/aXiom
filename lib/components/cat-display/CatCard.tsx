@@ -6,7 +6,7 @@ interface CatCardProps {
   svgImage: string;
   onClick?: () => void;
   showAddToCart?: boolean;
-  onAddToCart?: (catId: string) => void;
+  onAddToCart?: (catAlienId: string) => void;
 }
 
 export default function CatCard({

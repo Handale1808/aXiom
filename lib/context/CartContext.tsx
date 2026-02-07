@@ -21,7 +21,7 @@ import {
 import { getCatPriceAction } from "@/lib/services/settingsActions";
 
 interface CartItem {
-  catId: string;
+  catAlienId: string;
   name: string;
   svgImage: string;
   addedAt: string;
@@ -32,8 +32,8 @@ interface CartContextType {
   isLoading: boolean;
   cartItems: CartItem[];
   price: number;
-  addToCart: (catId: string) => Promise<void>;
-  removeFromCart: (catId: string) => Promise<void>;
+  addToCart: (catAlienId: string) => Promise<void>;
+  removeFromCart: (catAlienId: string) => Promise<void>;
   refreshCart: () => Promise<void>;
   checkout: () => Promise<{ success: boolean; error?: string }>;
 }
@@ -83,12 +83,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [user?.id, isAdmin, isAuthenticated]);
 
-  const addToCart = async (catId: string) => {
+  const addToCart = async (catAlienId: string) => {
     if (!user?.id) return;
 
     setIsLoading(true);
     try {
-      const result = await addToCartAction(user.id, catId);
+      const result = await addToCartAction(user.id, catAlienId);
 
       if (result.success) {
         showToast("[CAT_ADDED_TO_CART]", "success");
@@ -110,12 +110,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const removeFromCart = async (catId: string) => {
+  const removeFromCart = async (catAlienId: string) => {
     if (!user?.id) return;
 
     setIsLoading(true);
     try {
-      const result = await removeFromCartAction(user.id, catId);
+      const result = await removeFromCartAction(user.id, catAlienId);
 
       if (result.success) {
         showToast("[CAT_REMOVED_FROM_CART]", "success");

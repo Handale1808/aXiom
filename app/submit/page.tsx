@@ -19,9 +19,9 @@ export default function Submit() {
 
   useEffect(() => {
     // Check if navigated from My Cats page with cat info in router state
-    const state = (router as any).state as { catId?: string; catName?: string };
-    if (state?.catId && state?.catName) {
-      setSelectedCatId(state.catId);
+    const state = (router as any).state as { catAlienId?: string; catName?: string };
+    if (state?.catAlienId && state?.catName) {
+      setSelectedCatId(state.catAlienId);
       setSelectedCatName(state.catName);
     }
   }, [router]);
@@ -39,7 +39,7 @@ export default function Submit() {
           body: JSON.stringify({
             text,
             email,
-            catId: selectedCatId, // ADD THIS LINE
+            catAlienId: selectedCatId, // ADD THIS LINE
           }),
         }
       );
@@ -55,8 +55,8 @@ export default function Submit() {
     }
   };
 
-  const handleCatSelect = (catId: string | null, catName: string | null) => {
-    setSelectedCatId(catId);
+  const handleCatSelect = (catAlienId: string | null, catName: string | null) => {
+    setSelectedCatId(catAlienId);
     setSelectedCatName(catName);
   };
 

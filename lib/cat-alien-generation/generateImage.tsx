@@ -1,7 +1,7 @@
 // lib/cat-generation/generateImage.tsx
 
 import React from "react";
-import { IPhysicalTraits } from "../../models/Cats";
+import { IPhysicalTraits } from "../../models/CatAliens";
 
 interface GenerateImageProps {
   traits: IPhysicalTraits;

@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { IAbility } from "@/models/Ability";
-import type { ICat } from "@/models/Cats";
+import type { ICatAlien } from "@/models/CatAliens";
 import { debug, info, warn, error as logError } from "@/lib/logger";
 
 class ValidationError extends Error {
@@ -55,7 +55,7 @@ async function retryWithBackoff<T>(
 }
 
 function getMockDescription(
-  cat: Pick<ICat, "physicalTraits" | "stats" | "resistances" | "behavior">,
+  cat: Pick<ICatAlien, "physicalTraits" | "stats" | "resistances" | "behavior">,
   abilities: IAbility[]
 ): string {
   const { physicalTraits, stats, behavior } = cat;
@@ -123,7 +123,7 @@ function validateDescription(data: string): string {
  * @throws {Error} If API call fails after all retries
  */
 export async function generateDescription(
-  cat: Pick<ICat, "physicalTraits" | "stats" | "resistances" | "behavior">,
+  cat: Pick<ICatAlien, "physicalTraits" | "stats" | "resistances" | "behavior">,
   abilities: IAbility[],
   requestId?: string
 ): Promise<string> {
