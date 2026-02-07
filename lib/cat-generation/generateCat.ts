@@ -4,6 +4,7 @@ import { ICat } from "@/models/Cats";
 import { generateDescription } from "../cat-alien-generation/generateDescription";
 import { generateGenome } from "../cat-alien-generation/genome/generation";
 import { interpretGenome } from "../cat-alien-generation/genome/interpretation/index";
+import { generateSvgString } from "../cat-alien-generation/generateImage";
 
 // Reuse same specimen name generation as cat-aliens
 const SPECIMEN_PREFIXES = [
@@ -188,8 +189,11 @@ export async function generateCat(): Promise<ICat> {
       },
       [] // No abilities for cats
     );
+
+    // Step 4: Generate SVG image
+    const svgImage = generateSvgString(phenotype.physicalTraits);
     
-    // Step 4: Assemble cat document
+    // Step 5: Assemble cat document
     const cat: ICat = {
       type: "cat", // Always "cat" for pure cats
       name: generateName(),
@@ -198,9 +202,11 @@ export async function generateCat(): Promise<ICat> {
       physicalTraits: phenotype.physicalTraits,
       stats: phenotype.stats,
       behavior: phenotype.behavior,
-      svgImage: "🐱", // Placeholder emoji (will be replaced with real image later)
+      svgImage: svgImage || "🐱", // Placeholder emoji (will be replaced with real image later)
       createdAt: new Date(),
     };
+
+    
     
     return cat;
   } catch (error) {

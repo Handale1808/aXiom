@@ -7,6 +7,7 @@ import { generateAbilities } from "./generateAbilities";
 import { generateDescription } from "./generateDescription";
 import { generateGenome } from "./genome/generation";
 import { interpretGenome } from "./genome/interpretation/index";
+import { generateSvgString } from "./generateImage";
 
 // Specimen name generation constants (unchanged)
 const SPECIMEN_PREFIXES = [
@@ -161,7 +162,7 @@ function generateName(): string {
 /**
  * Main cat generation function
  * Now genome-driven instead of random
- * 
+ *
  * Flow:
  * 1. Generate genome (1000-base string)
  * 2. Interpret genome → derive complete phenotype
@@ -179,10 +180,10 @@ export async function generateCat(
   try {
     // Step 1: Generate genome
     const genome = generateGenome();
-    
+
     // Step 2: Interpret genome → derive phenotype
     const phenotype = interpretGenome(genome, { debug: false });
-    
+
     // Step 3: Grant abilities based on derived phenotype
     // generateAbilities logic is unchanged - still checks phenotype conditions
     const abilities = await generateAbilities(
@@ -193,7 +194,7 @@ export async function generateCat(
       allRules,
       allAbilities
     );
-    
+
     // Step 4: Generate description (unchanged - uses phenotype)
     const description = await generateDescription(
       {
@@ -204,25 +205,28 @@ export async function generateCat(
       },
       abilities
     );
-    
-    // Step 5: Assemble cat document
+
+    // Step 5: Generate SVG image
+    const svgImage = generateSvgString(phenotype.physicalTraits);
+
+    // Step 6: Assemble cat document
     const cat: ICatAlien = {
       name: generateName(),
       description,
-      genome, // NEW FIELD - store the genome string
+      genome,
       physicalTraits: phenotype.physicalTraits,
       stats: phenotype.stats,
       resistances: phenotype.resistances,
       behavior: phenotype.behavior,
-      svgImage: "", // Will be generated later
+      svgImage,
       createdAt: new Date(),
     };
-    
+
     return { cat, abilities };
   } catch (error) {
     console.error("Error generating cat:", error);
     throw new Error(
-      `Failed to generate cat: ${error instanceof Error ? error.message : 'Unknown error'}`
+      `Failed to generate cat: ${error instanceof Error ? error.message : "Unknown error"}`
     );
   }
 }
