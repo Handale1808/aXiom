@@ -2,7 +2,10 @@
 
 import { IPhysicalTraits } from "../../models/CatAliens";
 
-export function generateSvgString(traits: IPhysicalTraits): string {
+export function generateSvgString(
+  traits: IPhysicalTraits,
+  type?: string
+): string {
   const seededRandom = (seed: number) => {
     const x = Math.sin(seed) * 10000;
     return x - Math.floor(x);
@@ -220,8 +223,13 @@ export function generateSvgString(traits: IPhysicalTraits): string {
     traits.eyes * 1000 + traits.legs * 100 + traits.tails * 10 + traits.wings;
 
   const blobPoints = generateBlobPoints(100, 95, 50, blobSeed);
-  const analogousColors = getAnalogousColors(traits.colour);
-  const triadicColors = getTriadicColors(traits.colour);
+  const mainColor = traits.colour;
+  let analogousColors: string[] = [];
+  let triadicColors: string[] = [];
+  if (type !== "cat") {
+    analogousColors = getAnalogousColors(mainColor);
+    triadicColors = getTriadicColors(mainColor);
+  }
 
   const tails =
     traits.tails > 0
@@ -235,7 +243,8 @@ export function generateSvgString(traits: IPhysicalTraits): string {
             const angle = startAngle + angleStep * i;
             const originX = jitter(traits.tails === 1 ? 150 : 140, i * 100);
             const originY = jitter(traits.tails === 1 ? 80 : 100, i * 100 + 1);
-            const tailColor = triadicColors[i % 3];
+            const tailColor =
+              triadicColors.length > 0 ? triadicColors[i % 3] : mainColor;
 
             const tailPath = `
           M 0,0
@@ -254,7 +263,8 @@ export function generateSvgString(traits: IPhysicalTraits): string {
           .map((_, i) => {
             const t = traits.legs === 1 ? 0.5 : i / (traits.legs - 1);
             const curvePoint = getBottomCurvePoint(t, blobPoints);
-            const legColor = analogousColors[i % 3];
+            const legColor =
+              analogousColors.length > 0 ? analogousColors[i % 3] : mainColor;
             const perpAngle = curvePoint.angle + Math.PI / 2;
 
             return `<rect x="-3" y="-30" width="6" height="30" rx="3" ry="3" fill="${legColor}" opacity="1" transform="translate(${curvePoint.x}, ${curvePoint.y}) rotate(${(perpAngle * 180) / Math.PI})" />`;
@@ -303,5 +313,5 @@ export function generateSvgString(traits: IPhysicalTraits): string {
           .join("")
       : "";
 
-  return `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">${tails}<path d="${generateBlobPath(blobPoints, blobSeed)}" fill="${traits.colour}" />${legs}${wings}${eyes}</svg>`;
+  return `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">${tails}<path d="${generateBlobPath(blobPoints, blobSeed)}" fill="${mainColor}" />${legs}${wings}${eyes}</svg>`;
 }

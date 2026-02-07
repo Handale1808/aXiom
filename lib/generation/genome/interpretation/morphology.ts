@@ -1,8 +1,8 @@
 // lib/genome/interpretation/morphology.ts
 
-import type { IPhysicalTraits, SkinType, Size } from '@/models/CatAliens';
-import type { InterpretationResult, DebugInfo } from '../types';
-import { SUBREGIONS, MOTIFS, SYMBOL_MAPPINGS } from '../regions';
+import type { IPhysicalTraits, SkinType, Size } from "@/models/CatAliens";
+import type { InterpretationResult, DebugInfo } from "../types";
+import { SUBREGIONS, MOTIFS, SYMBOL_MAPPINGS } from "../regions";
 import {
   extractRegion,
   detectTandemRepeats,
@@ -13,13 +13,13 @@ import {
   createDebugInfo,
   calculateEntropy,
   countSymbolRuns,
-  countSymbolTransitions
-} from './utils';
+  countSymbolTransitions,
+} from "./utils";
 import {
   interpretPerceptionStat,
   interpretAgilityStat,
-  interpretEnduranceStat
-} from './interpreters';
+  interpretEnduranceStat,
+} from "./interpreters";
 
 /**
  * Interpret appendage count - hash-based for maximum variation
@@ -31,13 +31,13 @@ function interpretAppendageCount(
   // Create a simple hash from the segment
   let hash = 0;
   for (let i = 0; i < Math.min(segment.length, 10); i++) {
-    hash = ((hash << 5) - hash) + segment.charCodeAt(i);
+    hash = (hash << 5) - hash + segment.charCodeAt(i);
     hash = hash & hash; // Convert to 32bit integer
   }
-  
+
   // Use absolute value and modulo to get 0-10
   const count = Math.abs(hash) % 11;
-  
+
   return { count };
 }
 
@@ -50,42 +50,47 @@ function interpretBodyPlan(
 ): { legs: number; tails: number; size: Size; debugInfo?: DebugInfo } {
   const { start, end } = SUBREGIONS.BODY_PLAN;
   const segment = extractRegion(genome, start, end);
-  
+
   // Legs: use appendage interpreter on first half
   const legsSegment = segment.substring(0, 50);
   const legs = interpretAppendageCount(legsSegment).count;
-  
+
   // Tails: use appendage interpreter on second half
   const tailsSegment = segment.substring(50, 100);
   const tails = interpretAppendageCount(tailsSegment).count;
-  
+
   // Size: based on dominant symbol frequency
   const dominantSymbol = findDominantSymbol(segment);
   const counts = countSymbols(segment);
   const dominantCount = counts[dominantSymbol];
-  
-  let size: Size = 'medium';
+
+  let size: Size = "medium";
   for (const threshold of SYMBOL_MAPPINGS.SIZE_THRESHOLDS) {
     if (dominantCount >= threshold.min && dominantCount <= threshold.max) {
       size = threshold.size as Size;
       break;
     }
   }
-  
-  const result: { legs: number; tails: number; size: Size; debugInfo?: DebugInfo } = {
+
+  const result: {
+    legs: number;
+    tails: number;
+    size: Size;
+    debugInfo?: DebugInfo;
+  } = {
     legs,
     tails,
-    size
+    size,
   };
-  
+
   if (debug) {
-    result.debugInfo = createDebugInfo('Body Plan', segment, {
+    result.debugInfo = createDebugInfo("Body Plan", segment, {
       includeDominant: true,
-      includeRepeats: true
+      includeRepeats: true,
     });
     result.debugInfo.derivedValue = { legs, tails, size };
   }
-  
+
   return result;
 }
 
@@ -98,32 +103,32 @@ function interpretSensory(
 ): { eyes: number; perception: number; debugInfo?: DebugInfo } {
   const { start, end } = SUBREGIONS.SENSORY;
   const segment = extractRegion(genome, start, end);
-  
+
   // Eyes: use appendage interpreter
   const eyes = interpretAppendageCount(segment).count;
-  
+
   // Perception stat: use new opposing forces interpreter
   const perceptionResult = interpretPerceptionStat(segment, debug);
   const perception = perceptionResult.value;
-  
-  const result: { eyes: number; perception: number; debugInfo?: DebugInfo } = { 
-    eyes, 
-    perception 
+
+  const result: { eyes: number; perception: number; debugInfo?: DebugInfo } = {
+    eyes,
+    perception,
   };
-  
+
   if (debug) {
-    result.debugInfo = createDebugInfo('Sensory', segment, {
+    result.debugInfo = createDebugInfo("Sensory", segment, {
       motifs: MOTIFS.PERCEPTION,
       includeRepeats: true,
-      includeEntropy: true
+      includeEntropy: true,
     });
-    result.debugInfo.derivedValue = { 
-      eyes, 
+    result.debugInfo.derivedValue = {
+      eyes,
       perception,
-      perceptionBreakdown: perceptionResult.debugInfo
+      perceptionBreakdown: perceptionResult.debugInfo,
     };
   }
-  
+
   return result;
 }
 
@@ -136,33 +141,130 @@ function interpretLocomotion(
 ): { wings: number; agility: number; debugInfo?: DebugInfo } {
   const { start, end } = SUBREGIONS.LOCOMOTION;
   const segment = extractRegion(genome, start, end);
-  
+
   // Wings: use appendage interpreter
   const wings = interpretAppendageCount(segment).count;
-  
+
   // Agility stat: use new opposing forces interpreter
   const agilityResult = interpretAgilityStat(segment, debug);
   const agility = agilityResult.value;
-  
-  const result: { wings: number; agility: number; debugInfo?: DebugInfo } = { 
-    wings, 
-    agility 
+
+  const result: { wings: number; agility: number; debugInfo?: DebugInfo } = {
+    wings,
+    agility,
   };
-  
+
   if (debug) {
-    result.debugInfo = createDebugInfo('Locomotion', segment, {
+    result.debugInfo = createDebugInfo("Locomotion", segment, {
       motifs: MOTIFS.AGILITY,
       includeRepeats: true,
-      includeEntropy: true
+      includeEntropy: true,
     });
-    result.debugInfo.derivedValue = { 
-      wings, 
+    result.debugInfo.derivedValue = {
+      wings,
       agility,
-      agilityBreakdown: agilityResult.debugInfo
+      agilityBreakdown: agilityResult.debugInfo,
     };
   }
-  
+
   return result;
+}
+
+const hexToHsl = (hex: string): [number, number, number] => {
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const l = (max + min) / 2;
+  let h = 0;
+  let s = 0;
+
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+
+    switch (max) {
+      case r:
+        h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+        break;
+      case g:
+        h = ((b - r) / d + 2) / 6;
+        break;
+      case b:
+        h = ((r - g) / d + 4) / 6;
+        break;
+    }
+  }
+
+  return [h * 360, s * 100, l * 100];
+};
+
+const hslToHex = (h: number, s: number, l: number): string => {
+  h = h / 360;
+  s = s / 100;
+  l = l / 100;
+
+  let r, g, b;
+
+  if (s === 0) {
+    r = g = b = l;
+  } else {
+    const hue2rgb = (p: number, q: number, t: number) => {
+      if (t < 0) t += 1;
+      if (t > 1) t -= 1;
+      if (t < 1 / 6) return p + (q - p) * 6 * t;
+      if (t < 1 / 2) return q;
+      if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+      return p;
+    };
+
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    const p = 2 * l - q;
+    r = hue2rgb(p, q, h + 1 / 3);
+    g = hue2rgb(p, q, h);
+    b = hue2rgb(p, q, h - 1 / 3);
+  }
+
+  const toHex = (x: number) => {
+    const hex = Math.round(x * 255).toString(16);
+    return hex.length === 1 ? "0" + hex : hex;
+  };
+
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+};
+
+function normalizeColorForCats(hex: string): string {
+  const [h, s, l] = hexToHsl(hex);
+
+  // Decide which natural cat color family based on input
+  const isGrayish = s < 20;
+  const isDark = l < 35;
+  const isLight = l > 65;
+
+  let newH = h;
+  let newS = s;
+  let newL = l;
+
+  if (isGrayish || (isDark && s < 40)) {
+    // Gray/black cats: very low saturation, darker tones
+    newS = Math.min(s, 8);
+    newL = Math.max(18, Math.min(l, 45));
+  } else if (isLight) {
+    // White/cream cats: high lightness, very low saturation
+    newS = Math.min(s, 12);
+    newL = Math.max(75, Math.min(l, 92));
+    newH = Math.min(h, 40); // Warm cream tones
+  } else {
+    // Brown/tan/orange cats: warm hues, LOW saturation for natural look
+    // Map any hue to the 15-45 degree range (orange-brown earth tones)
+    newH = 15 + ((h % 360) % 31); // 15-45 degree range
+    newS = Math.max(20, Math.min(s, 45)); // 20-45% saturation (much less vivid)
+    newL = Math.max(30, Math.min(l, 65)); // 30-65% lightness (medium tones)
+  }
+
+  return hslToHex(newH, newS, newL);
 }
 
 /**
@@ -171,72 +273,75 @@ function interpretLocomotion(
 function interpretDefense(
   genome: string,
   debug: boolean
-): { 
-  skinType: SkinType; 
-  hasClaws: boolean; 
-  hasFangs: boolean; 
+): {
+  skinType: SkinType;
+  hasClaws: boolean;
+  hasFangs: boolean;
   colour: string;
   endurance: number;
-  debugInfo?: DebugInfo 
+  debugInfo?: DebugInfo;
 } {
   const { start, end } = SUBREGIONS.DEFENSE;
   const segment = extractRegion(genome, start, end);
-  
+
   // SkinType: based on dominant symbol
   const dominantSymbol = findDominantSymbol(segment);
   const skinType = SYMBOL_MAPPINGS.SKIN_TYPE[dominantSymbol] as SkinType;
-  
+
   // Claws and Fangs: motif presence
   const clawMatches = findMotifs(segment, MOTIFS.CLAWS);
   const fangMatches = findMotifs(segment, MOTIFS.FANGS);
   const hasClaws = clawMatches.length > 0;
   const hasFangs = fangMatches.length > 0;
-  
+
   // Colour: direct base mapping (first 3 bases of Defense region)
   const colorSegment = segment.substring(0, 3);
   const colorValues = SYMBOL_MAPPINGS.COLOR_VALUES;
-  
+
   const red = colorValues[colorSegment[0] as keyof typeof colorValues] || 0;
   const green = colorValues[colorSegment[1] as keyof typeof colorValues] || 0;
   const blue = colorValues[colorSegment[2] as keyof typeof colorValues] || 0;
-  
-  const colour = rgbToHex(red, green, blue);
-  
+
+  const rawColour = rgbToHex(red, green, blue);
+
+  // Normalize color for cats to natural tones
+  const colour = normalizeColorForCats(rawColour);
+
   // Endurance stat: use new opposing forces interpreter
   const enduranceResult = interpretEnduranceStat(segment, debug);
   const endurance = enduranceResult.value;
-  
-  const result: { 
-    skinType: SkinType; 
-    hasClaws: boolean; 
+
+  const result: {
+    skinType: SkinType;
+    hasClaws: boolean;
     hasFangs: boolean;
     colour: string;
     endurance: number;
-    debugInfo?: DebugInfo 
+    debugInfo?: DebugInfo;
   } = {
     skinType,
     hasClaws,
     hasFangs,
     colour,
-    endurance
+    endurance,
   };
-  
+
   if (debug) {
-    result.debugInfo = createDebugInfo('Defense', segment, {
+    result.debugInfo = createDebugInfo("Defense", segment, {
       motifs: [...MOTIFS.CLAWS, ...MOTIFS.FANGS, ...MOTIFS.ENDURANCE],
       includeDominant: true,
-      includeEntropy: true
+      includeEntropy: true,
     });
-    result.debugInfo.derivedValue = { 
-      skinType, 
-      hasClaws, 
-      hasFangs, 
-      colour, 
+    result.debugInfo.derivedValue = {
+      skinType,
+      hasClaws,
+      hasFangs,
+      colour,
       endurance,
-      enduranceBreakdown: enduranceResult.debugInfo
+      enduranceBreakdown: enduranceResult.debugInfo,
     };
   }
-  
+
   return result;
 }
 
@@ -257,7 +362,7 @@ export function interpretMorphology(
   const sensory = interpretSensory(genome, debug);
   const locomotion = interpretLocomotion(genome, debug);
   const defense = interpretDefense(genome, debug);
-  
+
   const physicalTraits: IPhysicalTraits = {
     legs: bodyPlan.legs,
     tails: bodyPlan.tails,
@@ -267,9 +372,9 @@ export function interpretMorphology(
     skinType: defense.skinType,
     hasClaws: defense.hasClaws,
     hasFangs: defense.hasFangs,
-    colour: defense.colour
+    colour: defense.colour,
   };
-  
+
   const result: InterpretationResult<{
     physicalTraits: IPhysicalTraits;
     perception: number;
@@ -280,18 +385,18 @@ export function interpretMorphology(
       physicalTraits,
       perception: sensory.perception,
       agility: locomotion.agility,
-      endurance: defense.endurance
-    }
+      endurance: defense.endurance,
+    },
   };
-  
+
   if (debug) {
     result.debugInfo = {
-      region: 'Morphology (complete)',
+      region: "Morphology (complete)",
       foundMotifs: [],
       symbolFrequencies: {} as any,
-      derivedValue: result.value
+      derivedValue: result.value,
     };
   }
-  
+
   return result;
 }

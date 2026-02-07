@@ -139,7 +139,7 @@ export async function generateCat(): Promise<ICat> {
     );
 
     // Step 4: Generate SVG image
-    const svgImage = generateSvgString(phenotype.physicalTraits);
+    const svgImage = generateSvgString(phenotype.physicalTraits, "cat");
 
     // Step 5: Assemble cat document
     const cat: ICat = {

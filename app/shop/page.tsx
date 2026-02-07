@@ -24,7 +24,7 @@ import {
   savePureCatAction,
   fetchAllPureCatsAction,
   fetchPureCatByIdAction,
-} from "@/lib/services/pureCatActions";
+} from "@/lib/services/CatActions";
 import { useCart } from "@/lib/context/CartContext";
 import {
   getCatPriceAction,
