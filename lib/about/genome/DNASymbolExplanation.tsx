@@ -1,7 +1,7 @@
 // lib/components/about/genome/DNASymbolExplanation.tsx
 
 import { getSymbolColor } from "./utils";
-import type { GenomeSymbol } from "@/lib/cat-alien-generation/genome/types";
+import type { GenomeSymbol } from "@/lib/generation/genome/types";
 
 const CAT_SYMBOLS: GenomeSymbol[] = ["A", "T", "C", "G"];
 const ALIEN_SYMBOLS: GenomeSymbol[] = ["W", "X", "Y", "Z"];

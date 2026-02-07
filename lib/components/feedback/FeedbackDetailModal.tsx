@@ -4,7 +4,7 @@ import AnalysisResult from "../AnalysisResult";
 import { formatDate } from "@/lib/utils/formatDate";
 import type { IFeedback } from "@/models/Feedback";
 import { apiFetch } from "@/lib/apiClient";
-import { fetchCatByIdAction } from "@/lib/services/catAlienActions";
+import { fetchCatAlienByIdAction } from "@/lib/services/catAlienActions";
 import { ICatAlien } from "@/models/CatAliens";
 import { IAbility } from "@/models/Ability";
 import CatDetails from "../cat-display/CatDetails";
@@ -46,7 +46,7 @@ export default function FeedbackDetailModal({
 
     setIsLoadingCat(true);
     try {
-      const data = await fetchCatByIdAction(feedback.catAlienId.toString());
+      const data = await fetchCatAlienByIdAction(feedback.catAlienId.toString());
       setCatData(data);
       setIsCatModalOpen(true);
     } catch (error) {

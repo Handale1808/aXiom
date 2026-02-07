@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useUser } from "@/lib/context/UserContext";
 import { useCart } from "@/lib/context/CartContext";
-import { fetchCatByIdAction } from "@/lib/services/catAlienActions";
+import { fetchCatAlienByIdAction } from "@/lib/services/catAlienActions";
 import { ICatAlien } from "@/models/CatAliens";
 import { IAbility } from "@/models/Ability";
 import Modal from "@/lib/components/ui/Modal";
@@ -24,7 +24,7 @@ export default function CartPage() {
 
   const handleCatClick = async (catAlienId: string) => {
     try {
-      const { cat, abilities } = await fetchCatByIdAction(catAlienId);
+      const { cat, abilities } = await fetchCatAlienByIdAction(catAlienId);
 
       if (!cat) {
         return;

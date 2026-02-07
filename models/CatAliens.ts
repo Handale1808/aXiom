@@ -45,7 +45,7 @@ export interface IBehavior {
 
 export interface ICatAlien {
   _id?: ObjectId;
-  type: "hybrid";
+  type: "cat-alien";
   name: string;
   description: string;
   genome: string; // NEW: 1000-base genome string (ATCGWXYZ alphabet)

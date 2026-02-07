@@ -67,7 +67,7 @@ export async function saveCatAlienAction(
     // Prepare cat document with SVG and type
     const catDocument: ICatAlien = {
       ...cat,
-      type: "hybrid", // Ensure type is set
+      type: "cat-alien", // Ensure type is set
       svgImage: svgString,
       createdAt: new Date(),
     };

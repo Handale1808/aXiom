@@ -20,7 +20,7 @@ import {
 import { useResponsiveScaling } from "@/lib/hooks/useResponsiveScaling";
 
 interface CatDetailsProps {
-  cat: ICatAlien;
+  cat: ICatAlien | ICat;
   abilities: IAbility[];
   onSave?: (svgString: string) => Promise<void>;
   onClose: () => void;

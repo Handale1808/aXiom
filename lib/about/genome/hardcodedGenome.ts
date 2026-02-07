@@ -1,6 +1,6 @@
 // lib/components/about/genome/hardcodedGenome.ts
 
-import type { GenomeSymbol } from '@/lib/cat-alien-generation/genome/types';
+import type { GenomeSymbol } from '@/lib/generation/genome/types';
 
 /**
  * Pre-generated demo genome for consistent visualization

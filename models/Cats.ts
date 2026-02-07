@@ -1,6 +1,7 @@
 // models/Cats.ts
 
 import { ObjectId } from "mongodb";
+import { IResistances } from "./CatAliens";
 
 export type SkinType = "fur";
 export type Size = "tiny" | "small" | "medium" | "large" | "massive";
@@ -41,6 +42,7 @@ export interface ICat {
   genome: string; // 1000-base ATCG-only genome string
   physicalTraits: IPhysicalTraits;
   stats: IStats;
+  resistances: IResistances;
   behavior: IBehavior;
   svgImage: string;
   createdAt: Date;

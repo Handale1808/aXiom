@@ -199,9 +199,10 @@ export async function generateCat(): Promise<ICat> {
       name: generateName(),
       description,
       genome, // ATCG-only genome string
-      physicalTraits: phenotype.physicalTraits,
-      stats: phenotype.stats,
-      behavior: phenotype.behavior,
+      physicalTraits: phenotype.physicalTraits as ICat["physicalTraits"],
+      resistances: {} as ICat["resistances"],
+      stats: phenotype.stats as ICat["stats"],
+      behavior: phenotype.behavior as ICat["behavior"],
       svgImage: svgImage || "🐱", // Placeholder emoji (will be replaced with real image later)
       createdAt: new Date(),
     };

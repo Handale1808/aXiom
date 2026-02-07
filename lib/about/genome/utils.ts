@@ -1,7 +1,7 @@
 // lib/components/about/genome/utils.ts
 
-import type { GenomeSymbol } from '@/lib/cat-alien-generation/genome/types';
-import { GENOME_REGIONS } from '@/lib/cat-alien-generation/genome/regions';
+import type { GenomeSymbol } from '@/lib/generation/genome/types';
+import { GENOME_REGIONS } from '@/lib/generation/genome/regions';
 
 /**
  * Color palette for genome symbols

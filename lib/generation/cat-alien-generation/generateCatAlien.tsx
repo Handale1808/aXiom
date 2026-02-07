@@ -220,6 +220,7 @@ export async function generateCat(
       behavior: phenotype.behavior,
       svgImage,
       createdAt: new Date(),
+      type: "cat-alien",
     };
 
     return { cat, abilities };

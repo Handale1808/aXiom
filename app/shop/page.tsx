@@ -507,7 +507,6 @@ export default function ShopPage() {
               onSave={handleSavePureCat}
               showAddToCart={false}
               onClose={handleCloseModal}
-              isCat={true}
             />
           ) : currentCat ? (
             <CatDetails
@@ -517,7 +516,6 @@ export default function ShopPage() {
               showAddToCart={!isAdmin}
               onAddToCart={!isAdmin ? addToCart : undefined}
               onClose={handleCloseModal}
-              isCat={false}
             />
           ) : null}
         </Modal>

@@ -10,17 +10,17 @@ import { validateGenome } from './validation';
 const SYMBOL_SETS: Record<GenerationType, GenomeSymbol[]> = {
   cat: ['A', 'T', 'C', 'G'],
   alien: ['W', 'X', 'Y', 'Z'],
-  hybrid: ['A', 'T', 'C', 'G', 'W', 'X', 'Y', 'Z']
+  "cat-alien": ['A', 'T', 'C', 'G', 'W', 'X', 'Y', 'Z']
 };
 
 /**
  * Generates a genome string based on specimen type
  * 
- * @param type - Specimen type: "cat" (ATCG only), "alien" (WXYZ only), or "hybrid" (all)
+ * @param type - Specimen type: "cat" (ATCG only), "alien" (WXYZ only), or "cat-alien" (all)
  * @returns A valid 1000-base genome string
  * @throws Error if generated genome fails validation
  */
-export function generateGenome(type: GenerationType = "hybrid"): string {
+export function generateGenome(type: GenerationType = "cat-alien"): string {
   const symbols = SYMBOL_SETS[type];
   const genome: string[] = [];
   

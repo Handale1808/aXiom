@@ -1,6 +1,6 @@
 // lib/components/about/stats/utils/statCalculations.ts
 
-import { SUBREGIONS, MOTIFS } from '@/lib/cat-alien-generation/genome/regions';
+import { SUBREGIONS, MOTIFS } from '@/lib/generation/genome/regions';
 import {
   interpretStrengthStat,
   interpretAgilityStat,
@@ -18,7 +18,7 @@ import {
   interpretCuriosity,
   interpretLoyalty,
   interpretChaos,
-} from '@/lib/cat-alien-generation/genome/interpretation/interpreters';
+} from '@/lib/generation/genome/interpretation/interpreters';
 import {
   extractRegion,
   findMotifs,
@@ -28,8 +28,7 @@ import {
   countAlternations,
   findDominantSymbol,
   countSymbols,
-} from '@/lib/cat-alien-generation/genome/interpretation/utils';
-import type { GenomeSymbol } from '@/lib/cat-alien-generation/genome/types';
+} from '@/lib/generation/genome/interpretation/utils';
 
 export type StatCategory = 'stats' | 'resistances' | 'behaviors';
 

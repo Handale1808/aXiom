@@ -137,7 +137,7 @@ function validateDescription(data: string): string {
  * @throws {Error} If API call fails after all retries
  */
 export async function generateDescription(
-  cat: Pick<ICat, "physicalTraits" | "stats" | "behavior"> & {
+  cat: Pick<ICat | ICatAlien, "physicalTraits" | "stats" | "behavior"> & {
     resistances?: IResistances;
   },
   abilities: IAbility[],

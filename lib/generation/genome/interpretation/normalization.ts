@@ -1,4 +1,4 @@
-// lib/cat-alien-generation/genome/interpretation/normalization.ts
+// lib/generation/genome/interpretation/normalization.ts
 
 import type { IPhysicalTraits, IStats, IBehavior } from '@/models/Cats';
 import type { GenomeInterpretationResult } from './index';
