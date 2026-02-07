@@ -139,6 +139,7 @@ function validateDescription(data: string): string {
 export async function generateDescription(
   cat: Pick<ICat | ICatAlien, "physicalTraits" | "stats" | "behavior"> & {
     resistances?: IResistances;
+    type: "cat" | "cat-alien";
   },
   abilities: IAbility[],
   requestId?: string
@@ -163,7 +164,78 @@ export async function generateDescription(
             ? abilities.map((a) => `- ${a.name}: ${a.description} `).join("\n")
             : "None";
 
-        const prompt = `
+        const isCat = cat.type === "cat";
+
+        const prompt = isCat
+          ? `
+ROLE:
+You are a feline behavioral assessment system generating specimen records
+for domesticated cat behavioral monitoring and welfare optimization.
+
+Your purpose is to produce clinical assessments of standard feline specimens
+while documenting their positive behavioral characteristics and companionship metrics.
+
+STYLE RULES:
+- Clinical and scientific tone
+- Emotionless, detached, and observational
+- Describe positive traits and optimal behaviors clinically
+- No humor, jokes, or overly whimsical phrasing
+- No dramatic storytelling
+- Use precise behavioral and ethological terminology
+- Frame all observations positively (aggression = "assertiveness", chaos = "spontaneity")
+
+OUTPUT RULES:
+- Output EXACTLY two sentences.
+- Output plain text only.
+- Do NOT include headings, labels, bullet points, or formatting.
+- Do NOT include numeric values or score references.
+- Do NOT restate raw trait data.
+- Infer positive behavioral patterns from the data.
+
+--------------------------------
+SPECIMEN DATA
+--------------------------------
+
+PHYSICAL TRAITS
+Eyes: ${physicalTraits.eyes}
+Legs: ${physicalTraits.legs}
+Tails: ${physicalTraits.tails}
+Skin Type: ${physicalTraits.skinType}
+Size: ${physicalTraits.size}
+Color: ${physicalTraits.colour}
+Claws Present: ${physicalTraits.hasClaws}
+Fangs Present: ${physicalTraits.hasFangs}
+
+STATS
+Strength: ${stats.strength}
+Agility: ${stats.agility}
+Endurance: ${stats.endurance}
+Intelligence: ${stats.intelligence}
+Perception: ${stats.perception}
+
+BEHAVIORAL TENDENCIES
+Aggression: ${behavior.aggression}
+Curiosity: ${behavior.curiosity}
+Loyalty: ${behavior.loyalty}
+Chaos: ${behavior.chaos}
+
+ABILITIES
+${abilityText}
+
+BASELINE SPECIMEN DIRECTIVE:
+This organism is a standard domesticated feline specimen.
+Describe positive behavioral traits, companionship quality,
+affection responses, play engagement, and optimal interaction protocols.
+
+TASK:
+Produce a two-sentence behavioral assessment describing:
+- temperament and affection metrics
+- cognitive engagement and curiosity levels
+- social bonding indicators
+- optimal handling and enrichment protocols
+- companionship value and welfare status
+`
+          : `
 ROLE:
 You are a laboratory documentation system generating behavioral specimen records
 for a bioengineering program that produces alien–feline hybrid organisms.
@@ -252,6 +324,7 @@ Produce a two-sentence psychological and behavioral profile describing:
 - containment or handling considerations
 - potential research or field-use implications
 `;
+
         debug("Calling Anthropic API", {
           requestId,
           model: "claude-sonnet-4-20250514",
