@@ -238,12 +238,12 @@ const GenerateImage = React.forwardRef<SVGSVGElement, GenerateImageProps>(
           Array.from({ length: traits.tails }).map((_, i) => {
             const totalTails = traits.tails;
             const angleSpread = 60;
-            const startAngle = -angleSpread / 2;
+            const startAngle = totalTails > 1 ? -angleSpread / 2 : 30;
             const angleStep =
               totalTails > 1 ? angleSpread / (totalTails - 1) : 0;
             const angle = startAngle + angleStep * i;
-            const originX = jitter(140, i * 100);
-            const originY = jitter(100, i * 100 + 1);
+            const originX = jitter(traits.tails === 1 ? 150 : 140, i * 100);
+            const originY = jitter(traits.tails === 1 ? 80 : 100, i * 100 + 1);
             const tailColor = triadicColors[i % 3];
 
             const tailPath = `
