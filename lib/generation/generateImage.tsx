@@ -244,7 +244,18 @@ export function generateSvgString(
             const originX = jitter(traits.tails === 1 ? 150 : 140, i * 100);
             const originY = jitter(traits.tails === 1 ? 80 : 100, i * 100 + 1);
             const tailColor =
-              triadicColors.length > 0 ? triadicColors[i % 3] : mainColor;
+              triadicColors.length > 0
+                ? triadicColors[i % 3]
+                : (() => {
+                    const [h, s, l] = hexToHsl(mainColor);
+                    const hueShift = jitter(0, i * 100 + 50, 25);
+                    const satShift = jitter(0, i * 100 + 51, s * 0.5);
+                    return hslToHex(
+                      (h + hueShift + 360) % 360,
+                      Math.max(0, Math.min(100, s + satShift)),
+                      l
+                    );
+                  })();
 
             const tailPath = `
           M 0,0
@@ -263,8 +274,23 @@ export function generateSvgString(
           .map((_, i) => {
             const t = traits.legs === 1 ? 0.5 : i / (traits.legs - 1);
             const curvePoint = getBottomCurvePoint(t, blobPoints);
+
+            // Generate a random seed for each leg instead of using position
+            const randomSeed = Math.floor(Math.random() * 10000);
+
             const legColor =
-              analogousColors.length > 0 ? analogousColors[i % 3] : mainColor;
+              analogousColors.length > 0
+                ? analogousColors[i % 3]
+                : (() => {
+                    const [h, s, l] = hexToHsl(mainColor);
+                    const hueShift = jitter(0, randomSeed, 25);
+                    const satShift = jitter(0, randomSeed + 1, s * 0.5);
+                    return hslToHex(
+                      (h + hueShift + 360) % 360,
+                      Math.max(0, Math.min(100, s + satShift)),
+                      l
+                    );
+                  })();
             const perpAngle = curvePoint.angle + Math.PI / 2;
 
             return `<rect x="-3" y="-30" width="6" height="30" rx="3" ry="3" fill="${legColor}" opacity="1" transform="translate(${curvePoint.x}, ${curvePoint.y}) rotate(${(perpAngle * 180) / Math.PI})" />`;
