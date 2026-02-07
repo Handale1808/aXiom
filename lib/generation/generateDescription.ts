@@ -139,7 +139,7 @@ function validateDescription(data: string): string {
 export async function generateDescription(
   cat: Pick<ICat | ICatAlien, "physicalTraits" | "stats" | "behavior"> & {
     resistances?: IResistances;
-    type: "cat" | "cat-alien";
+    type: "cat" | "cat-alien" | "alien";
   },
   abilities: IAbility[],
   requestId?: string
@@ -165,6 +165,7 @@ export async function generateDescription(
             : "None";
 
         const isCat = cat.type === "cat";
+        const isAlien = cat.type === "alien";
 
         const prompt = isCat
           ? `
@@ -234,6 +235,86 @@ Produce a two-sentence behavioral assessment describing:
 - social bonding indicators
 - optimal handling and enrichment protocols
 - companionship value and welfare status
+`
+          :  isAlien
+          ? `
+ROLE:
+You are a xenobiological archive system documenting specimens from 
+extraterrestrial origins for deep space research protocols.
+
+Your purpose is to produce clinical assessments of pure alien organisms
+while emphasizing their non-terrestrial biology and incomprehensible adaptations.
+
+STYLE RULES:
+- Clinical xenobiological tone
+- Emotionless, scientific, archival
+- Emphasize extreme weirdness and alien characteristics
+- No terrestrial comparisons or familiar references
+- No humor or anthropomorphization
+- Use precise xenobiological terminology
+- Frame all traits as alien/exotic/otherworldly
+
+OUTPUT RULES:
+- Output EXACTLY two sentences.
+- Output plain text only.
+- Do NOT include headings, labels, bullet points, or formatting.
+- Do NOT include numeric values or score references.
+- Do NOT restate raw trait data.
+- Infer alien behavioral patterns and xenobiological adaptations.
+
+--------------------------------
+SPECIMEN DATA
+--------------------------------
+
+PHYSICAL TRAITS
+Eyes: ${physicalTraits.eyes}
+Legs: ${physicalTraits.legs}
+Wings: ${physicalTraits.wings}
+Tails: ${physicalTraits.tails}
+Skin Type: ${physicalTraits.skinType}
+Size: ${physicalTraits.size}
+Color: ${physicalTraits.colour}
+Claws Present: ${physicalTraits.hasClaws}
+Fangs Present: ${physicalTraits.hasFangs}
+
+STATS
+Strength: ${stats.strength}
+Agility: ${stats.agility}
+Endurance: ${stats.endurance}
+Intelligence: ${stats.intelligence}
+Perception: ${stats.perception}
+Psychic: ${stats.psychic}
+
+RESISTANCES
+Poison: ${resistances?.poison || 0}
+Acid: ${resistances?.acid || 0}
+Fire: ${resistances?.fire || 0}
+Cold: ${resistances?.cold || 0}
+Psychic: ${resistances?.psychic || 0}
+Radiation: ${resistances?.radiation || 0}
+
+BEHAVIORAL TENDENCIES
+Aggression: ${behavior.aggression}
+Curiosity: ${behavior.curiosity}
+Loyalty: ${behavior.loyalty}
+Chaos: ${behavior.chaos}
+
+ABILITIES
+${abilityText}
+
+XENOBIOLOGICAL SPECIMEN DIRECTIVE:
+This organism originates from non-terrestrial environments.
+Describe incomprehensible adaptations, exotic biology,
+psychic manifestations, radiation tolerance, and
+containment protocols for handling extraterrestrial entities.
+
+TASK:
+Produce a two-sentence xenobiological assessment describing:
+- Non-terrestrial physiology and exotic adaptations
+- Psychic capabilities and mental anomalies
+- Environmental tolerances beyond terrestrial norms
+- Behavioral unpredictability and alien intelligence
+- Containment risks and research protocols
 `
           : `
 ROLE:

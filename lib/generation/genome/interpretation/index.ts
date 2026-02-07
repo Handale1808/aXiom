@@ -7,7 +7,7 @@ import { interpretMetabolism } from './metabolism';
 import { interpretCognition } from './cognition';
 import { interpretPower } from './power';
 import { isValidGenome } from '../validation';
-import { normalizeToCat, isPureCatGenome } from './normalization';
+import { normalizeToCat, isPureCatGenome, normalizeToAlien, isPureAlienGenome } from './normalization';
 
 /**
  * Complete genome interpretation result
@@ -40,10 +40,11 @@ export interface GenomeInterpretationResult {
  */
 export function interpretGenome(
   genome: string,
-  options?: { debug?: boolean; normalizeCats?: boolean }
+  options?: { debug?: boolean; normalizeCats?: boolean; normalizeAliens?: boolean }
 ): GenomeInterpretationResult {
   const debug = options?.debug ?? false;
   const normalizeCats = options?.normalizeCats ?? false;
+  const normalizeAliens = options?.normalizeAliens ?? false;
   
   // Validate genome before interpretation
   if (!isValidGenome(genome)) {
@@ -98,6 +99,11 @@ export function interpretGenome(
   if (normalizeCats && isPureCatGenome(genome)) {
     return normalizeToCat(result);
   }
+
+  // Normalize to alien if requested and genome is pure alien
+  if (normalizeAliens && isPureAlienGenome(genome)) {
+    return normalizeToAlien(result);
+  }
   
   return result;
 }
@@ -107,3 +113,4 @@ export { interpretMorphology } from './morphology';
 export { interpretMetabolism } from './metabolism';
 export { interpretCognition } from './cognition';
 export { interpretPower } from './power';
+export { normalizeToAlien, isPureAlienGenome } from './normalization';

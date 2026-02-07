@@ -24,13 +24,20 @@ import {
   savePureCatAction,
   fetchAllPureCatsAction,
   fetchPureCatByIdAction,
-} from "@/lib/services/CatActions";
+} from "@/lib/services/catActions";
 import { useCart } from "@/lib/context/CartContext";
 import {
   getCatPriceAction,
   updateCatPriceAction,
 } from "@/lib/services/settingsActions";
 import { useResponsiveScaling } from "@/lib/hooks/useResponsiveScaling";
+import { IAlien } from "@/models/Aliens";
+import {
+  generateAlienAction,
+  saveAlienAction,
+  fetchAllAliensAction,
+  fetchAlienByIdAction,
+} from "@/lib/services/alienActions";
 
 export default function ShopPage() {
   const { isAdmin, isLoading } = useUser();
@@ -44,6 +51,9 @@ export default function ShopPage() {
   const [pureCats, setPureCats] = useState<Cat[]>([]);
   const [currentPureCat, setCurrentPureCat] = useState<ICat | null>(null);
   const [isPureCatModal, setIsPureCatModal] = useState(false);
+  const [currentAlien, setCurrentAlien] = useState<IAlien | null>(null);
+  const [aliens, setAliens] = useState<Cat[]>([]);
+  const [isAlienModal, setIsAlienModal] = useState(false);
   const [isLoadingInventory, setIsLoadingInventory] = useState(false);
   const [selectedCatId, setSelectedCatId] = useState<string | null>(null);
   const [catPrice, setCatPrice] = useState(500);
@@ -170,6 +180,79 @@ export default function ShopPage() {
     }
   };
 
+  const handleGenerateAlien = async () => {
+    try {
+      const { alien, abilities } = await generateAlienAction();
+      setCurrentAlien(alien);
+      setCurrentCat(null);
+      setCurrentPureCat(null);
+      setCurrentAbilities(abilities);
+      setIsAlienModal(true);
+      setIsPureCatModal(false);
+      setIsModalOpen(true);
+    } catch (error) {
+      console.error("Failed to generate alien:", error);
+      showToast("[FAILED_TO_GENERATE_ALIEN]", "error");
+    }
+  };
+
+  const handleSaveAlien = async (svgString: string) => {
+    if (!currentAlien) return;
+
+    const result = await saveAlienAction(
+      currentAlien,
+      currentAbilities,
+      svgString
+    );
+
+    if (result.success) {
+      showToast("[ALIEN_SAVED_TO_DATABASE]", "success");
+      setIsModalOpen(false);
+      setCurrentAlien(null);
+      setIsAlienModal(false);
+      await fetchAliensInventory();
+    } else {
+      showToast(`[SAVE_FAILED: ${result.error}]`, "error");
+    }
+  };
+
+  const fetchAliensInventory = async () => {
+    try {
+      const fetchedAliens = await fetchAllAliensAction();
+      const transformed = fetchedAliens.map((alien) => ({
+        id: alien._id,
+        name: alien.name,
+        svgImage: alien.svgImage,
+      }));
+      setAliens(transformed);
+    } catch (error) {
+      console.error("Failed to fetch aliens:", error);
+      showToast("[FAILED_TO_LOAD_ALIENS]", "error");
+    }
+  };
+
+  const handleAlienClick = async (alienId: string) => {
+    try {
+      const { alien, abilities } = await fetchAlienByIdAction(alienId);
+
+      if (!alien) {
+        showToast("[ALIEN_NOT_FOUND]", "error");
+        return;
+      }
+
+      setCurrentAlien(alien);
+      setCurrentCat(null);
+      setCurrentPureCat(null);
+      setCurrentAbilities(abilities);
+      setIsAlienModal(true);
+      setIsPureCatModal(false);
+      setIsModalOpen(true);
+    } catch (error) {
+      console.error("Failed to fetch alien details:", error);
+      showToast("[FAILED_TO_LOAD_ALIEN]", "error");
+    }
+  };
+
   const fetchCatAliensInventory = async () => {
     setIsLoadingInventory(true);
     try {
@@ -236,6 +319,7 @@ export default function ShopPage() {
   useEffect(() => {
     fetchCatAliensInventory();
     fetchPureCatsInventory();
+    fetchAliensInventory();
   }, []);
 
   const handleGenerateCatAlien = async () => {
@@ -255,7 +339,11 @@ export default function ShopPage() {
   const handleSaveCatAlien = async (svgString: string) => {
     if (!currentCat) return;
 
-    const result = await saveCatAlienAction(currentCat, currentAbilities, svgString);
+    const result = await saveCatAlienAction(
+      currentCat,
+      currentAbilities,
+      svgString
+    );
 
     if (result.success) {
       showToast("[SPECIMEN_SAVED_TO_DATABASE]", "success");
@@ -272,8 +360,10 @@ export default function ShopPage() {
     setIsModalOpen(false);
     setCurrentCat(null);
     setCurrentPureCat(null);
+    setCurrentAlien(null);
     setCurrentAbilities([]);
     setIsPureCatModal(false);
+    setIsAlienModal(false);
     setSelectedCatId(null);
   };
 
@@ -302,6 +392,12 @@ export default function ShopPage() {
             id: "generate-cat",
             text: "GENERATE_CAT",
             onClick: handleGeneratePureCat,
+            disabled: false,
+          },
+          {
+            id: "generate-alien",
+            text: "GENERATE_ALIEN",
+            onClick: handleGenerateAlien,
             disabled: false,
           },
           {
@@ -415,22 +511,46 @@ export default function ShopPage() {
       id: "cats",
       label: "CATS",
       content: {
-        customContent: pureCats.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-[#006694] text-sm tracking-widest">
-              [NO_CATS_IN_DATABASE]
+        customContent:
+          pureCats.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="text-[#006694] text-sm tracking-widest">
+                [NO_CATS_IN_DATABASE]
+              </div>
+              <div className="text-[#006694]/50 text-xs tracking-wider mt-2">
+                [GENERATE_AND_SAVE_CATS_TO_POPULATE_INVENTORY]
+              </div>
             </div>
-            <div className="text-[#006694]/50 text-xs tracking-wider mt-2">
-              [GENERATE_AND_SAVE_CATS_TO_POPULATE_INVENTORY]
+          ) : (
+            <CatGrid
+              cats={pureCats}
+              showContainer={false}
+              onCatClick={handlePureCatClick}
+            />
+          ),
+      },
+    },
+    {
+      id: "aliens",
+      label: "ALIENS",
+      content: {
+        customContent:
+          aliens.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="text-[#006694] text-sm tracking-widest">
+                [NO_ALIENS_IN_DATABASE]
+              </div>
+              <div className="text-[#006694]/50 text-xs tracking-wider mt-2">
+                [GENERATE_AND_SAVE_ALIENS_TO_POPULATE_INVENTORY]
+              </div>
             </div>
-          </div>
-        ) : (
-          <CatGrid
-            cats={pureCats}
-            showContainer={false}
-            onCatClick={handlePureCatClick}
-          />
-        ),
+          ) : (
+            <CatGrid
+              cats={aliens}
+              showContainer={false}
+              onCatClick={handleAlienClick}
+            />
+          ),
       },
     },
     {
@@ -506,6 +626,15 @@ export default function ShopPage() {
               abilities={[]}
               onSave={handleSavePureCat}
               showAddToCart={false}
+              onClose={handleCloseModal}
+            />
+          ) : isAlienModal && currentAlien ? (
+            <CatDetails
+              cat={currentAlien}
+              abilities={currentAbilities}
+              onSave={selectedCatId ? undefined : handleSaveAlien}
+              showAddToCart={!isAdmin}
+              onAddToCart={!isAdmin ? addToCart : undefined}
               onClose={handleCloseModal}
             />
           ) : currentCat ? (

@@ -18,6 +18,8 @@ async function main() {
   const { setupCartIndexes } = await import("../lib/indexes/setup-cart-indexes.ts");
   const { setupPurchaseIndexes } = await import("../lib/indexes/setup-purchase-indexes.ts");
   const { setupCatIndexes } = await import("../lib/indexes/setup-cat-indexes.ts");
+  const { setupAlienIndexes } = await import("../lib/indexes/setup-alien-indexes.ts");
+  const { setupAlienAbilityIndexes } = await import("../lib/indexes/setup-alien-ability-indexes.ts");
   const { default: clientPromise } = await import("../lib/mongodb.ts");
 
   await setupFeedbackIndexes();
@@ -31,6 +33,8 @@ async function main() {
   await setupSettingsIndexes();
   await setupCartIndexes();
   await setupPurchaseIndexes();
+  await setupAlienIndexes();
+  await setupAlienAbilityIndexes();
 
   // Seed settings collection with default cat price
   try {
