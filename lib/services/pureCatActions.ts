@@ -2,7 +2,7 @@
 
 import clientPromise from "@/lib/mongodb";
 import { ICat } from "@/models/Cats";
-import { generateCat } from "@/lib/cat-generation/generateCat";
+import { generateCat } from "@/lib/generation/cat-generation/generateCat";
 import { addCatToStock, getAllCatsInStock } from "./stockHelpers";
 
 /**

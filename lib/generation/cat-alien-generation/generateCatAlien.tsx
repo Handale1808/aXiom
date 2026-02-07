@@ -1,12 +1,15 @@
 // lib/cat-generation/generateCat.ts
 
-import { ICat } from "@/models/Cats";
-import { generateDescription } from "../cat-alien-generation/generateDescription";
-import { generateGenome } from "../cat-alien-generation/genome/generation";
-import { interpretGenome } from "../cat-alien-generation/genome/interpretation/index";
-import { generateSvgString } from "../cat-alien-generation/generateImage";
+import { ICatAlien } from "../../models/CatAliens";
+import { IAbility } from "../../models/Ability";
+import { IAbilityRule } from "../../models/AbilityRules";
+import { generateAbilities } from "../generateAbilities";
+import { generateDescription } from "../generateDescription";
+import { generateGenome } from "../genome/generation";
+import { interpretGenome } from "../genome/interpretation/index";
+import { generateSvgString } from "../generateImage";
 
-// Reuse same specimen name generation as cat-aliens
+// Specimen name generation constants (unchanged)
 const SPECIMEN_PREFIXES = [
   "SPECIMEN",
   "SUBJECT",
@@ -52,6 +55,7 @@ const SPECIMEN_PREFIXES = [
   "AUGMENT",
   "SYNTHETIC",
   "CRYPTID",
+  "SPECIMEN",
   "INCUBATE",
   "PARASITE",
 ];
@@ -156,63 +160,73 @@ function generateName(): string {
 }
 
 /**
- * Main pure cat generation function
- * 
+ * Main cat generation function
+ * Now genome-driven instead of random
+ *
  * Flow:
- * 1. Generate ATCG-only genome (type: "cat")
- * 2. Interpret genome → derive phenotype (auto-normalized for cats)
- * 3. Generate description from phenotype
- * 4. Assemble and return cat document
- * 
- * Note: No abilities or resistances for pure cats
+ * 1. Generate genome (1000-base string)
+ * 2. Interpret genome → derive complete phenotype
+ * 3. Grant abilities based on derived phenotype (unchanged logic)
+ * 4. Generate description from phenotype (unchanged logic)
+ * 5. Assemble and return cat document with genome
  */
-export async function generateCat(): Promise<ICat> {
+export async function generateCat(
+  allRules: IAbilityRule[],
+  allAbilities: IAbility[]
+): Promise<{
+  cat: ICatAlien;
+  abilities: IAbility[];
+}> {
   try {
-    // Step 1: Generate pure cat genome (ATCG only)
-    const genome = generateGenome("cat");
-    
+    // Step 1: Generate genome
+    const genome = generateGenome();
+
     // Step 2: Interpret genome → derive phenotype
-    // normalizeCats: true (default) ensures realistic cat traits
-    const phenotype = interpretGenome(genome, { 
-      debug: false, 
-      normalizeCats: true 
-    });
-    
-    // Step 3: Generate description
-    // Pass empty abilities array (cats don't have abilities)
-    // Don't pass resistances (cats don't have them)
+    const phenotype = interpretGenome(genome, { debug: false });
+
+    // Step 3: Grant abilities based on derived phenotype
+    // generateAbilities logic is unchanged - still checks phenotype conditions
+    const abilities = await generateAbilities(
+      phenotype.physicalTraits,
+      phenotype.stats,
+      phenotype.resistances,
+      phenotype.behavior,
+      allRules,
+      allAbilities
+    );
+
+    // Step 4: Generate description (unchanged - uses phenotype)
     const description = await generateDescription(
       {
         physicalTraits: phenotype.physicalTraits,
         stats: phenotype.stats,
+        resistances: phenotype.resistances,
         behavior: phenotype.behavior,
       },
-      [] // No abilities for cats
+      abilities
     );
 
-    // Step 4: Generate SVG image
+    // Step 5: Generate SVG image
     const svgImage = generateSvgString(phenotype.physicalTraits);
-    
-    // Step 5: Assemble cat document
-    const cat: ICat = {
-      type: "cat", // Always "cat" for pure cats
+
+    // Step 6: Assemble cat document
+    const cat: ICatAlien = {
       name: generateName(),
       description,
-      genome, // ATCG-only genome string
+      genome,
       physicalTraits: phenotype.physicalTraits,
       stats: phenotype.stats,
+      resistances: phenotype.resistances,
       behavior: phenotype.behavior,
-      svgImage: svgImage || "🐱", // Placeholder emoji (will be replaced with real image later)
+      svgImage,
       createdAt: new Date(),
     };
 
-    
-    
-    return cat;
+    return { cat, abilities };
   } catch (error) {
     console.error("Error generating cat:", error);
     throw new Error(
-      `Failed to generate cat: ${error instanceof Error ? error.message : 'Unknown error'}`
+      `Failed to generate cat: ${error instanceof Error ? error.message : "Unknown error"}`
     );
   }
 }

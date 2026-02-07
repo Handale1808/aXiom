@@ -11,13 +11,12 @@ import FormWithHeading, {
 } from "@/lib/components/ui/FormWithHeading";
 import ProgressBar from "@/lib/components/ui/ProgressBar";
 import Tooltip from "@/lib/components/ui/Tooltip";
-import GenerateImage from "@/lib/cat-alien-generation/generateImage";
 import {
   STAT_RANGES,
   RESISTANCE_RANGES,
   BEHAVIOR_RANGES,
   GENERATION_LIMITS,
-} from "@/lib/cat-alien-generation/constants";
+} from "@/lib/generation/cat-alien-generation/constants";
 import { useResponsiveScaling } from "@/lib/hooks/useResponsiveScaling";
 
 interface CatDetailsProps {
