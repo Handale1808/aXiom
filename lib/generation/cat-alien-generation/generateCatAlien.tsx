@@ -1,8 +1,8 @@
 // lib/cat-generation/generateCat.ts
 
-import { ICatAlien } from "../../models/CatAliens";
-import { IAbility } from "../../models/Ability";
-import { IAbilityRule } from "../../models/AbilityRules";
+import { ICatAlien } from "../../../models/CatAliens";
+import { IAbility } from "../../../models/Ability";
+import { IAbilityRule } from "../../../models/AbilityRules";
 import { generateAbilities } from "../generateAbilities";
 import { generateDescription } from "../generateDescription";
 import { generateGenome } from "../genome/generation";
