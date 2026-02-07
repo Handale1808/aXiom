@@ -1,47 +1,40 @@
 // lib/genome/generation.ts
 
 import { GENOME_LENGTH } from './regions';
-import type { GenomeSymbol } from './types';
+import type { GenerationType, GenomeSymbol } from './types';
 import { validateGenome } from './validation';
 
 /**
- * All valid genome symbols
- * A, T, C, G = Cat DNA bases
- * W, X, Y, Z = Alien DNA bases
+ * Symbol sets for each generation type
  */
-const SYMBOLS: GenomeSymbol[] = ['A', 'T', 'C', 'G', 'W', 'X', 'Y', 'Z'];
+const SYMBOL_SETS: Record<GenerationType, GenomeSymbol[]> = {
+  cat: ['A', 'T', 'C', 'G'],
+  alien: ['W', 'X', 'Y', 'Z'],
+  hybrid: ['A', 'T', 'C', 'G', 'W', 'X', 'Y', 'Z']
+};
 
 /**
- * Generates a random genome string
+ * Generates a genome string based on specimen type
  * 
- * Currently uses pure random generation where each position has equal probability
- * for all 8 symbols (1/8 = 12.5% each).
- * 
- * This will be replaced in future iterations with:
- * - Cat-only generation (ATCG bases only)
- * - Alien-only generation (WXYZ bases only)
- * - Spliced generation (combining cat and alien segments)
- * 
+ * @param type - Specimen type: "cat" (ATCG only), "alien" (WXYZ only), or "hybrid" (all)
  * @returns A valid 1000-base genome string
  * @throws Error if generated genome fails validation
  */
-export function generateGenome(): string {
+export function generateGenome(type: GenerationType = "hybrid"): string {
+  const symbols = SYMBOL_SETS[type];
   const genome: string[] = [];
   
-  // Generate 1000 random bases
+  // Generate 1000 random bases from the appropriate symbol set
   for (let i = 0; i < GENOME_LENGTH; i++) {
-    // Select random symbol with equal probability
-    const randomIndex = Math.floor(Math.random() * SYMBOLS.length);
-    genome.push(SYMBOLS[randomIndex]);
+    const randomIndex = Math.floor(Math.random() * symbols.length);
+    genome.push(symbols[randomIndex]);
   }
   
   const genomeString = genome.join('');
   
-  // Validate before returning to ensure consistency
+  // Validate before returning
   const validation = validateGenome(genomeString);
   if (!validation.valid) {
-    // This should never happen with the current implementation,
-    // but we check anyway for safety
     throw new Error(`Generated invalid genome: ${validation.errors.join(', ')}`);
   }
   

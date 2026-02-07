@@ -1,4 +1,4 @@
-// lib/services/catActions.ts
+// lib/services/catAlienActions.ts
 
 "use server";
 
@@ -9,7 +9,7 @@ import { ICatAlien } from "@/models/CatAliens";
 import { generateCat } from "@/lib/cat-alien-generation/generateCat";
 import { addCatToStock, getAllCatsInStock } from "./stockHelpers";
 
-export async function generateCatAction(): Promise<{
+export async function generateCatAlienAction(): Promise<{
   cat: ICatAlien;
   abilities: IAbility[];
 }> {
@@ -34,12 +34,12 @@ export async function generateCatAction(): Promise<{
       abilities: JSON.parse(JSON.stringify(result.abilities)),
     };
   } catch (error) {
-    console.error("Failed to generate cat:", error);
+    console.error("Failed to generate cat-alien:", error);
     throw error;
   }
 }
 
-export async function saveCatAction(
+export async function saveCatAlienAction(
   cat: ICatAlien,
   abilities: IAbility[],
   svgString: string
@@ -64,19 +64,19 @@ export async function saveCatAction(
     const client = await clientPromise;
     const db = client.db("axiom");
 
-    // Prepare cat document with SVG
+    // Prepare cat document with SVG and type
     const catDocument: ICatAlien = {
       ...cat,
+      type: "hybrid", // Ensure type is set
       svgImage: svgString,
       createdAt: new Date(),
     };
 
-    // Insert cat
-    // Insert cat
-    const catResult = await db.collection("cats").insertOne(catDocument);
+    // Insert into catAliens collection
+    const catResult = await db.collection("catAliens").insertOne(catDocument);
     const catAlienId = catResult.insertedId;
 
-    // Prepare catAbility junction records
+    // Prepare catAlienAbility junction records
     if (abilities.length > 0) {
       const catAbilityDocuments = abilities.map((ability) => ({
         catAlienId: catAlienId,
@@ -85,7 +85,7 @@ export async function saveCatAction(
         acquiredAt: new Date(),
       }));
 
-      // Insert catAbility records
+      // Insert catAlienAbility records
       await db.collection("catAlienAbilities").insertMany(catAbilityDocuments);
     }
 
@@ -93,7 +93,7 @@ export async function saveCatAction(
     const stockResult = await addCatToStock(catAlienId);
     if (!stockResult.success) {
       console.error(
-        `Cat ${catAlienId.toString()} saved but failed to add to stock:`,
+        `Cat-alien ${catAlienId.toString()} saved but failed to add to stock:`,
         stockResult.error
       );
     }
@@ -103,7 +103,7 @@ export async function saveCatAction(
       catAlienId: catAlienId.toString(),
     };
   } catch (error) {
-    console.error("Failed to save cat:", error);
+    console.error("Failed to save cat-alien:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",
@@ -111,7 +111,7 @@ export async function saveCatAction(
   }
 }
 
-export async function fetchAllCatsAction(): Promise<
+export async function fetchAllCatAliensAction(): Promise<
   Array<{
     _id: string;
     name: string;
@@ -124,7 +124,7 @@ export async function fetchAllCatsAction(): Promise<
     const db = client.db("axiom");
 
     const cats = await db
-      .collection("cats")
+      .collection("catAliens")
       .find({})
       .project({ _id: 1, name: 1, svgImage: 1, createdAt: 1 })
       .sort({ createdAt: -1 })
@@ -137,12 +137,12 @@ export async function fetchAllCatsAction(): Promise<
       createdAt: cat.createdAt.toISOString(),
     }));
   } catch (error) {
-    console.error("Failed to fetch cats:", error);
+    console.error("Failed to fetch cat-aliens:", error);
     return [];
   }
 }
 
-export async function fetchCatByIdAction(catAlienId: string): Promise<{
+export async function fetchCatAlienByIdAction(catAlienId: string): Promise<{
   cat: ICatAlien | null;
   abilities: IAbility[];
 }> {
@@ -152,7 +152,7 @@ export async function fetchCatByIdAction(catAlienId: string): Promise<{
     const { ObjectId } = await import("mongodb");
 
     const cat = await db
-      .collection("cats")
+      .collection("catAliens")
       .findOne({ _id: new ObjectId(catAlienId) });
 
     if (!cat) {
@@ -193,23 +193,23 @@ export async function fetchCatByIdAction(catAlienId: string): Promise<{
       abilities: JSON.parse(JSON.stringify(abilities)) as IAbility[],
     };
   } catch (error) {
-    console.error("[SERVER] Failed to fetch cat by ID:", error);
+    console.error("[SERVER] Failed to fetch cat-alien by ID:", error);
     return { cat: null, abilities: [] };
   }
 }
 
-export async function getAllCatsInStockAction(): Promise<
+export async function getAllCatAliensInStockAction(): Promise<
   Array<{ catAlienId: string; addedAt: string }>
 > {
   try {
     return await getAllCatsInStock();
   } catch (error) {
-    console.error("Failed to get cats in stock:", error);
+    console.error("Failed to get cat-aliens in stock:", error);
     return [];
   }
 }
 
-export async function getUserPurchasedCatsAction(userId: string): Promise<
+export async function getUserPurchasedCatAliensAction(userId: string): Promise<
   Array<{
     catAlienId: string;
     name: string;
@@ -232,7 +232,7 @@ export async function getUserPurchasedCatsAction(userId: string): Promise<
         { $match: { userId: new ObjectId(userId) } },
         {
           $lookup: {
-            from: "cats",
+            from: "catAliens",
             localField: "catAlienId",
             foreignField: "_id",
             as: "cat",
@@ -258,7 +258,7 @@ export async function getUserPurchasedCatsAction(userId: string): Promise<
       purchasedAt: purchase.purchasedAt.toISOString(),
     }));
   } catch (error) {
-    console.error("Failed to fetch user purchased cats:", error);
+    console.error("Failed to fetch user purchased cat-aliens:", error);
     return [];
   }
 }

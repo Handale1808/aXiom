@@ -6,7 +6,7 @@ import { usePurchasedCats } from "@/lib/hooks/usePurchasedCats";
 import CatGrid from "@/lib/components/cat-display/CatGrid";
 import Modal from "@/lib/components/ui/Modal";
 import CatDetails from "@/lib/components/cat-display/CatDetails";
-import { fetchCatByIdAction } from "@/lib/services/catActions";
+import { fetchCatByIdAction } from "@/lib/services/catAlienActions";
 import { ICatAlien } from "@/models/CatAliens";
 import { IAbility } from "@/models/Ability";
 import Link from "next/link";

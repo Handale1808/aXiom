@@ -3,6 +3,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { ICat } from "@/models/Cats";
 import { ICatAlien } from "@/models/CatAliens";
 import { IAbility } from "@/models/Ability";
 import FormWithHeading, {
@@ -26,6 +27,7 @@ interface CatDetailsProps {
   onClose: () => void;
   showAddToCart?: boolean;
   onAddToCart?: (catAlienId: string) => Promise<void>;
+  isPureCat?: boolean;
 }
 
 export default function CatDetails({
@@ -35,6 +37,7 @@ export default function CatDetails({
   onClose,
   showAddToCart,
   onAddToCart,
+  isPureCat = false,
 }: CatDetailsProps) {
   const [activeTab, setActiveTab] = useState("physical");
   const [isSaving, setIsSaving] = useState(false);
@@ -49,10 +52,9 @@ export default function CatDetails({
     (sum, val) => sum + val,
     0
   );
-  const resistancesTotal = Object.values(cat.resistances).reduce(
-    (sum, val) => sum + val,
-    0
-  );
+  const resistancesTotal = 'resistances' in cat 
+    ? Object.values(cat.resistances).reduce((sum, val) => sum + val, 0)
+    : 0;
   const behaviorTotal = Object.values(cat.behavior).reduce(
     (sum, val) => sum + val,
     0
@@ -284,7 +286,7 @@ export default function CatDetails({
       id: "resistances",
       label: "RESISTANCES",
       content: {
-        customContent: (
+        customContent: 'resistances' in cat ? (
           <div
             style={{
               display: "flex",
@@ -322,6 +324,10 @@ export default function CatDetails({
               value={cat.resistances.radiation}
               max={RESISTANCE_RANGES.RADIATION.max}
             />
+          </div>
+        ) : (
+          <div className="text-center text-[#006694] py-12">
+            [NO_RESISTANCE_DATA]
           </div>
         ),
       },
@@ -475,6 +481,10 @@ export default function CatDetails({
     },
   ];
 
+  // Filter out resistances tab for pure cats
+  const filteredTabs = isPureCat 
+    ? tabs.filter(tab => tab.id !== 'resistances' && tab.id !== 'abilities') 
+    : tabs;
   return (
     <div
       style={{
@@ -510,7 +520,7 @@ export default function CatDetails({
       </div>
 
       <FormWithHeading
-        tabs={tabs}
+        tabs={filteredTabs}
         activeTab={activeTab}
         onTabChange={setActiveTab}
       />

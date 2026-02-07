@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import path from 'path';
 
+
 // Load .env.local FIRST
 dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 
@@ -16,11 +17,13 @@ async function main() {
   const { setupSettingsIndexes } = await import("../lib/indexes/setup-settings-indexes.ts");
   const { setupCartIndexes } = await import("../lib/indexes/setup-cart-indexes.ts");
   const { setupPurchaseIndexes } = await import("../lib/indexes/setup-purchase-indexes.ts");
+  const { setupCatIndexes } = await import("../lib/indexes/setup-cat-indexes.ts");
   const { default: clientPromise } = await import("../lib/mongodb.ts");
 
   await setupFeedbackIndexes();
   await setupUserIndexes();
   await setupCatAlienIndexes();
+  await setupCatIndexes();
   await setupAbilityIndexes();
   await setupAbilityRuleIndexes();
   await setupCatAbilityIndexes();

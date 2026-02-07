@@ -9,15 +9,22 @@ import FormWithHeading, {
 import CatGrid, { type Cat } from "@/lib/components/cat-display/CatGrid";
 import Modal from "@/lib/components/ui/Modal";
 import CatDetails from "@/lib/components/cat-display/CatDetails";
+import { ICat } from "@/models/Cats";
 import { ICatAlien } from "@/models/CatAliens";
 import { IAbility } from "@/models/Ability";
 import {
-  generateCatAction,
-  saveCatAction,
-  fetchAllCatsAction,
-  fetchCatByIdAction,
-  getAllCatsInStockAction,
-} from "@/lib/services/catActions";
+  generateCatAlienAction,
+  saveCatAlienAction,
+  fetchAllCatAliensAction,
+  fetchCatAlienByIdAction,
+  getAllCatAliensInStockAction,
+} from "@/lib/services/catAlienActions";
+import {
+  generatePureCatAction,
+  savePureCatAction,
+  fetchAllPureCatsAction,
+  fetchPureCatByIdAction,
+} from "@/lib/services/pureCatActions";
 import { useCart } from "@/lib/context/CartContext";
 import {
   getCatPriceAction,
@@ -34,6 +41,9 @@ export default function ShopPage() {
   const [currentCat, setCurrentCat] = useState<ICatAlien | null>(null);
   const [currentAbilities, setCurrentAbilities] = useState<IAbility[]>([]);
   const [savedCats, setSavedCats] = useState<Cat[]>([]);
+  const [pureCats, setPureCats] = useState<Cat[]>([]);
+  const [currentPureCat, setCurrentPureCat] = useState<ICat | null>(null);
+  const [isPureCatModal, setIsPureCatModal] = useState(false);
   const [isLoadingInventory, setIsLoadingInventory] = useState(false);
   const [selectedCatId, setSelectedCatId] = useState<string | null>(null);
   const [catPrice, setCatPrice] = useState(500);
@@ -42,7 +52,7 @@ export default function ShopPage() {
 
   const { user } = useUser();
 
-  let addToCart: ((catAlienId: string) => Promise<void>) | undefined;
+  let addToCart: ((catId: string) => Promise<void>) | undefined;
 
   try {
     const cart = useCart();
@@ -95,11 +105,76 @@ export default function ShopPage() {
     }
   };
 
-  const fetchInventoryCats = async () => {
+  const handleGeneratePureCat = async () => {
+    try {
+      const { cat } = await generatePureCatAction();
+      setCurrentPureCat(cat);
+      setCurrentCat(null);
+      setCurrentAbilities([]);
+      setIsPureCatModal(true);
+      setIsModalOpen(true);
+    } catch (error) {
+      console.error("Failed to generate cat:", error);
+      showToast("[FAILED_TO_GENERATE_CAT]", "error");
+    }
+  };
+
+  const handleSavePureCat = async (svgString: string) => {
+    if (!currentPureCat) return;
+
+    const result = await savePureCatAction(currentPureCat, svgString);
+
+    if (result.success) {
+      showToast("[CAT_SAVED_TO_DATABASE]", "success");
+      setIsModalOpen(false);
+      setCurrentPureCat(null);
+      setIsPureCatModal(false);
+      await fetchPureCatsInventory();
+    } else {
+      showToast(`[SAVE_FAILED: ${result.error}]`, "error");
+    }
+  };
+
+  const fetchPureCatsInventory = async () => {
+    try {
+      const fetchedCats = await fetchAllPureCatsAction();
+      const transformed = fetchedCats.map((cat) => ({
+        id: cat._id,
+        name: cat.name,
+        svgImage: cat.svgImage,
+      }));
+      setPureCats(transformed);
+    } catch (error) {
+      console.error("Failed to fetch pure cats:", error);
+      showToast("[FAILED_TO_LOAD_CATS]", "error");
+    }
+  };
+
+  const handlePureCatClick = async (catId: string) => {
+    try {
+      const { cat } = await fetchPureCatByIdAction(catId);
+
+      if (!cat) {
+        showToast("[CAT_NOT_FOUND]", "error");
+        return;
+      }
+
+      setCurrentPureCat(cat);
+      setCurrentCat(null);
+      setCurrentAbilities([]);
+      setIsPureCatModal(true);
+      setIsModalOpen(true);
+    } catch (error) {
+      console.error("Failed to fetch cat details:", error);
+      showToast("[FAILED_TO_LOAD_CAT]", "error");
+    }
+  };
+
+  const fetchCatAliensInventory = async () => {
     setIsLoadingInventory(true);
     try {
       if (isAdmin) {
-        const fetchedCats = await fetchAllCatsAction();
+        const fetchedCats = await fetchAllCatAliensAction();
         const transformed = fetchedCats.map((cat) => ({
           id: cat._id,
           name: cat.name,
@@ -107,10 +182,10 @@ export default function ShopPage() {
         }));
         setSavedCats(transformed);
       } else {
-        const stockRecords = await getAllCatsInStockAction();
+        const stockRecords = await getAllCatAliensInStockAction();
 
         const catPromises = stockRecords.map(async (record) => {
-          const { cat } = await fetchCatByIdAction(record.catAlienId);
+          const { cat } = await fetchCatAlienByIdAction(record.catAlienId);
           return cat;
         });
 
@@ -126,16 +201,16 @@ export default function ShopPage() {
         setSavedCats(transformed);
       }
     } catch (error) {
-      console.error("Failed to fetch inventory:", error);
+      console.error("Failed to fetch cat-alien inventory:", error);
       showToast("[FAILED_TO_LOAD_INVENTORY]", "error");
     } finally {
       setIsLoadingInventory(false);
     }
   };
 
-  const fetchCatDetails = async (catAlienId: string) => {
+  const fetchCatAlienDetails = async (catId: string) => {
     try {
-      const { cat, abilities } = await fetchCatByIdAction(catAlienId);
+      const { cat, abilities } = await fetchCatAlienByIdAction(catId);
 
       if (!cat) {
         showToast("[SPECIMEN_NOT_FOUND]", "error");
@@ -144,44 +219,50 @@ export default function ShopPage() {
 
       setCurrentCat(cat);
       setCurrentAbilities(abilities);
+      setCurrentPureCat(null);
+      setIsPureCatModal(false);
       setIsModalOpen(true);
     } catch (error) {
-      console.error("Failed to fetch cat details:", error);
+      console.error("Failed to fetch cat-alien details:", error);
       showToast("[FAILED_TO_LOAD_SPECIMEN]", "error");
     }
   };
 
-  const handleCatClick = async (catAlienId: string) => {
-    setSelectedCatId(catAlienId);
-    await fetchCatDetails(catAlienId);
+  const handleCatAlienClick = async (catId: string) => {
+    setSelectedCatId(catId);
+    await fetchCatAlienDetails(catId);
   };
 
   useEffect(() => {
-    fetchInventoryCats();
+    fetchCatAliensInventory();
+    fetchPureCatsInventory();
   }, []);
 
-  const handleGenerateCats = async () => {
+  const handleGenerateCatAlien = async () => {
     try {
-      const { cat, abilities } = await generateCatAction();
+      const { cat, abilities } = await generateCatAlienAction();
       setCurrentCat(cat);
       setCurrentAbilities(abilities);
+      setCurrentPureCat(null);
+      setIsPureCatModal(false);
       setIsModalOpen(true);
     } catch (error) {
-      console.error("Failed to generate cat:", error);
+      console.error("Failed to generate cat-alien:", error);
+      showToast("[FAILED_TO_GENERATE_CAT_ALIEN]", "error");
     }
   };
 
-  const handleSaveCat = async (svgString: string) => {
+  const handleSaveCatAlien = async (svgString: string) => {
     if (!currentCat) return;
 
-    const result = await saveCatAction(currentCat, currentAbilities, svgString);
+    const result = await saveCatAlienAction(currentCat, currentAbilities, svgString);
 
     if (result.success) {
       showToast("[SPECIMEN_SAVED_TO_DATABASE]", "success");
       setIsModalOpen(false);
       setCurrentCat(null);
       setCurrentAbilities([]);
-      await fetchInventoryCats();
+      await fetchCatAliensInventory();
     } else {
       showToast(`[SAVE_FAILED: ${result.error}]`, "error");
     }
@@ -190,7 +271,9 @@ export default function ShopPage() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setCurrentCat(null);
+    setCurrentPureCat(null);
     setCurrentAbilities([]);
+    setIsPureCatModal(false);
     setSelectedCatId(null);
   };
 
@@ -216,9 +299,15 @@ export default function ShopPage() {
       content: {
         buttons: [
           {
-            id: "generate",
-            text: "GENERATE_CATS_ALIENS",
-            onClick: handleGenerateCats,
+            id: "generate-cat",
+            text: "GENERATE_CAT",
+            onClick: handleGeneratePureCat,
+            disabled: false,
+          },
+          {
+            id: "generate-cat-alien",
+            text: "GENERATE_CAT_ALIEN",
+            onClick: handleGenerateCatAlien,
             disabled: false,
           },
         ],
@@ -323,6 +412,28 @@ export default function ShopPage() {
       },
     },
     {
+      id: "cats",
+      label: "CATS",
+      content: {
+        customContent: pureCats.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="text-[#006694] text-sm tracking-widest">
+              [NO_CATS_IN_DATABASE]
+            </div>
+            <div className="text-[#006694]/50 text-xs tracking-wider mt-2">
+              [GENERATE_AND_SAVE_CATS_TO_POPULATE_INVENTORY]
+            </div>
+          </div>
+        ) : (
+          <CatGrid
+            cats={pureCats}
+            showContainer={false}
+            onCatClick={handlePureCatClick}
+          />
+        ),
+      },
+    },
+    {
       id: "inventory",
       label: "INVENTORY",
       content: {
@@ -341,14 +452,14 @@ export default function ShopPage() {
               [NO_SPECIMENS_IN_DATABASE]
             </div>
             <div className="text-[#006694]/50 text-xs tracking-wider mt-2">
-              [GENERATE_AND_SAVE_CATS_TO_POPULATE_INVENTORY]
+              [GENERATE_AND_SAVE_CAT_ALIENS_TO_POPULATE_INVENTORY]
             </div>
           </div>
         ) : (
           <CatGrid
             cats={savedCats}
             showContainer={false}
-            onCatClick={handleCatClick}
+            onCatClick={handleCatAlienClick}
           />
         ),
       },
@@ -377,26 +488,38 @@ export default function ShopPage() {
           <CatGrid
             cats={savedCats}
             showContainer={true}
-            onCatClick={handleCatClick}
+            onCatClick={handleCatAlienClick}
             showAddToCart={!isAdmin}
             onAddToCart={addToCart}
           />
         )}
       </div>
-      {isModalOpen && currentCat && (
+      {isModalOpen && (
         <Modal
           isOpen={isModalOpen}
           onClose={handleCloseModal}
           showDefaultClose={false}
         >
-          <CatDetails
-            cat={currentCat}
-            abilities={currentAbilities}
-            onSave={selectedCatId ? undefined : handleSaveCat}
-            showAddToCart={!isAdmin}
-            onAddToCart={!isAdmin ? addToCart : undefined}
-            onClose={handleCloseModal}
-          />
+          {isPureCatModal && currentPureCat ? (
+            <CatDetails
+              cat={currentPureCat}
+              abilities={[]}
+              onSave={handleSavePureCat}
+              showAddToCart={false}
+              onClose={handleCloseModal}
+              isCat={true}
+            />
+          ) : currentCat ? (
+            <CatDetails
+              cat={currentCat}
+              abilities={currentAbilities}
+              onSave={selectedCatId ? undefined : handleSaveCatAlien}
+              showAddToCart={!isAdmin}
+              onAddToCart={!isAdmin ? addToCart : undefined}
+              onClose={handleCloseModal}
+              isCat={false}
+            />
+          ) : null}
         </Modal>
       )}
     </div>

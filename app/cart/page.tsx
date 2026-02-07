@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useUser } from "@/lib/context/UserContext";
 import { useCart } from "@/lib/context/CartContext";
-import { fetchCatByIdAction } from "@/lib/services/catActions";
+import { fetchCatByIdAction } from "@/lib/services/catAlienActions";
 import { ICatAlien } from "@/models/CatAliens";
 import { IAbility } from "@/models/Ability";
 import Modal from "@/lib/components/ui/Modal";

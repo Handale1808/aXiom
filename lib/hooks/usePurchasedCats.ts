@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { getUserPurchasedCatsAction } from "@/lib/services/catActions";
+import { getUserPurchasedCatsAction } from "@/lib/services/catAlienActions";
 import { useUser } from "@/lib/context/UserContext";
 
 interface Cat {
