@@ -6,7 +6,7 @@ import clientPromise from "@/lib/mongodb";
 import { IAbility } from "@/models/Ability";
 import { IAbilityRule } from "@/models/AbilityRules";
 import { ICat } from "@/models/Cats";
-import { generateCat } from "@/lib/cat-generation/generateCat";
+import { generateCat } from "@/lib/cat-alien-generation/generateCat";
 import { addCatToStock, getAllCatsInStock } from "./stockHelpers";
 
 export async function generateCatAction(): Promise<{

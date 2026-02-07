@@ -3,7 +3,7 @@
 'use client';
 
 import { getSymbolColor } from '@/lib/about/genome/utils';
-import type { GenomeSymbol } from '@/lib/cat-generation/genome/types';
+import type { GenomeSymbol } from '@/lib/cat-alien-generation/genome/types';
 import type { DetectedPattern } from '@/lib/about/stats/utils/statCalculations';
 import { formatPosition } from '@/lib/about/stats/utils/visualHelpers';
 
