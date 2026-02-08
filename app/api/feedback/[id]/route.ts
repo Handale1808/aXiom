@@ -46,7 +46,7 @@ async function getHandler(
             {
               $lookup: {
                 from: "cats",
-                localField: "catId",
+                localField: "catAlienId",
                 foreignField: "_id",
                 as: "cat",
               },

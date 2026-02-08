@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useUser } from "@/lib/context/UserContext";
 import { useCart } from "@/lib/context/CartContext";
-import { fetchCatByIdAction } from "@/lib/services/catActions";
-import { ICat } from "@/models/Cats";
+import { fetchCatAlienByIdAction } from "@/lib/services/catAlienActions";
+import { ICatAlien } from "@/models/CatAliens";
 import { IAbility } from "@/models/Ability";
 import Modal from "@/lib/components/ui/Modal";
 import CatDetails from "@/lib/components/cat-display/CatDetails";
@@ -17,14 +17,14 @@ export default function CartPage() {
     useCart();
   const scaled = useResponsiveScaling();
   const [selectedCatId, setSelectedCatId] = useState<string | null>(null);
-  const [selectedCat, setSelectedCat] = useState<ICat | null>(null);
+  const [selectedCat, setSelectedCat] = useState<ICatAlien | null>(null);
   const [selectedAbilities, setSelectedAbilities] = useState<IAbility[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
 
-  const handleCatClick = async (catId: string) => {
+  const handleCatClick = async (catAlienId: string) => {
     try {
-      const { cat, abilities } = await fetchCatByIdAction(catId);
+      const { cat, abilities } = await fetchCatAlienByIdAction(catAlienId);
 
       if (!cat) {
         return;
@@ -32,15 +32,15 @@ export default function CartPage() {
 
       setSelectedCat(cat);
       setSelectedAbilities(abilities);
-      setSelectedCatId(catId);
+      setSelectedCatId(catAlienId);
       setIsModalOpen(true);
     } catch (error) {
       console.error("Failed to fetch cat details:", error);
     }
   };
 
-  const handleRemoveFromCart = async (catId: string) => {
-    await removeFromCart(catId);
+  const handleRemoveFromCart = async (catAlienId: string) => {
+    await removeFromCart(catAlienId);
   };
 
   const handleCheckout = async () => {
@@ -364,7 +364,7 @@ export default function CartPage() {
               >
                 {cartItems.map((item) => (
                   <div
-                    key={item.catId}
+                    key={item.catAlienId}
                     style={{
                       padding: `${scaled.padding.medium}px`,
                       gap: `${scaled.spacing.gapMedium}px`,
@@ -377,7 +377,7 @@ export default function CartPage() {
                         height: `${scaled.interactive.catAvatarSize * 1.5}px`,
                       }}
                       className="flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"
-                      onClick={() => handleCatClick(item.catId)}
+                      onClick={() => handleCatClick(item.catAlienId)}
                       dangerouslySetInnerHTML={{ __html: item.svgImage }}
                     />
 
@@ -385,14 +385,14 @@ export default function CartPage() {
                       <div
                         style={{ fontSize: `${scaled.text.small}px` }}
                         className="font-bold tracking-wider text-[#30D6D6] cursor-pointer hover:text-[#30D6D6]/80 transition-colors"
-                        onClick={() => handleCatClick(item.catId)}
+                        onClick={() => handleCatClick(item.catAlienId)}
                       >
                         {item.name}
                       </div>
                     </div>
 
                     <button
-                      onClick={() => handleRemoveFromCart(item.catId)}
+                      onClick={() => handleRemoveFromCart(item.catAlienId)}
                       disabled={isLoading}
                       style={{
                         paddingLeft: `${scaled.padding.medium}px`,

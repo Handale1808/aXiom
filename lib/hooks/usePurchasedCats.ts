@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { getUserPurchasedCatsAction } from "@/lib/services/catActions";
+import { getUserPurchasedCatAliensAction } from "@/lib/services/catAlienActions";
 import { useUser } from "@/lib/context/UserContext";
 
 interface Cat {
@@ -32,10 +32,10 @@ export function usePurchasedCats(): UsePurchasedCatsReturn {
     setError(null);
 
     try {
-      const purchasedCats = await getUserPurchasedCatsAction(user.id);
+      const purchasedCats = await getUserPurchasedCatAliensAction(user.id);
       setCats(
         purchasedCats.map((pc) => ({
-          id: pc.catId,
+          id: pc.catAlienId,
           name: pc.name,
           svgImage: pc.svgImage,
         }))

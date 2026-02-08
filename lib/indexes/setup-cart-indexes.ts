@@ -60,11 +60,11 @@ export async function setupCartIndexes(dbName: string = "axiom"): Promise<{
         options: { name: "cart_user_id_index" },
       },
       {
-        fields: { catId: 1 },
+        fields: { catAlienId: 1 },
         options: { name: "cart_cat_id_index" },
       },
       {
-        fields: { userId: 1, catId: 1 },
+        fields: { userId: 1, catAlienId: 1 },
         options: { name: "cart_user_cat_unique_index", unique: true },
       },
       {

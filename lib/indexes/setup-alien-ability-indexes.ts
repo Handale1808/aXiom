@@ -1,3 +1,5 @@
+// lib/indexes/setup-alien-ability-indexes.ts
+
 import clientPromise from "../mongodb";
 
 export interface IndexSetupResult {
@@ -8,9 +10,10 @@ export interface IndexSetupResult {
 }
 
 /**
- * Sets up MongoDB indexes for the cats collection (pure cats)
+ * Sets up MongoDB indexes for the alienAbilities junction collection
+ * This collection tracks which abilities each alien has acquired
  */
-export async function setupCatIndexes(
+export async function setupAlienAbilityIndexes(
   databaseName: string = "axiom"
 ): Promise<IndexSetupResult> {
   const result: IndexSetupResult = {
@@ -23,38 +26,28 @@ export async function setupCatIndexes(
   try {
     const client = await clientPromise;
     const db = client.db(databaseName);
-    const collection = db.collection("cats");
+    const collection = db.collection("alienAbilities");
 
     const indexDefinitions = [
       {
-        name: "cat_created_at_index",
-        spec: { createdAt: -1 } as const,
-        options: { name: "cat_created_at_index" },
+        name: "alien_ability_alienId_index",
+        spec: { alienId: 1 } as const,
+        options: { name: "alien_ability_alienId_index" },
       },
       {
-        name: "cat_name_index",
-        spec: { name: 1 } as const,
-        options: { name: "cat_name_index" },
+        name: "alien_ability_abilityId_index",
+        spec: { abilityId: 1 } as const,
+        options: { name: "alien_ability_abilityId_index" },
       },
       {
-        name: "cat_type_index",
-        spec: { type: 1 } as const,
-        options: { name: "cat_type_index" },
+        name: "alien_ability_compound_index",
+        spec: { alienId: 1, abilityId: 1 } as const,
+        options: { name: "alien_ability_compound_index", unique: true },
       },
       {
-        name: "stat_strength_index",
-        spec: { "stats.strength": 1 } as const,
-        options: { name: "stat_strength_index" },
-      },
-      {
-        name: "stat_agility_index",
-        spec: { "stats.agility": 1 } as const,
-        options: { name: "stat_agility_index" },
-      },
-      {
-        name: "trait_size_index",
-        spec: { "physicalTraits.size": 1 } as const,
-        options: { name: "trait_size_index" },
+        name: "alien_ability_acquired_at_index",
+        spec: { acquiredAt: -1 } as const,
+        options: { name: "alien_ability_acquired_at_index" },
       },
     ] as const;
 
@@ -66,7 +59,7 @@ export async function setupCatIndexes(
         if (error?.code === 85 || error?.codeName === "IndexAlreadyExists") {
           return { status: "existing" as const, name: def.name };
         }
-        
+
         const errorMessage = error?.message || String(error);
         return { status: "error" as const, name: def.name, error: errorMessage };
       }

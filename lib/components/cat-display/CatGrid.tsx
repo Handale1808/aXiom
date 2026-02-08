@@ -9,9 +9,9 @@ interface Cat {
 interface CatGridProps {
   cats: Cat[];
   showContainer?: boolean;
-  onCatClick?: (catId: string) => void;
+  onCatClick?: (catAlienId: string) => void;
   showAddToCart?: boolean;
-  onAddToCart?: (catId: string) => void;
+  onAddToCart?: (catAlienId: string) => void;
 }
 
 export default function CatGrid({

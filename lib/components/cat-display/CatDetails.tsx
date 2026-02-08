@@ -4,28 +4,30 @@
 
 import { useState, useRef } from "react";
 import { ICat } from "@/models/Cats";
+import { ICatAlien } from "@/models/CatAliens";
+import { IAlien } from "@/models/Aliens";
 import { IAbility } from "@/models/Ability";
 import FormWithHeading, {
   type TabWithContent,
 } from "@/lib/components/ui/FormWithHeading";
 import ProgressBar from "@/lib/components/ui/ProgressBar";
 import Tooltip from "@/lib/components/ui/Tooltip";
-import GenerateImage from "@/lib/cat-alien-generation/generateImage";
 import {
   STAT_RANGES,
   RESISTANCE_RANGES,
   BEHAVIOR_RANGES,
   GENERATION_LIMITS,
-} from "@/lib/cat-alien-generation/constants";
+} from "@/lib/generation/constants";
 import { useResponsiveScaling } from "@/lib/hooks/useResponsiveScaling";
 
 interface CatDetailsProps {
-  cat: ICat;
+  cat: ICatAlien | ICat | IAlien;
   abilities: IAbility[];
   onSave?: (svgString: string) => Promise<void>;
   onClose: () => void;
   showAddToCart?: boolean;
-  onAddToCart?: (catId: string) => Promise<void>;
+  onAddToCart?: (catAlienId: string) => Promise<void>;
+  isPureCat?: boolean;
 }
 
 export default function CatDetails({
@@ -35,6 +37,7 @@ export default function CatDetails({
   onClose,
   showAddToCart,
   onAddToCart,
+  isPureCat = false,
 }: CatDetailsProps) {
   const [activeTab, setActiveTab] = useState("physical");
   const [isSaving, setIsSaving] = useState(false);
@@ -49,10 +52,10 @@ export default function CatDetails({
     (sum, val) => sum + val,
     0
   );
-  const resistancesTotal = Object.values(cat.resistances).reduce(
-    (sum, val) => sum + val,
-    0
-  );
+  const resistancesTotal =
+    "resistances" in cat
+      ? Object.values(cat.resistances).reduce((sum, val) => sum + val, 0)
+      : 0;
   const behaviorTotal = Object.values(cat.behavior).reduce(
     (sum, val) => sum + val,
     0
@@ -60,9 +63,10 @@ export default function CatDetails({
 
   const captureSVG = (): string => {
     if (svgRef.current) {
-      return svgRef.current.outerHTML;
+      const svgElement = svgRef.current.querySelector("svg");
+      return svgElement ? svgElement.outerHTML : cat.svgImage;
     }
-    return "";
+    return cat.svgImage;
   };
 
   const handleSave = async () => {
@@ -284,46 +288,51 @@ export default function CatDetails({
       id: "resistances",
       label: "RESISTANCES",
       content: {
-        customContent: (
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: `${scaled.spacing.gapMedium}px`,
-            }}
-          >
-            <ProgressBar
-              label="POISON"
-              value={cat.resistances.poison}
-              max={RESISTANCE_RANGES.POISON.max}
-            />
-            <ProgressBar
-              label="ACID"
-              value={cat.resistances.acid}
-              max={RESISTANCE_RANGES.ACID.max}
-            />
-            <ProgressBar
-              label="FIRE"
-              value={cat.resistances.fire}
-              max={RESISTANCE_RANGES.FIRE.max}
-            />
-            <ProgressBar
-              label="COLD"
-              value={cat.resistances.cold}
-              max={RESISTANCE_RANGES.COLD.max}
-            />
-            <ProgressBar
-              label="PSYCHIC"
-              value={cat.resistances.psychic}
-              max={RESISTANCE_RANGES.PSYCHIC.max}
-            />
-            <ProgressBar
-              label="RADIATION"
-              value={cat.resistances.radiation}
-              max={RESISTANCE_RANGES.RADIATION.max}
-            />
-          </div>
-        ),
+        customContent:
+          "resistances" in cat ? (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: `${scaled.spacing.gapMedium}px`,
+              }}
+            >
+              <ProgressBar
+                label="POISON"
+                value={cat.resistances.poison}
+                max={RESISTANCE_RANGES.POISON.max}
+              />
+              <ProgressBar
+                label="ACID"
+                value={cat.resistances.acid}
+                max={RESISTANCE_RANGES.ACID.max}
+              />
+              <ProgressBar
+                label="FIRE"
+                value={cat.resistances.fire}
+                max={RESISTANCE_RANGES.FIRE.max}
+              />
+              <ProgressBar
+                label="COLD"
+                value={cat.resistances.cold}
+                max={RESISTANCE_RANGES.COLD.max}
+              />
+              <ProgressBar
+                label="PSYCHIC"
+                value={cat.resistances.psychic}
+                max={RESISTANCE_RANGES.PSYCHIC.max}
+              />
+              <ProgressBar
+                label="RADIATION"
+                value={cat.resistances.radiation}
+                max={RESISTANCE_RANGES.RADIATION.max}
+              />
+            </div>
+          ) : (
+            <div className="text-center text-[#006694] py-12">
+              [NO_RESISTANCE_DATA]
+            </div>
+          ),
       },
     },
     {
@@ -475,6 +484,10 @@ export default function CatDetails({
     },
   ];
 
+  // Filter out resistances tab for pure cats
+  const filteredTabs = isPureCat
+    ? tabs.filter((tab) => tab.id !== "resistances" && tab.id !== "abilities")
+    : tabs;
   return (
     <div
       style={{
@@ -506,11 +519,16 @@ export default function CatDetails({
         className="w-full flex items-center justify-center border-2 border-[#30D6D6]/30 bg-black/30"
         style={{ height: `${scaled.imageContainer.catDisplay}px` }}
       >
-        <GenerateImage ref={svgRef} traits={cat.physicalTraits} />
+        <img
+          ref={svgRef as any}
+          src={`data:image/svg+xml;utf8,${encodeURIComponent(cat.svgImage)}`}
+          alt={cat.name}
+          className="w-full h-full object-contain"
+        />
       </div>
 
       <FormWithHeading
-        tabs={tabs}
+        tabs={filteredTabs}
         activeTab={activeTab}
         onTabChange={setActiveTab}
       />

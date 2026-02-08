@@ -8,6 +8,14 @@
 export type GenomeSymbol = 'A' | 'T' | 'C' | 'G' | 'W' | 'X' | 'Y' | 'Z';
 
 /**
+ * Specimen generation types
+ * cat = Pure feline (ATCG only)
+ * alien = Pure alien (WXYZ only) - future implementation
+ * cat-alien = Cat-alien mix (ATCG+WXYZ) - current default
+ */
+export type GenerationType = 'cat' | 'alien' | 'cat-alien';
+
+/**
  * Represents a functional region of the genome
  */
 export interface GenomeRegion {

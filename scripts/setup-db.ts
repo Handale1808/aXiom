@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import path from 'path';
 
+
 // Load .env.local FIRST
 dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 
@@ -8,7 +9,7 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 async function main() {
   const { setupFeedbackIndexes } = await import("../lib/indexes/setup-indexes.ts");
   const { setupUserIndexes } = await import("../lib/indexes/setup-user-indexes.ts");
-  const { setupCatIndexes } = await import("../lib/indexes/setup-cat-indexes.ts");
+  const { setupCatAlienIndexes } = await import("../lib/indexes/setup-cat-alien-indexes.ts");
   const { setupAbilityIndexes } = await import("../lib/indexes/setup-ability-indexes.ts");
   const { setupAbilityRuleIndexes } = await import("../lib/indexes/setup-ability-rule-indexes.ts");
   const { setupCatAbilityIndexes } = await import("../lib/indexes/setup-cat-ability-indexes.ts");
@@ -16,10 +17,14 @@ async function main() {
   const { setupSettingsIndexes } = await import("../lib/indexes/setup-settings-indexes.ts");
   const { setupCartIndexes } = await import("../lib/indexes/setup-cart-indexes.ts");
   const { setupPurchaseIndexes } = await import("../lib/indexes/setup-purchase-indexes.ts");
+  const { setupCatIndexes } = await import("../lib/indexes/setup-cat-indexes.ts");
+  const { setupAlienIndexes } = await import("../lib/indexes/setup-alien-indexes.ts");
+  const { setupAlienAbilityIndexes } = await import("../lib/indexes/setup-alien-ability-indexes.ts");
   const { default: clientPromise } = await import("../lib/mongodb.ts");
 
   await setupFeedbackIndexes();
   await setupUserIndexes();
+  await setupCatAlienIndexes();
   await setupCatIndexes();
   await setupAbilityIndexes();
   await setupAbilityRuleIndexes();
@@ -28,6 +33,8 @@ async function main() {
   await setupSettingsIndexes();
   await setupCartIndexes();
   await setupPurchaseIndexes();
+  await setupAlienIndexes();
+  await setupAlienAbilityIndexes();
 
   // Seed settings collection with default cat price
   try {

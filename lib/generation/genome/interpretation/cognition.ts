@@ -1,6 +1,6 @@
 // lib/genome/interpretation/cognition.ts
 
-import type { IBehavior } from '@/models/Cats';
+import type { IBehavior } from '@/models/CatAliens';
 import type { InterpretationResult, DebugInfo } from '../types';
 import { SUBREGIONS } from '../regions';
 import { extractRegion } from './utils';

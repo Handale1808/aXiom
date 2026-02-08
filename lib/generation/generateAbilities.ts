@@ -1,4 +1,4 @@
-import { IPhysicalTraits, IStats, IResistances, IBehavior } from "../../models/Cats";
+import { IPhysicalTraits, IStats, IResistances, IBehavior } from "../../models/CatAliens";
 import { IAbility } from "../../models/Ability";
 import { IAbilityRule, ICondition, ConditionSource, ConditionOperator } from "../../models/AbilityRules";
 import { ObjectId } from "mongodb";

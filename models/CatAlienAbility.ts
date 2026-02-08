@@ -1,8 +1,8 @@
 import { ObjectId } from "mongodb";
 
-export interface ICatAbility {
+export interface ICatAlienAbility {
   _id?: ObjectId;
-  catId: ObjectId;
+  catAlienId: ObjectId;
   abilityId: ObjectId;
   roll: number;
   acquiredAt: Date;

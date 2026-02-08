@@ -32,25 +32,25 @@ async function postHandler(
     const collection = db.collection<IFeedback>("feedbacks");
 
     const body = await request.json();
-    const { text, email, catId } = body;
+    const { text, email, catAlienId } = body;
 
     // Get userId from session
     const session = await getServerSession(authOptions);
     const userId = session?.user?.id;
 
-    // Validate catId if provided
-    if (catId) {
-      debug("Validating catId", {
+    // Validate catAlienId if provided
+    if (catAlienId) {
+      debug("Validating catAlienId", {
         requestId,
-        catId,
+        catAlienId,
         userId,
       });
 
-      if (!/^[0-9a-fA-F]{24}$/.test(catId)) {
-        warn("Invalid catId format", { requestId, catId });
+      if (!/^[0-9a-fA-F]{24}$/.test(catAlienId)) {
+        warn("Invalid catAlienId format", { requestId, catAlienId });
         throw new ValidationError(
           "Invalid cat ID format",
-          { catId: "Invalid cat ID format" },
+          { catAlienId: "Invalid cat ID format" },
           requestId
         );
       }
@@ -59,19 +59,19 @@ async function postHandler(
       if (userId) {
         const purchase = await db.collection("purchases").findOne({
           userId: new ObjectId(userId),
-          catId: new ObjectId(catId),
+          catAlienId: new ObjectId(catAlienId),
         });
 
         if (!purchase) {
-          warn("User does not own cat", { requestId, userId, catId });
+          warn("User does not own cat", { requestId, userId, catAlienId });
           throw new ValidationError(
             "You do not own this cat",
-            { catId: "You do not own this cat" },
+            { catAlienId: "You do not own this cat" },
             requestId
           );
         }
 
-        info("Cat ownership verified", { requestId, userId, catId });
+        info("Cat ownership verified", { requestId, userId, catAlienId });
       }
     }
 
@@ -118,7 +118,7 @@ async function postHandler(
     const feedback: IFeedback = {
       text,
       email,
-      catId: catId ? new ObjectId(catId) : undefined,
+      catAlienId: catAlienId ? new ObjectId(catAlienId) : undefined,
       userId: userId ? new ObjectId(userId) : undefined,
       createdAt: new Date(),
       analysis,
@@ -212,9 +212,9 @@ async function getHandler(
     // Add hasCat filter
     const hasCat = searchParams.get("hasCat");
     if (hasCat === "true") {
-      filter.catId = { $exists: true, $ne: null };
+      filter.catAlienId = { $exists: true, $ne: null };
     } else if (hasCat === "false") {
-      filter.catId = { $exists: false };
+      filter.catAlienId = { $exists: false };
     }
     if (sentiment) {
       const sentiments = searchParams.getAll("sentiment");
@@ -258,7 +258,7 @@ async function getHandler(
             {
               $lookup: {
                 from: "cats",
-                localField: "catId",
+                localField: "catAlienId",
                 foreignField: "_id",
                 as: "cat",
               },

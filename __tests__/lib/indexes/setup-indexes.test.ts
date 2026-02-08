@@ -153,7 +153,7 @@ describe("setupFeedbackIndexes", () => {
       const indexCall = calls.find((c) => c[1].name === "cat_id_index");
 
       expect(indexCall).toBeDefined();
-      expect(indexCall[0]).toEqual({ catId: 1 });
+      expect(indexCall[0]).toEqual({ catAlienId: 1 });
       expect(indexCall[1]).toEqual({ name: "cat_id_index" });
     });
 
@@ -175,7 +175,7 @@ describe("setupFeedbackIndexes", () => {
       const indexCall = calls.find((c) => c[1].name === "user_cat_index");
 
       expect(indexCall).toBeDefined();
-      expect(indexCall[0]).toEqual({ userId: 1, catId: 1 });
+      expect(indexCall[0]).toEqual({ userId: 1, catAlienId: 1 });
       expect(indexCall[1]).toEqual({ name: "user_cat_index" });
     });
 
@@ -186,7 +186,7 @@ describe("setupFeedbackIndexes", () => {
       const indexCall = calls.find((c) => c[1].name === "cat_created_at_index");
 
       expect(indexCall).toBeDefined();
-      expect(indexCall[0]).toEqual({ catId: 1, createdAt: -1 });
+      expect(indexCall[0]).toEqual({ catAlienId: 1, createdAt: -1 });
       expect(indexCall[1]).toEqual({ name: "cat_created_at_index" });
     });
 
@@ -938,14 +938,14 @@ describe("setupFeedbackIndexes", () => {
       expect(createdAtCall[0].createdAt).toBe(-1);
     });
 
-    it("should create descending index for catId+createdAt compound", async () => {
+    it("should create descending index for catAlienId+createdAt compound", async () => {
       await setupFeedbackIndexes();
 
       const compoundCall = mockCollection.createIndex.mock.calls.find(
         (call) => call[1].name === "cat_created_at_index"
       );
 
-      expect(compoundCall[0].catId).toBe(1);
+      expect(compoundCall[0].catAlienId).toBe(1);
       expect(compoundCall[0].createdAt).toBe(-1);
     });
 
@@ -1002,7 +1002,7 @@ describe("setupFeedbackIndexes", () => {
 
       const keys = Object.keys(compoundCall[0]);
       expect(keys[0]).toBe("userId");
-      expect(keys[1]).toBe("catId");
+      expect(keys[1]).toBe("catAlienId");
     });
   });
 

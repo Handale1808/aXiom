@@ -28,7 +28,7 @@ async function retryWithBackoff<T>(
 }
 
 export async function addCatToStock(
-  catId: ObjectId
+  catAlienId: ObjectId
 ): Promise<{ success: boolean; error?: string }> {
   try {
     await retryWithBackoff(async () => {
@@ -36,7 +36,7 @@ export async function addCatToStock(
       const db = client.db("axiom");
 
       const stockDocument: IStock = {
-        catId: catId,
+        catAlienId: catAlienId,
         addedAt: new Date(),
         removedAt: null,
       };
@@ -55,7 +55,7 @@ export async function addCatToStock(
 }
 
 export async function getAllCatsInStock(): Promise<
-  Array<{ catId: string; addedAt: string }>
+  Array<{ catAlienId: string; addedAt: string }>
 > {
   try {
     const client = await clientPromise;
@@ -64,12 +64,12 @@ export async function getAllCatsInStock(): Promise<
     const stockRecords = await db
       .collection("stock")
       .find({ removedAt: null })
-      .project({ catId: 1, addedAt: 1 })
+      .project({ catAlienId: 1, addedAt: 1 })
       .sort({ addedAt: -1 })
       .toArray();
 
     return stockRecords.map((record) => ({
-      catId: record.catId.toString(),
+      catAlienId: record.catAlienId.toString(),
       addedAt: record.addedAt.toISOString(),
     }));
   } catch (error) {
@@ -79,14 +79,14 @@ export async function getAllCatsInStock(): Promise<
 }
 
 export async function removeCatFromStock(
-  catId: string
+  catAlienId: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const client = await clientPromise;
     const db = client.db("axiom");
 
     const result = await db.collection("stock").updateOne(
-      { catId: new ObjectId(catId) },
+      { catAlienId: new ObjectId(catAlienId) },
       { $set: { removedAt: new Date() } }
     );
 

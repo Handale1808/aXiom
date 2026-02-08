@@ -4,8 +4,8 @@ import AnalysisResult from "../AnalysisResult";
 import { formatDate } from "@/lib/utils/formatDate";
 import type { IFeedback } from "@/models/Feedback";
 import { apiFetch } from "@/lib/apiClient";
-import { fetchCatByIdAction } from "@/lib/services/catActions";
-import { ICat } from "@/models/Cats";
+import { fetchCatAlienByIdAction } from "@/lib/services/catAlienActions";
+import { ICatAlien } from "@/models/CatAliens";
 import { IAbility } from "@/models/Ability";
 import CatDetails from "../cat-display/CatDetails";
 import { useResponsiveScaling } from "@/lib/hooks/useResponsiveScaling";
@@ -36,17 +36,17 @@ export default function FeedbackDetailModal({
   const [nextActionError, setNextActionError] = useState<string | null>(null);
   const [isCatModalOpen, setIsCatModalOpen] = useState(false);
   const [catData, setCatData] = useState<{
-    cat: ICat | null;
+    cat: ICatAlien | null;
     abilities: IAbility[];
   } | null>(null);
   const [isLoadingCat, setIsLoadingCat] = useState(false);
 
   const handleViewCat = async () => {
-    if (!feedback?.catId) return;
+    if (!feedback?.catAlienId) return;
 
     setIsLoadingCat(true);
     try {
-      const data = await fetchCatByIdAction(feedback.catId.toString());
+      const data = await fetchCatAlienByIdAction(feedback.catAlienId.toString());
       setCatData(data);
       setIsCatModalOpen(true);
     } catch (error) {
@@ -394,7 +394,7 @@ export default function FeedbackDetailModal({
               </div>
             </div>
 
-            {feedback.catId && feedback.catName && (
+            {feedback.catAlienId && feedback.catName && (
               <div 
                 className="border-2 border-[#30D6D6]/30 bg-black/30"
                 style={{ padding: `${scaledValues.padding.medium}px` }}

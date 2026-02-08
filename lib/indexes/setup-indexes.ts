@@ -91,7 +91,7 @@ export async function setupFeedbackIndexes(
       },
       {
         name: "cat_id_index",
-        spec: { catId: 1 },
+        spec: { catAlienId: 1 },
         options: { name: "cat_id_index" },
       },
       {
@@ -101,12 +101,12 @@ export async function setupFeedbackIndexes(
       },
       {
         name: "user_cat_index",
-        spec: { userId: 1, catId: 1 },
+        spec: { userId: 1, catAlienId: 1 },
         options: { name: "user_cat_index" },
       },
       {
         name: "cat_created_at_index",
-        spec: { catId: 1, createdAt: -1 },
+        spec: { catAlienId: 1, createdAt: -1 },
         options: { name: "cat_created_at_index" },
       },
     ];

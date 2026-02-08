@@ -1,3 +1,5 @@
+// lib/indexes/setup-alien-indexes.ts
+
 import clientPromise from "../mongodb";
 
 export interface IndexSetupResult {
@@ -8,9 +10,9 @@ export interface IndexSetupResult {
 }
 
 /**
- * Sets up MongoDB indexes for the cats collection (pure cats)
+ * Sets up MongoDB indexes for the aliens collection (pure aliens)
  */
-export async function setupCatIndexes(
+export async function setupAlienIndexes(
   databaseName: string = "axiom"
 ): Promise<IndexSetupResult> {
   const result: IndexSetupResult = {
@@ -23,38 +25,48 @@ export async function setupCatIndexes(
   try {
     const client = await clientPromise;
     const db = client.db(databaseName);
-    const collection = db.collection("cats");
+    const collection = db.collection("aliens");
 
     const indexDefinitions = [
       {
-        name: "cat_created_at_index",
+        name: "alien_created_at_index",
         spec: { createdAt: -1 } as const,
-        options: { name: "cat_created_at_index" },
+        options: { name: "alien_created_at_index" },
       },
       {
-        name: "cat_name_index",
+        name: "alien_name_index",
         spec: { name: 1 } as const,
-        options: { name: "cat_name_index" },
+        options: { name: "alien_name_index" },
       },
       {
-        name: "cat_type_index",
+        name: "alien_type_index",
         spec: { type: 1 } as const,
-        options: { name: "cat_type_index" },
+        options: { name: "alien_type_index" },
       },
       {
-        name: "stat_strength_index",
+        name: "alien_stat_strength_index",
         spec: { "stats.strength": 1 } as const,
-        options: { name: "stat_strength_index" },
+        options: { name: "alien_stat_strength_index" },
       },
       {
-        name: "stat_agility_index",
-        spec: { "stats.agility": 1 } as const,
-        options: { name: "stat_agility_index" },
+        name: "alien_stat_psychic_index",
+        spec: { "stats.psychic": 1 } as const,
+        options: { name: "alien_stat_psychic_index" },
       },
       {
-        name: "trait_size_index",
+        name: "alien_trait_wings_index",
+        spec: { "physicalTraits.wings": 1 } as const,
+        options: { name: "alien_trait_wings_index" },
+      },
+      {
+        name: "alien_trait_skin_type_index",
+        spec: { "physicalTraits.skinType": 1 } as const,
+        options: { name: "alien_trait_skin_type_index" },
+      },
+      {
+        name: "alien_trait_size_index",
         spec: { "physicalTraits.size": 1 } as const,
-        options: { name: "trait_size_index" },
+        options: { name: "alien_trait_size_index" },
       },
     ] as const;
 
@@ -66,7 +78,7 @@ export async function setupCatIndexes(
         if (error?.code === 85 || error?.codeName === "IndexAlreadyExists") {
           return { status: "existing" as const, name: def.name };
         }
-        
+
         const errorMessage = error?.message || String(error);
         return { status: "error" as const, name: def.name, error: errorMessage };
       }

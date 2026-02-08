@@ -1,53 +1,45 @@
 // models/Cats.ts
 
 import { ObjectId } from "mongodb";
+import { IResistances } from "./CatAliens";
 
-export type TailType = "none" | "short" | "long" | "prehensile";
-export type SkinType = "fur" | "scales" | "chitin" | "skin";
+export type SkinType = "fur";
 export type Size = "tiny" | "small" | "medium" | "large" | "massive";
 
 export interface IPhysicalTraits {
-  eyes: number; // 0 - 10
-  legs: number; // 0 - 10
-  wings: number; // 0 - 10
-  tails: number; // 0 - 10
-  skinType: SkinType;
+  eyes: 2;
+  legs: 4;
+  wings: 0;
+  tails: 1;
+  skinType: "fur";
   size: Size;
   colour: string;
-  hasClaws: boolean;
-  hasFangs: boolean;
+  hasClaws: true;
+  hasFangs: true;
 }
 
 export interface IStats {
-  strength: number; // 1 - 10
-  agility: number; // 1 - 10
-  endurance: number; // 1 - 10
-  intelligence: number; // 1 - 10
-  perception: number; // 1 - 10
-  psychic: number; // 1 - 10
-}
-
-export interface IResistances {
-  poison: number; // 0 - 100
-  acid: number; // 0 - 100
-  fire: number; // 0 - 100
-  cold: number; // 0 - 100
-  psychic: number; // 0 - 100
-  radiation: number; // 0 - 100
+  strength: number; // 1 - 10 (normalized to 3-7 for cats)
+  agility: number; // 1 - 10 (normalized to 6-10 for cats)
+  endurance: number; // 1 - 10 (normalized to 4-8 for cats)
+  intelligence: number; // 1 - 10 (normalized to 5-9 for cats)
+  perception: number; // 1 - 10 (normalized to 7-10 for cats)
+  psychic: 0; // Always 0 for pure cats
 }
 
 export interface IBehavior {
-  aggression: number; // 1 - 10
-  curiosity: number; // 1 - 10
-  loyalty: number; // 1 - 10
-  chaos: number; // 1 - 10
+  aggression: number; // 1 - 10 (normalized to 2-8 for cats)
+  curiosity: number; // 1 - 10 (normalized to 7-10 for cats)
+  loyalty: number; // 1 - 10 (normalized to 3-9 for cats)
+  chaos: number; // 1 - 10 (normalized to 5-9 for cats)
 }
 
 export interface ICat {
   _id?: ObjectId;
+  type: "cat";
   name: string;
   description: string;
-  genome: string; // NEW: 1000-base genome string (ATCGWXYZ alphabet)
+  genome: string; // 1000-base ATCG-only genome string
   physicalTraits: IPhysicalTraits;
   stats: IStats;
   resistances: IResistances;

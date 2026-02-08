@@ -2,7 +2,7 @@
 
 import { getRegionForPosition, formatPosition, isCatBase, isAlienBase } from './utils';
 import { DEMO_GENOME_METADATA } from './hardcodedGenome';
-import type { GenomeSymbol } from '@/lib/cat-alien-generation/genome/types';
+import type { GenomeSymbol } from '@/lib/generation/genome/types';
 
 interface RegionInfoPanelProps {
   hoveredBase: number | null;

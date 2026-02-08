@@ -1,6 +1,6 @@
 // lib/genome/interpretation/metabolism.ts
 
-import type { IResistances } from '@/models/Cats';
+import type { IResistances } from '@/models/CatAliens';
 import type { InterpretationResult, DebugInfo } from '../types';
 import { SUBREGIONS } from '../regions';
 import { extractRegion } from './utils';

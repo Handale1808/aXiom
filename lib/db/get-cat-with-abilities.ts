@@ -1,33 +1,33 @@
 import { ObjectId } from "mongodb";
 import clientPromise from "../mongodb.ts";
-import { ICat } from "../../models/Cats";
+import { ICatAlien } from "../../models/CatAliens.ts";
 import { IAbilityRule } from "../../models/AbilityRules";
-import { ICatAbility } from "../../models/CatAbility";
+import { ICatAlienAbility } from "../../models/CatAlienAbility.ts";
 
-export async function getCatWithAbilities(catId: ObjectId): Promise<{
-  cat: ICat | null;
+export async function getCatWithAbilities(catAlienId: ObjectId): Promise<{
+  cat: ICatAlien | null;
   abilities: Array<{
     ability: IAbilityRule;
-    catAbility: ICatAbility;
+    catAbility: ICatAlienAbility;
   }>;
 }> {
   const client = await clientPromise;
   const db = client.db("axiom");
   const catsCollection = db.collection("cats");
-  const catAbilitiesCollection = db.collection("catAbilities");
+  const catAlienAbilitiesCollection = db.collection("catAlienAbilities");
   const abilitiesCollection = db.collection("abilities");
 
-  const cat = await catsCollection.findOne({ _id: catId }) as unknown as ICat | null;
+  const cat = await catsCollection.findOne({ _id: catAlienId }) as unknown as ICatAlien | null;
 
   if (!cat) {
     return { cat: null, abilities: [] };
   }
 
-  const catAbilities = await catAbilitiesCollection
-    .find({ catId })
-    .toArray() as unknown as ICatAbility[];
+  const catAlienAbilities = await catAlienAbilitiesCollection
+    .find({ catAlienId })
+    .toArray() as unknown as ICatAlienAbility[];
 
-  const abilityIds = catAbilities.map((ca) => ca.abilityId);
+  const abilityIds = catAlienAbilities.map((ca) => ca.abilityId);
 
   const abilities = await abilitiesCollection
     .find({ _id: { $in: abilityIds } })
@@ -38,7 +38,7 @@ export async function getCatWithAbilities(catId: ObjectId): Promise<{
     abilityMap.set(ability._id!.toString(), ability);
   });
 
-  const populatedAbilities = catAbilities.map((catAbility) => {
+  const populatedAbilities = catAlienAbilities.map((catAbility) => {
     const ability = abilityMap.get(catAbility.abilityId.toString());
     return {
       ability: ability!,

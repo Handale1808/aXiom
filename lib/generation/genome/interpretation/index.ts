@@ -1,12 +1,13 @@
 // lib/genome/interpretation/index.ts
 
-import type { IPhysicalTraits, IStats, IResistances, IBehavior } from '@/models/Cats';
+import type { IPhysicalTraits, IStats, IResistances, IBehavior } from '@/models/CatAliens';
 import type { DebugInfo } from '../types';
 import { interpretMorphology } from './morphology';
 import { interpretMetabolism } from './metabolism';
 import { interpretCognition } from './cognition';
 import { interpretPower } from './power';
 import { isValidGenome } from '../validation';
+import { normalizeToCat, isPureCatGenome, normalizeToAlien, isPureAlienGenome } from './normalization';
 
 /**
  * Complete genome interpretation result
@@ -23,6 +24,7 @@ export interface GenomeInterpretationResult {
     cognition?: DebugInfo;
     power?: DebugInfo;
   };
+  genome?: string;
 }
 
 /**
@@ -39,9 +41,11 @@ export interface GenomeInterpretationResult {
  */
 export function interpretGenome(
   genome: string,
-  options?: { debug?: boolean }
+  options?: { debug?: boolean; normalizeCats?: boolean; normalizeAliens?: boolean }
 ): GenomeInterpretationResult {
   const debug = options?.debug ?? false;
+  const normalizeCats = options?.normalizeCats ?? false;
+  const normalizeAliens = options?.normalizeAliens ?? false;
   
   // Validate genome before interpretation
   if (!isValidGenome(genome)) {
@@ -79,7 +83,8 @@ export function interpretGenome(
     physicalTraits: morphologyResult.value.physicalTraits,
     stats,
     resistances,
-    behavior: cognitionResult.value.behavior
+    behavior: cognitionResult.value.behavior,
+    genome
   };
   
   // Add debug info if requested
@@ -92,6 +97,16 @@ export function interpretGenome(
     };
   }
   
+  // Normalize to cat if requested and genome is pure cat
+  if (normalizeCats && isPureCatGenome(genome)) {
+    return normalizeToCat(result);
+  }
+
+  // Normalize to alien if requested and genome is pure alien
+  if (normalizeAliens && isPureAlienGenome(genome)) {
+    return normalizeToAlien(result);
+  }
+  
   return result;
 }
 
@@ -100,3 +115,4 @@ export { interpretMorphology } from './morphology';
 export { interpretMetabolism } from './metabolism';
 export { interpretCognition } from './cognition';
 export { interpretPower } from './power';
+export { normalizeToAlien, isPureAlienGenome } from './normalization';

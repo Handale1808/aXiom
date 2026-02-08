@@ -1,18 +1,20 @@
-import clientPromise from "../mongodb";
+import clientPromise from "../mongodb.ts";
 
 export interface IndexSetupResult {
   success: boolean;
   createdIndexes: string[];
   existingIndexes: string[];
-  errors: Array<{ indexName: string; error: string }>;
+  errors: Array<{
+    indexName: string;
+    error: string;
+  }>;
 }
 
-/**
- * Sets up MongoDB indexes for the cats collection (pure cats)
- */
-export async function setupCatIndexes(
+export async function setupCatAlienIndexes(
   databaseName: string = "axiom"
 ): Promise<IndexSetupResult> {
+  const dbName = databaseName ?? "axiom";
+  
   const result: IndexSetupResult = {
     success: true,
     createdIndexes: [],
@@ -22,10 +24,20 @@ export async function setupCatIndexes(
 
   try {
     const client = await clientPromise;
-    const db = client.db(databaseName);
-    const collection = db.collection("cats");
 
-    const indexDefinitions = [
+    if (!client || typeof client.db !== "function") {
+      result.success = false;
+      result.errors.push({
+        indexName: "connection",
+        error: "Invalid MongoDB client: client is null or missing db method",
+      });
+      return result;
+    }
+
+    const db = client.db(dbName);
+    const collection = db.collection("catAliens");
+
+   const indexDefinitions = [
       {
         name: "cat_created_at_index",
         spec: { createdAt: -1 } as const,
@@ -35,11 +47,6 @@ export async function setupCatIndexes(
         name: "cat_name_index",
         spec: { name: 1 } as const,
         options: { name: "cat_name_index" },
-      },
-      {
-        name: "cat_type_index",
-        spec: { type: 1 } as const,
-        options: { name: "cat_type_index" },
       },
       {
         name: "stat_strength_index",
@@ -52,9 +59,19 @@ export async function setupCatIndexes(
         options: { name: "stat_agility_index" },
       },
       {
+        name: "stat_psychic_index",
+        spec: { "stats.psychic": 1 } as const,
+        options: { name: "stat_psychic_index" },
+      },
+      {
         name: "trait_size_index",
         spec: { "physicalTraits.size": 1 } as const,
         options: { name: "trait_size_index" },
+      },
+      {
+        name: "trait_skin_type_index",
+        spec: { "physicalTraits.skinType": 1 } as const,
+        options: { name: "trait_skin_type_index" },
       },
     ] as const;
 
@@ -63,12 +80,35 @@ export async function setupCatIndexes(
         await collection.createIndex(def.spec, def.options);
         return { status: "created" as const, name: def.name };
       } catch (error: any) {
-        if (error?.code === 85 || error?.codeName === "IndexAlreadyExists") {
+        const errorCode = error?.code;
+        const errorCodeName = error?.codeName;
+        
+        if (errorCode === 85 || errorCodeName === "IndexAlreadyExists") {
           return { status: "existing" as const, name: def.name };
         }
         
-        const errorMessage = error?.message || String(error);
-        return { status: "error" as const, name: def.name, error: errorMessage };
+        let errorMessage: string;
+        if (error === null) {
+          errorMessage = "null";
+        } else if (error === undefined) {
+          errorMessage = "undefined";
+        } else if (typeof error === "string") {
+          errorMessage = error;
+        } else if (error instanceof Error) {
+          errorMessage = error.message || String(error);
+        } else if (error && typeof error === "object" && "message" in error) {
+          errorMessage = typeof error.message === "string" 
+            ? error.message 
+            : String(error.message);
+        } else {
+          errorMessage = String(error);
+        }
+        
+        return {
+          status: "error" as const,
+          name: def.name,
+          error: errorMessage,
+        };
       }
     });
 
@@ -87,15 +127,22 @@ export async function setupCatIndexes(
             error: indexResult.error,
           });
         }
+      } else {
+        result.errors.push({
+          indexName: "unknown",
+          error: promiseResult.reason?.message || String(promiseResult.reason),
+        });
       }
     }
 
-    result.success = result.errors.length === 0;
+    if (result.errors.length > 0) {
+      result.success = false;
+    }
   } catch (error: any) {
     result.success = false;
     result.errors.push({
       indexName: "connection",
-      error: error?.message || String(error),
+      error: error.message || String(error),
     });
   }
 

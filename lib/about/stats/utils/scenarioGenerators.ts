@@ -1,6 +1,6 @@
 // lib/components/about/stats/utils/scenarioGenerators.ts
 
-import type { GenomeSymbol } from '@/lib/cat-alien-generation/genome/types';
+import type { GenomeSymbol } from '@/lib/generation/genome/types';
 
 export interface Scenario {
   id: string;

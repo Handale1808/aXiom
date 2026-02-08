@@ -1,14 +1,16 @@
-// lib/cat-generation/generateCat.ts
+// lib/generation/alien-generation/generateAlien.ts
 
-import { ICat } from "../../models/Cats";
-import { IAbility } from "../../models/Ability";
-import { IAbilityRule } from "../../models/AbilityRules";
-import { generateAbilities } from "./generateAbilities";
-import { generateDescription } from "./generateDescription";
-import { generateGenome } from "./genome/generation";
-import { interpretGenome } from "./genome/interpretation/index";
+import { IAlien } from "@/models/Aliens";
+import { IAbility } from "@/models/Ability";
+import { IAbilityRule } from "@/models/AbilityRules";
+import { generateAbilities } from "../generateAbilities";
+import { generateDescription } from "../generateDescription";
+import { generateGenome } from "../genome/generation";
+import { interpretGenome } from "../genome/interpretation/index";
+import { generateSvgString } from "../generateImage";
 
-// Specimen name generation constants (unchanged)
+// Specimen name generation constants
+// Using same sci-fi themed names as cat-aliens (already alien-appropriate)
 const SPECIMEN_PREFIXES = [
   "SPECIMEN",
   "SUBJECT",
@@ -159,32 +161,40 @@ function generateName(): string {
 }
 
 /**
- * Main cat generation function
- * Now genome-driven instead of random
+ * Main pure alien generation function
  * 
  * Flow:
- * 1. Generate genome (1000-base string)
- * 2. Interpret genome → derive complete phenotype
- * 3. Grant abilities based on derived phenotype (unchanged logic)
- * 4. Generate description from phenotype (unchanged logic)
- * 5. Assemble and return cat document with genome
+ * 1. Generate WXYZ-only genome (type: "alien")
+ * 2. Interpret genome → derive phenotype (auto-normalized for aliens)
+ * 3. Grant abilities based on phenotype
+ * 4. Generate description from phenotype
+ * 5. Generate SVG image
+ * 6. Assemble and return alien document with abilities
+ * 
+ * @param allRules - All ability rules from database
+ * @param allAbilities - All abilities from database
+ * @returns Promise resolving to alien specimen and granted abilities
  */
-export async function generateCat(
+export async function generateAlien(
   allRules: IAbilityRule[],
   allAbilities: IAbility[]
 ): Promise<{
-  cat: ICat;
+  alien: IAlien;
   abilities: IAbility[];
 }> {
   try {
-    // Step 1: Generate genome
-    const genome = generateGenome();
-    
+    // Step 1: Generate pure alien genome (WXYZ only)
+    const genome = generateGenome("alien");
+
     // Step 2: Interpret genome → derive phenotype
-    const phenotype = interpretGenome(genome, { debug: false });
-    
+    // normalizeAliens: true ensures alien-like traits
+    const phenotype = interpretGenome(genome, {
+      debug: false,
+      normalizeAliens: true,
+    });
+
     // Step 3: Grant abilities based on derived phenotype
-    // generateAbilities logic is unchanged - still checks phenotype conditions
+    // generateAbilities logic works with any phenotype
     const abilities = await generateAbilities(
       phenotype.physicalTraits,
       phenotype.stats,
@@ -193,36 +203,43 @@ export async function generateCat(
       allRules,
       allAbilities
     );
-    
-    // Step 4: Generate description (unchanged - uses phenotype)
+
+    // Step 4: Generate description
+    // Pass type: "alien" for alien-focused prompt
     const description = await generateDescription(
       {
         physicalTraits: phenotype.physicalTraits,
         stats: phenotype.stats,
         resistances: phenotype.resistances,
         behavior: phenotype.behavior,
+        type: "alien",
       },
       abilities
     );
-    
-    // Step 5: Assemble cat document
-    const cat: ICat = {
+
+    // Step 5: Generate SVG image
+    // Uses same image generation as cat-aliens
+    const svgImage = generateSvgString(phenotype.physicalTraits, "alien");
+
+    // Step 6: Assemble alien document
+    const alien: IAlien = {
+      type: "alien", // Always "alien" for pure aliens
       name: generateName(),
       description,
-      genome, // NEW FIELD - store the genome string
+      genome, // WXYZ-only genome string
       physicalTraits: phenotype.physicalTraits,
       stats: phenotype.stats,
       resistances: phenotype.resistances,
       behavior: phenotype.behavior,
-      svgImage: "", // Will be generated later
+      svgImage: svgImage || "👽", // Placeholder emoji (will be replaced with real image)
       createdAt: new Date(),
     };
-    
-    return { cat, abilities };
+
+    return { alien, abilities };
   } catch (error) {
-    console.error("Error generating cat:", error);
+    console.error("Error generating alien:", error);
     throw new Error(
-      `Failed to generate cat: ${error instanceof Error ? error.message : 'Unknown error'}`
+      `Failed to generate alien: ${error instanceof Error ? error.message : "Unknown error"}`
     );
   }
 }

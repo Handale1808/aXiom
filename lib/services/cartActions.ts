@@ -11,10 +11,10 @@ import { removeCatFromStock } from "./stockHelpers";
 
 export async function addToCartAction(
   userId: string,
-  catId: string
+  catAlienId: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    if (!userId || !catId) {
+    if (!userId || !catAlienId) {
       return { success: false, error: "Missing required fields" };
     }
 
@@ -24,7 +24,7 @@ export async function addToCartAction(
     // Check if cat is still in stock
     const stockItem = await db
       .collection("stock")
-      .findOne({ catId: new ObjectId(catId), removedAt: null });
+      .findOne({ catAlienId: new ObjectId(catAlienId), removedAt: null });
 
     if (!stockItem) {
       return { success: false, error: "Cat not available" };
@@ -33,7 +33,7 @@ export async function addToCartAction(
     // Check if already in cart
     const existingCartItem = await db
       .collection("cart")
-      .findOne({ userId: new ObjectId(userId), catId: new ObjectId(catId) });
+      .findOne({ userId: new ObjectId(userId), catAlienId: new ObjectId(catAlienId) });
 
     if (existingCartItem) {
       return { success: false, error: "Cat already in cart" };
@@ -42,7 +42,7 @@ export async function addToCartAction(
     // Add to cart
     const cartDocument: ICart = {
       userId: new ObjectId(userId),
-      catId: new ObjectId(catId),
+      catAlienId: new ObjectId(catAlienId),
       addedAt: new Date(),
     };
 
@@ -60,10 +60,10 @@ export async function addToCartAction(
 
 export async function removeFromCartAction(
   userId: string,
-  catId: string
+  catAlienId: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    if (!userId || !catId) {
+    if (!userId || !catAlienId) {
       return { success: false, error: "Missing required fields" };
     }
 
@@ -72,7 +72,7 @@ export async function removeFromCartAction(
 
     const result = await db
       .collection("cart")
-      .deleteOne({ userId: new ObjectId(userId), catId: new ObjectId(catId) });
+      .deleteOne({ userId: new ObjectId(userId), catAlienId: new ObjectId(catAlienId) });
 
     if (result.deletedCount === 0) {
       return { success: false, error: "Cart item not found" };
@@ -90,7 +90,7 @@ export async function removeFromCartAction(
 
 export async function getUserCartAction(userId: string): Promise<
   Array<{
-    catId: string;
+    catAlienId: string;
     name: string;
     svgImage: string;
     addedAt: string;
@@ -111,7 +111,7 @@ export async function getUserCartAction(userId: string): Promise<
         {
           $lookup: {
             from: "cats",
-            localField: "catId",
+            localField: "catAlienId",
             foreignField: "_id",
             as: "cat",
           },
@@ -120,8 +120,8 @@ export async function getUserCartAction(userId: string): Promise<
         {
           $lookup: {
             from: "stock",
-            localField: "catId",
-            foreignField: "catId",
+            localField: "catAlienId",
+            foreignField: "catAlienId",
             as: "stock",
           },
         },
@@ -129,7 +129,7 @@ export async function getUserCartAction(userId: string): Promise<
         { $match: { "stock.removedAt": null } },
         {
           $project: {
-            catId: "$catId",
+            catAlienId: "$catAlienId",
             name: "$cat.name",
             svgImage: "$cat.svgImage",
             addedAt: "$addedAt",
@@ -140,7 +140,7 @@ export async function getUserCartAction(userId: string): Promise<
       .toArray();
 
     return cartItems.map((item) => ({
-      catId: item.catId.toString(),
+      catAlienId: item.catAlienId.toString(),
       name: item.name,
       svgImage: item.svgImage,
       addedAt: item.addedAt.toISOString(),
@@ -167,8 +167,8 @@ export async function getCartCountAction(userId: string): Promise<number> {
         {
           $lookup: {
             from: "stock",
-            localField: "catId",
-            foreignField: "catId",
+            localField: "catAlienId",
+            foreignField: "catAlienId",
             as: "stock",
           },
         },
@@ -232,7 +232,7 @@ export async function checkoutCartAction(userId: string): Promise<{
         {
           $lookup: {
             from: "cats",
-            localField: "catId",
+            localField: "catAlienId",
             foreignField: "_id",
             as: "cat",
           },
@@ -241,15 +241,15 @@ export async function checkoutCartAction(userId: string): Promise<{
         {
           $lookup: {
             from: "stock",
-            localField: "catId",
-            foreignField: "catId",
+            localField: "catAlienId",
+            foreignField: "catAlienId",
             as: "stock",
           },
         },
         { $unwind: "$stock" },
         {
           $project: {
-            catId: "$catId",
+            catAlienId: "$catAlienId",
             catName: "$cat.name",
             stockRemovedAt: "$stock.removedAt",
           },
@@ -277,7 +277,7 @@ export async function checkoutCartAction(userId: string): Promise<{
     // Process purchases
     const purchaseDocuments: IPurchase[] = cartItems.map((item) => ({
       userId: new ObjectId(userId),
-      catId: item.catId,
+      catAlienId: item.catAlienId,
       purchasedAt: new Date(),
       price: price,
     }));
@@ -287,7 +287,7 @@ export async function checkoutCartAction(userId: string): Promise<{
 
     // Remove cats from stock
     for (const item of cartItems) {
-      await removeCatFromStock(item.catId.toString());
+      await removeCatFromStock(item.catAlienId.toString());
     }
 
     // Clear cart
@@ -305,7 +305,7 @@ export async function checkoutCartAction(userId: string): Promise<{
 
 export async function getUserPurchasedCatsAction(userId: string): Promise<
   Array<{
-    catId: string;
+    catAlienId: string;
     name: string;
     svgImage: string;
     purchasedAt: string;
@@ -327,7 +327,7 @@ export async function getUserPurchasedCatsAction(userId: string): Promise<
         {
           $lookup: {
             from: "cats",
-            localField: "catId",
+            localField: "catAlienId",
             foreignField: "_id",
             as: "cat",
           },
@@ -335,7 +335,7 @@ export async function getUserPurchasedCatsAction(userId: string): Promise<
         { $unwind: "$cat" },
         {
           $project: {
-            catId: "$catId",
+            catAlienId: "$catAlienId",
             name: "$cat.name",
             svgImage: "$cat.svgImage",
             purchasedAt: "$purchasedAt",
@@ -346,7 +346,7 @@ export async function getUserPurchasedCatsAction(userId: string): Promise<
       .toArray();
 
     return purchases.map((purchase) => ({
-      catId: purchase.catId.toString(),
+      catAlienId: purchase.catAlienId.toString(),
       name: purchase.name,
       svgImage: purchase.svgImage,
       purchasedAt: purchase.purchasedAt.toISOString(),

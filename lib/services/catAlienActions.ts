@@ -1,16 +1,16 @@
-// lib/services/catActions.ts
+// lib/services/catAlienActions.ts
 
 "use server";
 
 import clientPromise from "@/lib/mongodb";
 import { IAbility } from "@/models/Ability";
 import { IAbilityRule } from "@/models/AbilityRules";
-import { ICat } from "@/models/Cats";
-import { generateCat } from "@/lib/cat-alien-generation/generateCat";
+import { ICatAlien } from "@/models/CatAliens";
+import { generateCat } from "@/lib/generation/cat-alien-generation/generateCatAlien";
 import { addCatToStock, getAllCatsInStock } from "./stockHelpers";
 
-export async function generateCatAction(): Promise<{
-  cat: ICat;
+export async function generateCatAlienAction(): Promise<{
+  cat: ICatAlien;
   abilities: IAbility[];
 }> {
   try {
@@ -34,17 +34,17 @@ export async function generateCatAction(): Promise<{
       abilities: JSON.parse(JSON.stringify(result.abilities)),
     };
   } catch (error) {
-    console.error("Failed to generate cat:", error);
+    console.error("Failed to generate cat-alien:", error);
     throw error;
   }
 }
 
-export async function saveCatAction(
-  cat: ICat,
+export async function saveCatAlienAction(
+  cat: ICatAlien,
   abilities: IAbility[],
   svgString: string
 ): Promise<
-  { success: true; catId: string } | { success: false; error: string }
+  { success: true; catAlienId: string } | { success: false; error: string }
 > {
   try {
     // Validation
@@ -64,46 +64,46 @@ export async function saveCatAction(
     const client = await clientPromise;
     const db = client.db("axiom");
 
-    // Prepare cat document with SVG
-    const catDocument: ICat = {
+    // Prepare cat document with SVG and type
+    const catDocument: ICatAlien = {
       ...cat,
+      type: "cat-alien", // Ensure type is set
       svgImage: svgString,
       createdAt: new Date(),
     };
 
-    // Insert cat
-    // Insert cat
-    const catResult = await db.collection("cats").insertOne(catDocument);
-    const catId = catResult.insertedId;
+    // Insert into catAliens collection
+    const catResult = await db.collection("catAliens").insertOne(catDocument);
+    const catAlienId = catResult.insertedId;
 
-    // Prepare catAbility junction records
+    // Prepare catAlienAbility junction records
     if (abilities.length > 0) {
       const catAbilityDocuments = abilities.map((ability) => ({
-        catId: catId,
+        catAlienId: catAlienId,
         abilityId: ability._id!,
         roll: Math.random(),
         acquiredAt: new Date(),
       }));
 
-      // Insert catAbility records
-      await db.collection("catAbilities").insertMany(catAbilityDocuments);
+      // Insert catAlienAbility records
+      await db.collection("catAlienAbilities").insertMany(catAbilityDocuments);
     }
 
     // Add cat to stock
-    const stockResult = await addCatToStock(catId);
+    const stockResult = await addCatToStock(catAlienId);
     if (!stockResult.success) {
       console.error(
-        `Cat ${catId.toString()} saved but failed to add to stock:`,
+        `Cat-alien ${catAlienId.toString()} saved but failed to add to stock:`,
         stockResult.error
       );
     }
 
     return {
       success: true,
-      catId: catId.toString(),
+      catAlienId: catAlienId.toString(),
     };
   } catch (error) {
-    console.error("Failed to save cat:", error);
+    console.error("Failed to save cat-alien:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",
@@ -111,7 +111,7 @@ export async function saveCatAction(
   }
 }
 
-export async function fetchAllCatsAction(): Promise<
+export async function fetchAllCatAliensAction(): Promise<
   Array<{
     _id: string;
     name: string;
@@ -124,7 +124,7 @@ export async function fetchAllCatsAction(): Promise<
     const db = client.db("axiom");
 
     const cats = await db
-      .collection("cats")
+      .collection("catAliens")
       .find({})
       .project({ _id: 1, name: 1, svgImage: 1, createdAt: 1 })
       .sort({ createdAt: -1 })
@@ -137,13 +137,13 @@ export async function fetchAllCatsAction(): Promise<
       createdAt: cat.createdAt.toISOString(),
     }));
   } catch (error) {
-    console.error("Failed to fetch cats:", error);
+    console.error("Failed to fetch cat-aliens:", error);
     return [];
   }
 }
 
-export async function fetchCatByIdAction(catId: string): Promise<{
-  cat: ICat | null;
+export async function fetchCatAlienByIdAction(catAlienId: string): Promise<{
+  cat: ICatAlien | null;
   abilities: IAbility[];
 }> {
   try {
@@ -152,28 +152,28 @@ export async function fetchCatByIdAction(catId: string): Promise<{
     const { ObjectId } = await import("mongodb");
 
     const cat = await db
-      .collection("cats")
-      .findOne({ _id: new ObjectId(catId) });
+      .collection("catAliens")
+      .findOne({ _id: new ObjectId(catAlienId) });
 
     if (!cat) {
       return { cat: null, abilities: [] };
     }
 
-    const catAbilities = await db
-      .collection("catAbilities")
-      .find({ catId: new ObjectId(catId) })
+    const catAlienAbilities = await db
+      .collection("catAlienAbilities")
+      .find({ catAlienId: new ObjectId(catAlienId) })
       .toArray();
 
-    if (catAbilities.length === 0) {
+    if (catAlienAbilities.length === 0) {
       // Let's check if any records exist at all
       const allCatAbilities = await db
-        .collection("catAbilities")
+        .collection("catAlienAbilities")
         .find({})
         .limit(5)
         .toArray();
     }
 
-    const abilityIds = catAbilities.map((ca) => ca.abilityId);
+    const abilityIds = catAlienAbilities.map((ca) => ca.abilityId);
 
     // Convert abilityIds to ObjectIds if they're strings
     const abilityObjectIds = abilityIds.map((id) =>
@@ -189,29 +189,29 @@ export async function fetchCatByIdAction(catId: string): Promise<{
         : [];
 
     return {
-      cat: JSON.parse(JSON.stringify(cat)) as ICat,
+      cat: JSON.parse(JSON.stringify(cat)) as ICatAlien,
       abilities: JSON.parse(JSON.stringify(abilities)) as IAbility[],
     };
   } catch (error) {
-    console.error("[SERVER] Failed to fetch cat by ID:", error);
+    console.error("[SERVER] Failed to fetch cat-alien by ID:", error);
     return { cat: null, abilities: [] };
   }
 }
 
-export async function getAllCatsInStockAction(): Promise<
-  Array<{ catId: string; addedAt: string }>
+export async function getAllCatAliensInStockAction(): Promise<
+  Array<{ catAlienId: string; addedAt: string }>
 > {
   try {
     return await getAllCatsInStock();
   } catch (error) {
-    console.error("Failed to get cats in stock:", error);
+    console.error("Failed to get cat-aliens in stock:", error);
     return [];
   }
 }
 
-export async function getUserPurchasedCatsAction(userId: string): Promise<
+export async function getUserPurchasedCatAliensAction(userId: string): Promise<
   Array<{
-    catId: string;
+    catAlienId: string;
     name: string;
     svgImage: string;
     purchasedAt: string;
@@ -232,8 +232,8 @@ export async function getUserPurchasedCatsAction(userId: string): Promise<
         { $match: { userId: new ObjectId(userId) } },
         {
           $lookup: {
-            from: "cats",
-            localField: "catId",
+            from: "catAliens",
+            localField: "catAlienId",
             foreignField: "_id",
             as: "cat",
           },
@@ -241,7 +241,7 @@ export async function getUserPurchasedCatsAction(userId: string): Promise<
         { $unwind: "$cat" },
         {
           $project: {
-            catId: "$catId",
+            catAlienId: "$catAlienId",
             name: "$cat.name",
             svgImage: "$cat.svgImage",
             purchasedAt: "$purchasedAt",
@@ -252,13 +252,13 @@ export async function getUserPurchasedCatsAction(userId: string): Promise<
       .toArray();
 
     return purchases.map((purchase) => ({
-      catId: purchase.catId.toString(),
+      catAlienId: purchase.catAlienId.toString(),
       name: purchase.name,
       svgImage: purchase.svgImage,
       purchasedAt: purchase.purchasedAt.toISOString(),
     }));
   } catch (error) {
-    console.error("Failed to fetch user purchased cats:", error);
+    console.error("Failed to fetch user purchased cat-aliens:", error);
     return [];
   }
 }
