@@ -31,6 +31,7 @@ import {
   updateCatPriceAction,
 } from "@/lib/services/settingsActions";
 import { useResponsiveScaling } from "@/lib/hooks/useResponsiveScaling";
+import { useGenerationProgress } from "@/lib/hooks/useGenerationProgress";
 import { IAlien } from "@/models/Aliens";
 import {
   generateAlienAction,
@@ -44,6 +45,8 @@ export default function ShopPage() {
   const { isAdmin, isLoading } = useUser();
   const { showToast } = useToast();
   const scaledValues = useResponsiveScaling();
+  const { isGenerating, currentMessage, startGeneration, stopGeneration } =
+    useGenerationProgress();
   const [activeTab, setActiveTab] = useState("admin");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentCat, setCurrentCat] = useState<ICatAlien | null>(null);
@@ -118,13 +121,19 @@ export default function ShopPage() {
 
   const handleGeneratePureCat = async () => {
     try {
+      startGeneration("cat");
+
       const { cat } = await generatePureCatAction();
+
+      stopGeneration();
+
       setCurrentPureCat(cat);
       setCurrentCat(null);
       setCurrentAbilities([]);
       setIsPureCatModal(true);
       setIsModalOpen(true);
     } catch (error) {
+      stopGeneration();
       console.error("Failed to generate cat:", error);
       showToast("[FAILED_TO_GENERATE_CAT]", "error");
     }
@@ -183,7 +192,12 @@ export default function ShopPage() {
 
   const handleGenerateAlien = async () => {
     try {
+      startGeneration("alien");
+
       const { alien, abilities } = await generateAlienAction();
+
+      stopGeneration();
+
       setCurrentAlien(alien);
       setCurrentCat(null);
       setCurrentPureCat(null);
@@ -192,6 +206,7 @@ export default function ShopPage() {
       setIsPureCatModal(false);
       setIsModalOpen(true);
     } catch (error) {
+      stopGeneration();
       console.error("Failed to generate alien:", error);
       showToast("[FAILED_TO_GENERATE_ALIEN]", "error");
     }
@@ -325,13 +340,19 @@ export default function ShopPage() {
 
   const handleGenerateCatAlien = async () => {
     try {
+      startGeneration("cat-alien");
+
       const { cat, abilities } = await generateCatAlienAction();
+
+      stopGeneration();
+
       setCurrentCat(cat);
       setCurrentAbilities(abilities);
       setCurrentPureCat(null);
       setIsPureCatModal(false);
       setIsModalOpen(true);
     } catch (error) {
+      stopGeneration();
       console.error("Failed to generate cat-alien:", error);
       showToast("[FAILED_TO_GENERATE_CAT_ALIEN]", "error");
     }
@@ -393,116 +414,124 @@ export default function ShopPage() {
             id: "generate-cat",
             text: "GENERATE_CAT",
             onClick: handleGeneratePureCat,
-            disabled: false,
+            disabled: isGenerating,
           },
           {
             id: "generate-alien",
             text: "GENERATE_ALIEN",
             onClick: handleGenerateAlien,
-            disabled: false,
+            disabled: isGenerating,
           },
           {
             id: "generate-cat-alien",
             text: "GENERATE_CAT_ALIEN",
             onClick: handleGenerateCatAlien,
-            disabled: false,
+            disabled: isGenerating,
           },
         ],
         customContent: (
-          <div
-            className="mt-6 relative border-2 border-[#30D6D6]/30 bg-black/50"
-            style={{ padding: `${scaledValues.container.padding}px` }}
-          >
-            <div
-              className="absolute -left-px -top-px border-l-2 border-t-2 border-[#30D6D6]"
-              style={{
-                height: `${scaledValues.container.cornerSize}px`,
-                width: `${scaledValues.container.cornerSize}px`,
-              }}
-            />
-            <div
-              className="absolute -right-px -top-px border-r-2 border-t-2 border-[#30D6D6]"
-              style={{
-                height: `${scaledValues.container.cornerSize}px`,
-                width: `${scaledValues.container.cornerSize}px`,
-              }}
-            />
-            <div
-              className="absolute -bottom-px -left-px border-b-2 border-l-2 border-[#30D6D6]"
-              style={{
-                height: `${scaledValues.container.cornerSize}px`,
-                width: `${scaledValues.container.cornerSize}px`,
-              }}
-            />
-            <div
-              className="absolute -bottom-px -right-px border-b-2 border-r-2 border-[#30D6D6]"
-              style={{
-                height: `${scaledValues.container.cornerSize}px`,
-                width: `${scaledValues.container.cornerSize}px`,
-              }}
-            />
-
-            <h3
-              className="mb-4 font-bold tracking-widest text-[#30D6D6]"
-              style={{
-                fontSize: `${scaledValues.heading.fontSize}px`,
-                letterSpacing: `${scaledValues.heading.letterSpacing}em`,
-              }}
-            >
-              [CAT_PRICE_SETTINGS]
-            </h3>
-
-            <div className="space-y-4">
-              <div>
-                <label
-                  className="block text-[#30D6D6] mb-2"
-                  style={{
-                    fontSize: `${scaledValues.label.fontSize}px`,
-                    letterSpacing: `${scaledValues.label.letterSpacing}em`,
-                  }}
-                >
-                  [PRICE_PER_CAT]
-                </label>
-                <div className="flex items-center gap-2">
-                  <span
-                    className="text-[#30D6D6] font-bold"
-                    style={{
-                      fontSize: `${scaledValues.currencySymbol.fontSize}px`,
-                    }}
-                  >
-                    R
-                  </span>
-                  <input
-                    type="number"
-                    value={priceInputValue}
-                    onChange={handlePriceInputChange}
-                    min="1"
-                    step="1"
-                    className="flex-1 border-[#30D6D6]/30 bg-black text-[#30D6D6] font-mono focus:border-[#30D6D6] focus:outline-none"
-                    style={{
-                      fontSize: `${scaledValues.input.fontSize}px`,
-                      paddingLeft: `${scaledValues.input.paddingX}px`,
-                      paddingRight: `${scaledValues.input.paddingX}px`,
-                      paddingTop: `${scaledValues.input.paddingY}px`,
-                      paddingBottom: `${scaledValues.input.paddingY}px`,
-                      borderWidth: `${scaledValues.input.borderWidth}px`,
-                    }}
-                  />
-                </div>
+          <div className="relative">
+            {isGenerating && (
+              <div className="absolute inset-0 z-10 bg-black/80 flex items-center justify-center">
+                <LoadingContainer message={currentMessage} />
               </div>
+            )}
 
-              <button
-                onClick={handleSavePrice}
-                disabled={isSavingPrice}
-                className="w-full border-2 border-[#30D6D6] bg-black font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_20px_rgba(48,214,214,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:text-[#30D6D6]"
+            <div
+              className="mt-6 relative border-2 border-[#30D6D6]/30 bg-black/50"
+              style={{ padding: `${scaledValues.container.padding}px` }}
+            >
+              <div
+                className="absolute -left-px -top-px border-l-2 border-t-2 border-[#30D6D6]"
                 style={{
-                  fontSize: `${scaledValues.button.fontSize}px`,
-                  paddingTop: `${scaledValues.button.paddingY}px`,
-                  paddingBottom: `${scaledValues.button.paddingY}px`,
+                  height: `${scaledValues.container.cornerSize}px`,
+                  width: `${scaledValues.container.cornerSize}px`,
+                }}
+              />
+              <div
+                className="absolute -right-px -top-px border-r-2 border-t-2 border-[#30D6D6]"
+                style={{
+                  height: `${scaledValues.container.cornerSize}px`,
+                  width: `${scaledValues.container.cornerSize}px`,
+                }}
+              />
+              <div
+                className="absolute -bottom-px -left-px border-b-2 border-l-2 border-[#30D6D6]"
+                style={{
+                  height: `${scaledValues.container.cornerSize}px`,
+                  width: `${scaledValues.container.cornerSize}px`,
+                }}
+              />
+              <div
+                className="absolute -bottom-px -right-px border-b-2 border-r-2 border-[#30D6D6]"
+                style={{
+                  height: `${scaledValues.container.cornerSize}px`,
+                  width: `${scaledValues.container.cornerSize}px`,
+                }}
+              />
+
+              <h3
+                className="mb-4 font-bold tracking-widest text-[#30D6D6]"
+                style={{
+                  fontSize: `${scaledValues.heading.fontSize}px`,
+                  letterSpacing: `${scaledValues.heading.letterSpacing}em`,
                 }}
               >
-                {isSavingPrice ? "[SAVING...]" : "[SAVE_PRICE]"}
-              </button>
+                [CAT_PRICE_SETTINGS]
+              </h3>
+
+              <div className="space-y-4">
+                <div>
+                  <label
+                    className="block text-[#30D6D6] mb-2"
+                    style={{
+                      fontSize: `${scaledValues.label.fontSize}px`,
+                      letterSpacing: `${scaledValues.label.letterSpacing}em`,
+                    }}
+                  >
+                    [PRICE_PER_CAT]
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="text-[#30D6D6] font-bold"
+                      style={{
+                        fontSize: `${scaledValues.currencySymbol.fontSize}px`,
+                      }}
+                    >
+                      R
+                    </span>
+                    <input
+                      type="number"
+                      value={priceInputValue}
+                      onChange={handlePriceInputChange}
+                      min="1"
+                      step="1"
+                      className="flex-1 border-[#30D6D6]/30 bg-black text-[#30D6D6] font-mono focus:border-[#30D6D6] focus:outline-none"
+                      style={{
+                        fontSize: `${scaledValues.input.fontSize}px`,
+                        paddingLeft: `${scaledValues.input.paddingX}px`,
+                        paddingRight: `${scaledValues.input.paddingX}px`,
+                        paddingTop: `${scaledValues.input.paddingY}px`,
+                        paddingBottom: `${scaledValues.input.paddingY}px`,
+                        borderWidth: `${scaledValues.input.borderWidth}px`,
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleSavePrice}
+                  disabled={isSavingPrice}
+                  className="w-full border-2 border-[#30D6D6] bg-black font-bold tracking-widest text-[#30D6D6] transition-all hover:bg-[#30D6D6] hover:text-black hover:shadow-[0_0_20px_rgba(48,214,214,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:text-[#30D6D6]"
+                  style={{
+                    fontSize: `${scaledValues.button.fontSize}px`,
+                    paddingTop: `${scaledValues.button.paddingY}px`,
+                    paddingBottom: `${scaledValues.button.paddingY}px`,
+                  }}
+                >
+                  {isSavingPrice ? "[SAVING...]" : "[SAVE_PRICE]"}
+                </button>
+              </div>
             </div>
           </div>
         ),
