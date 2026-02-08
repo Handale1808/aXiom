@@ -170,103 +170,6 @@ function interpretLocomotion(
   return result;
 }
 
-const hexToHsl = (hex: string): [number, number, number] => {
-  const r = parseInt(hex.slice(1, 3), 16) / 255;
-  const g = parseInt(hex.slice(3, 5), 16) / 255;
-  const b = parseInt(hex.slice(5, 7), 16) / 255;
-
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  const l = (max + min) / 2;
-  let h = 0;
-  let s = 0;
-
-  if (max !== min) {
-    const d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-
-    switch (max) {
-      case r:
-        h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
-        break;
-      case g:
-        h = ((b - r) / d + 2) / 6;
-        break;
-      case b:
-        h = ((r - g) / d + 4) / 6;
-        break;
-    }
-  }
-
-  return [h * 360, s * 100, l * 100];
-};
-
-const hslToHex = (h: number, s: number, l: number): string => {
-  h = h / 360;
-  s = s / 100;
-  l = l / 100;
-
-  let r, g, b;
-
-  if (s === 0) {
-    r = g = b = l;
-  } else {
-    const hue2rgb = (p: number, q: number, t: number) => {
-      if (t < 0) t += 1;
-      if (t > 1) t -= 1;
-      if (t < 1 / 6) return p + (q - p) * 6 * t;
-      if (t < 1 / 2) return q;
-      if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-      return p;
-    };
-
-    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-    const p = 2 * l - q;
-    r = hue2rgb(p, q, h + 1 / 3);
-    g = hue2rgb(p, q, h);
-    b = hue2rgb(p, q, h - 1 / 3);
-  }
-
-  const toHex = (x: number) => {
-    const hex = Math.round(x * 255).toString(16);
-    return hex.length === 1 ? "0" + hex : hex;
-  };
-
-  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-};
-
-function normalizeColorForCats(hex: string): string {
-  const [h, s, l] = hexToHsl(hex);
-
-  // Decide which natural cat color family based on input
-  const isGrayish = s < 20;
-  const isDark = l < 35;
-  const isLight = l > 65;
-
-  let newH = h;
-  let newS = s;
-  let newL = l;
-
-  if (isGrayish || (isDark && s < 40)) {
-    // Gray/black cats: very low saturation, darker tones
-    newS = Math.min(s, 8);
-    newL = Math.max(18, Math.min(l, 45));
-  } else if (isLight) {
-    // White/cream cats: high lightness, very low saturation
-    newS = Math.min(s, 12);
-    newL = Math.max(75, Math.min(l, 92));
-    newH = Math.min(h, 40); // Warm cream tones
-  } else {
-    // Brown/tan/orange cats: warm hues, LOW saturation for natural look
-    // Map any hue to the 15-45 degree range (orange-brown earth tones)
-    newH = 15 + ((h % 360) % 31); // 15-45 degree range
-    newS = Math.max(20, Math.min(s, 45)); // 20-45% saturation (much less vivid)
-    newL = Math.max(30, Math.min(l, 65)); // 30-65% lightness (medium tones)
-  }
-
-  return hslToHex(newH, newS, newL);
-}
-
 /**
  * Interpret Defense subregion → skinType, hasClaws, hasFangs, colour, endurance stat
  */
@@ -304,8 +207,8 @@ function interpretDefense(
 
   const rawColour = rgbToHex(red, green, blue);
 
-  // Normalize color for cats to natural tones
-  const colour = normalizeColorForCats(rawColour);
+  // Keep raw color - normalization will happen in normalizeToCat() for pure cats only
+const colour = rawColour;
 
   // Endurance stat: use new opposing forces interpreter
   const enduranceResult = interpretEnduranceStat(segment, debug);

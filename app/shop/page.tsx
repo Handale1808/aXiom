@@ -537,52 +537,60 @@ export default function ShopPage() {
         ),
       },
     },
-    {
-      id: "cats",
-      label: "CATS",
-      content: {
-        customContent:
-          pureCats.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="text-[#006694] text-sm tracking-widest">
-                [NO_CATS_IN_DATABASE]
-              </div>
-              <div className="text-[#006694]/50 text-xs tracking-wider mt-2">
-                [GENERATE_AND_SAVE_CATS_TO_POPULATE_INVENTORY]
-              </div>
-            </div>
-          ) : (
-            <CatGrid
-              cats={pureCats}
-              showContainer={false}
-              onCatClick={handlePureCatClick}
-            />
-          ),
-      },
-    },
-    {
-      id: "aliens",
-      label: "ALIENS",
-      content: {
-        customContent:
-          aliens.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="text-[#006694] text-sm tracking-widest">
-                [NO_ALIENS_IN_DATABASE]
-              </div>
-              <div className="text-[#006694]/50 text-xs tracking-wider mt-2">
-                [GENERATE_AND_SAVE_ALIENS_TO_POPULATE_INVENTORY]
-              </div>
-            </div>
-          ) : (
-            <CatGrid
-              cats={aliens}
-              showContainer={false}
-              onCatClick={handleAlienClick}
-            />
-          ),
-      },
-    },
+    ...(isAdmin
+      ? [
+          {
+            id: "cats",
+            label: "CATS",
+            content: {
+              customContent:
+                pureCats.length === 0 ? (
+                  <div className="text-center py-12">
+                    <div className="text-[#006694] text-sm tracking-widest">
+                      [NO_CATS_IN_DATABASE]
+                    </div>
+                    <div className="text-[#006694]/50 text-xs tracking-wider mt-2">
+                      [GENERATE_AND_SAVE_CATS_TO_POPULATE_INVENTORY]
+                    </div>
+                  </div>
+                ) : (
+                  <CatGrid
+                    cats={pureCats}
+                    showContainer={false}
+                    onCatClick={handlePureCatClick}
+                  />
+                ),
+            },
+          },
+        ]
+      : []),
+    ...(isAdmin
+      ? [
+          {
+            id: "aliens",
+            label: "ALIENS",
+            content: {
+              customContent:
+                aliens.length === 0 ? (
+                  <div className="text-center py-12">
+                    <div className="text-[#006694] text-sm tracking-widest">
+                      [NO_ALIENS_IN_DATABASE]
+                    </div>
+                    <div className="text-[#006694]/50 text-xs tracking-wider mt-2">
+                      [GENERATE_AND_SAVE_ALIENS_TO_POPULATE_INVENTORY]
+                    </div>
+                  </div>
+                ) : (
+                  <CatGrid
+                    cats={aliens}
+                    showContainer={false}
+                    onCatClick={handleAlienClick}
+                  />
+                ),
+            },
+          },
+        ]
+      : []),
     {
       id: "inventory",
       label: "INVENTORY",
