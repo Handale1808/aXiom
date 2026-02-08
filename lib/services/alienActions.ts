@@ -217,7 +217,11 @@ export async function getAllAliensInStockAction(): Promise<
   Array<{ alienId: string; addedAt: string }>
 > {
   try {
-    return await getAllCatsInStock();
+    const stockItems = await getAllCatsInStock();
+    return stockItems.map(item => ({
+      alienId: item.catAlienId,
+      addedAt: item.addedAt
+    }));
   } catch (error) {
     console.error("Failed to get aliens in stock:", error);
     return [];
