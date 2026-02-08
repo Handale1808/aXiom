@@ -38,6 +38,7 @@ import {
   fetchAllAliensAction,
   fetchAlienByIdAction,
 } from "@/lib/services/alienActions";
+import LoadingContainer from "@/lib/components/ui/LoadingContainer";
 
 export default function ShopPage() {
   const { isAdmin, isLoading } = useUser();
@@ -558,14 +559,7 @@ export default function ShopPage() {
       label: "INVENTORY",
       content: {
         customContent: isLoadingInventory ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="flex items-center gap-3">
-              <div className="h-3 w-3 animate-pulse bg-[#30D6D6] shadow-[0_0_10px_rgba(48,214,214,0.8)]" />
-              <div className="text-sm tracking-widest text-[#30D6D6]">
-                [LOADING_INVENTORY...]
-              </div>
-            </div>
-          </div>
+          <LoadingContainer message="[LOADING_INVENTORY...]" />
         ) : savedCats.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-[#006694] text-sm tracking-widest">
